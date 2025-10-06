@@ -1,26 +1,1297 @@
 @import "tailwindcss";
 
+/* ======================================
+   PIStack Design System — v1.0
+   Dark Theme with Semantic Colors
+   ====================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* === Neutros (Dark) === */
+  --bg: #0F1115;
+  --bg-elev: #151821;
+  --stroke: #242837;
+  --muted: #8A90A6;
+  --text: #E6E9F2;
+  --text-dim: #B9BECD;
+
+  /* === Semânticas === */
+  --primary: #7AA2FF;
+  --success: #5AD19A;
+  --warning: #FFC24B;
+  --danger: #FF6B6B;
+  --info: #9AA7FF;
+  --cyan: #8AD3FF;
+  --rose: #FF8FA3;
+
+  /* === Cores por Etapa === */
+  --accent-idea: var(--primary);
+  --accent-understanding: var(--info);
+  --accent-scope: var(--success);
+  --accent-design: var(--warning);
+  --accent-tech: var(--cyan);
+  --accent-plan: var(--rose);
+
+  /* === Raios & Sombras === */
+  --radius-xl: 16px;
+  --radius-lg: 12px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --shadow-1: 0 4px 16px rgba(0, 0, 0, 0.24);
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.32);
+
+  /* === Espaçamentos === */
+  --s-1: 8px;
+  --s-2: 12px;
+  --s-3: 16px;
+  --s-4: 20px;
+  --s-5: 24px;
+  --s-6: 32px;
+
+  /* === Bordas === */
+  --border: 1px solid var(--stroke);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* @theme inline removido - configuração movida para tailwind.config.ts */
+
+/* === Base Styles === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* === Focus Visible (Acessibilidade) === */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === Scrollbar Styling === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--stroke);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === Tailwind Utility Overrides === */
+.rounded-lg {
+  border-radius: 12px !important;
+}
+
+.rounded-md {
+  border-radius: 10px !important;
+}
+
+.rounded-sm {
+  border-radius: 8px !important;
+}
+
+.px-4 {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.px-6 {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+.px-8 {
+  padding-left: 32px !important;
+  padding-right: 32px !important;
+}
+
+.h-9 {
+  height: 36px !important;
+}
+
+.h-10 {
+  height: 40px !important;
+}
+
+.h-12 {
+  height: 48px !important;
+}
+
+/* Badge e Chip específicos */
+.px-3 {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.py-1 {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.rounded-sm {
+  border-radius: 8px !important;
+}
+
+/* === Cores dos Componentes === */
+/* Botões */
+.bg-primary {
+  background-color: #7AA2FF !important;
+}
+
+.bg-success {
+  background-color: #5AD19A !important;
+}
+
+.bg-danger {
+  background-color: #FF6B6B !important;
+}
+
+.bg-warning {
+  background-color: #FFC24B !important;
+}
+
+.bg-info {
+  background-color: #9AA7FF !important;
+}
+
+.text-primary {
+  color: #7AA2FF !important;
+}
+
+.text-success {
+  color: #5AD19A !important;
+}
+
+.text-danger {
+  color: #FF6B6B !important;
+}
+
+.text-warning {
+  color: #FFC24B !important;
+}
+
+.text-info {
+  color: #9AA7FF !important;
+}
+
+.border-primary {
+  border-color: #7AA2FF !important;
+}
+
+.border-success {
+  border-color: #5AD19A !important;
+}
+
+.border-danger {
+  border-color: #FF6B6B !important;
+}
+
+.border-warning {
+  border-color: #FFC24B !important;
+}
+
+.border-info {
+  border-color: #9AA7FF !important;
+}
+
+.bg-primary\/10 {
+  background-color: rgba(122, 162, 255, 0.1) !important;
+}
+
+.bg-info\/10 {
+  background-color: rgba(154, 167, 255, 0.1) !important;
+}
+
+.bg-danger\/5 {
+  background-color: rgba(255, 107, 107, 0.05) !important;
+}
+
+/* Input e Textarea específicos */
+.px-4 {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.py-3 {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.py-16 {
+  padding-top: 64px !important;
+  padding-bottom: 64px !important;
+}
+
+.px-6 {
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+.gap-6 {
+  gap: 24px !important;
+}
+
+/* === Moléculas específicas === */
+/* ProjectTile */
+.p-4 {
+  padding: 16px !important;
+}
+
+.mb-3 {
+  margin-bottom: 12px !important;
+}
+
+.mb-2 {
+  margin-bottom: 8px !important;
+}
+
+.gap-2 {
+  gap: 8px !important;
+}
+
+.gap-3 {
+  gap: 12px !important;
+}
+
+/* CardHeader */
+.border-l-2 {
+  border-left-width: 2px !important;
+}
+
+.border-l-primary {
+  border-left-color: #7AA2FF !important;
+}
+
+.border-l-info {
+  border-left-color: #9AA7FF !important;
+}
+
+.border-l-success {
+  border-left-color: #5AD19A !important;
+}
+
+.border-l-warning {
+  border-left-color: #FFC24B !important;
+}
+
+.border-l-cyan {
+  border-left-color: #8AD3FF !important;
+}
+
+.border-l-rose {
+  border-left-color: #FF8FA3 !important;
+}
+
+/* AIPanel e ProgressDrawer */
+.w-96 {
+  width: 384px !important;
+}
+
+.w-80 {
+  width: 320px !important;
+}
+
+.h-full {
+  height: 100% !important;
+}
+
+/* Grid layouts */
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.grid {
+  display: grid !important;
+}
+
+/* Flexbox utilities */
+.flex-1 {
+  flex: 1 1 0% !important;
+}
+
+.min-w-0 {
+  min-width: 0px !important;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+/* Text utilities */
+.truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Opacity utilities */
+.opacity-0 {
+  opacity: 0 !important;
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1 !important;
+}
+
+/* Transform utilities */
+.-translate-y-0\.5 {
+  transform: translateY(-2px) !important;
+}
+
+/* Hover states */
+.hover\:bg-bg-elev:hover {
+  background-color: #151821 !important;
+}
+
+.hover\:border-primary\/50:hover {
+  border-color: rgba(122, 162, 255, 0.5) !important;
+}
+
+.hover\:shadow-1:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* === Cards específicos === */
+/* Espaçamentos para cards */
+.space-y-6 > * + * {
+  margin-top: 24px !important;
+}
+
+.space-y-4 > * + * {
+  margin-top: 16px !important;
+}
+
+.space-y-2 > * + * {
+  margin-top: 8px !important;
+}
+
+.space-y-3 > * + * {
+  margin-top: 12px !important;
+}
+
+/* Grid layouts para cards */
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.md\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Flexbox para cards */
+.items-start {
+  align-items: flex-start !important;
+}
+
+.items-center {
+  align-items: center !important;
+}
+
+.justify-between {
+  justify-content: space-between !important;
+}
+
+.justify-start {
+  justify-content: flex-start !important;
+}
+
+/* Text utilities para cards */
+.text-sm {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.text-xs {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+.font-medium {
+  font-weight: 500 !important;
+}
+
+.font-semibold {
+  font-weight: 600 !important;
+}
+
+/* Border utilities para cards */
+.border-l-2 {
+  border-left-width: 2px !important;
+}
+
+.rounded-md {
+  border-radius: 10px !important;
+}
+
+.rounded-lg {
+  border-radius: 12px !important;
+}
+
+/* Background utilities para cards */
+.bg-bg {
+  background-color: #0F1115 !important;
+}
+
+.bg-bg-elev {
+  background-color: #151821 !important;
+}
+
+/* Bordas suaves para cards específicos */
+.border-stroke {
+  border-color: rgba(36, 40, 55, 0.8) !important;
+}
+
+.bg-primary\/5 {
+  background-color: rgba(122, 162, 255, 0.05) !important;
+}
+
+.bg-info\/5 {
+  background-color: rgba(154, 167, 255, 0.05) !important;
+}
+
+.bg-success\/5 {
+  background-color: rgba(90, 209, 154, 0.05) !important;
+}
+
+.bg-danger\/5 {
+  background-color: rgba(255, 107, 107, 0.05) !important;
+}
+
+/* Border color utilities para cards */
+.border-primary\/20 {
+  border-color: rgba(122, 162, 255, 0.2) !important;
+}
+
+.border-info\/20 {
+  border-color: rgba(154, 167, 255, 0.2) !important;
+}
+
+.border-success\/20 {
+  border-color: rgba(90, 209, 154, 0.2) !important;
+}
+
+.border-danger\/20 {
+  border-color: rgba(255, 107, 107, 0.2) !important;
+}
+
+/* Hover states para cards */
+.hover\:bg-bg-elev\/50:hover {
+  background-color: rgba(21, 24, 33, 0.5) !important;
+}
+
+.hover\:border-primary\/50:hover {
+  border-color: rgba(122, 162, 255, 0.5) !important;
+}
+
+.hover\:border-info\/50:hover {
+  border-color: rgba(154, 167, 255, 0.5) !important;
+}
+
+.hover\:border-success\/50:hover {
+  border-color: rgba(90, 209, 154, 0.5) !important;
+}
+
+.hover\:border-cyan\/50:hover {
+  border-color: rgba(138, 211, 255, 0.5) !important;
+}
+
+/* Resize utilities */
+.resize-none {
+  resize: none !important;
+}
+
+/* Line height utilities */
+.line-through {
+  text-decoration: line-through !important;
+}
+
+/* Width utilities */
+.w-full {
+  width: 100% !important;
+}
+
+.max-w-800px {
+  max-width: 800px !important;
+}
+
+/* Height utilities */
+.h-3 {
+  height: 12px !important;
+}
+
+.h-4 {
+  height: 16px !important;
+}
+
+.h-5 {
+  height: 20px !important;
+}
+
+.h-6 {
+  height: 24px !important;
+}
+
+.h-8 {
+  height: 32px !important;
+}
+
+/* Width utilities */
+.w-3 {
+  width: 12px !important;
+}
+
+.w-4 {
+  width: 16px !important;
+}
+
+.w-5 {
+  width: 20px !important;
+}
+
+.w-6 {
+  width: 24px !important;
+}
+
+.w-8 {
+  width: 32px !important;
+}
+
+/* Margin utilities */
+.mr-1 {
+  margin-right: 4px !important;
+}
+
+.mr-2 {
+  margin-right: 8px !important;
+}
+
+.mb-1 {
+  margin-bottom: 4px !important;
+}
+
+.mb-2 {
+  margin-bottom: 8px !important;
+}
+
+.mb-3 {
+  margin-bottom: 12px !important;
+}
+
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Padding utilities específicos */
+.p-3 {
+  padding: 12px !important;
+}
+
+.p-4 {
+  padding: 16px !important;
+}
+
+.p-6 {
+  padding: 24px !important;
+}
+
+.px-2 {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.px-3 {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.px-4 {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.py-2 {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.py-3 {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.py-8 {
+  padding-top: 32px !important;
+  padding-bottom: 32px !important;
+}
+
+/* Position utilities */
+.relative {
+  position: relative !important;
+}
+
+.absolute {
+  position: absolute !important;
+}
+
+/* Z-index utilities */
+.z-10 {
+  z-index: 10 !important;
+}
+
+/* Cursor utilities */
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.cursor-default {
+  cursor: default !important;
+}
+
+/* Transition utilities */
+.transition-all {
+  transition-property: all !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+}
+
+/* Duration utilities */
+.duration-200 {
+  transition-duration: 200ms !important;
+}
+
+.duration-300 {
+  transition-duration: 300ms !important;
+}
+
+/* Opacity utilities */
+.opacity-50 {
+  opacity: 0.5 !important;
+}
+
+/* Select utilities */
+select {
+  background-color: #151821 !important;
+  border: 1px solid #242837 !important;
+  border-radius: 8px !important;
+  color: #E6E9F2 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+select:focus {
+  outline: 2px solid #7AA2FF !important;
+  outline-offset: 2px !important;
+}
+
+/* Button utilities específicos */
+button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Text color utilities específicos */
+.text-danger {
+  color: #FF6B6B !important;
+}
+
+.text-success {
+  color: #5AD19A !important;
+}
+
+.text-warning {
+  color: #FFC24B !important;
+}
+
+.text-info {
+  color: #9AA7FF !important;
+}
+
+.text-cyan {
+  color: #8AD3FF !important;
+}
+
+.text-rose {
+  color: #FF8FA3 !important;
+}
+
+/* === HIERARQUIA VISUAL - Melhorias === */
+/* Títulos com hierarquia clara */
+.text-4xl {
+  font-size: 36px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.text-3xl {
+  font-size: 30px !important;
+  line-height: 1.3 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.text-2xl {
+  font-size: 24px !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.text-xl {
+  font-size: 20px !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+
+.text-lg {
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+}
+
+/* Hierarquia de cores para títulos */
+.text-primary {
+  color: #7AA2FF !important;
+}
+
+.text-info {
+  color: #9AA7FF !important;
+}
+
+.text-success {
+  color: #5AD19A !important;
+}
+
+.text-cyan {
+  color: #8AD3FF !important;
+}
+
+/* Contraste melhorado para textos */
+.text-text {
+  color: #E6E9F2 !important;
+  font-weight: 500 !important;
+}
+
+.text-text-dim {
+  color: #B9BECD !important;
+  font-weight: 400 !important;
+}
+
+/* Backgrounds com hierarquia */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #7AA2FF20, #9AA7FF20) !important;
+  border: 1px solid #7AA2FF40 !important;
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #5AD19A20, #8AD3FF20) !important;
+  border: 1px solid #5AD19A40 !important;
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #FFC24B20, #FF8FA320) !important;
+  border: 1px solid #FFC24B40 !important;
+}
+
+.bg-gradient-info {
+  background: linear-gradient(135deg, #9AA7FF20, #8AD3FF20) !important;
+  border: 1px solid #9AA7FF40 !important;
+}
+
+/* Cards com hierarquia visual melhorada */
+.card-elevated {
+  background: #151821 !important;
+  border: 1px solid rgba(36, 40, 55, 0.8) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24) !important;
+  transition: all 0.2s ease !important;
+}
+
+.card-elevated:hover {
+  border-color: rgba(122, 162, 255, 0.5) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Cards clicáveis mantêm animação padrão */
+a.card-elevated {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+/* Hierarquia de espaçamentos */
+.space-y-8 > * + * {
+  margin-top: 32px !important;
+}
+
+.space-y-6 > * + * {
+  margin-top: 24px !important;
+}
+
+.space-y-4 > * + * {
+  margin-top: 16px !important;
+}
+
+.space-y-3 > * + * {
+  margin-top: 12px !important;
+}
+
+.space-y-2 > * + * {
+  margin-top: 8px !important;
+}
+
+/* Padding hierárquico */
+.p-8 {
+  padding: 32px !important;
+}
+
+.p-6 {
+  padding: 24px !important;
+}
+
+.p-5 {
+  padding: 20px !important;
+}
+
+.p-4 {
+  padding: 16px !important;
+}
+
+.p-3 {
+  padding: 12px !important;
+}
+
+/* Margins hierárquicos */
+.mb-8 {
+  margin-bottom: 32px !important;
+}
+
+.mb-6 {
+  margin-bottom: 24px !important;
+}
+
+.mb-5 {
+  margin-bottom: 20px !important;
+}
+
+.mb-4 {
+  margin-bottom: 16px !important;
+}
+
+.mb-3 {
+  margin-bottom: 12px !important;
+}
+
+.mb-2 {
+  margin-bottom: 8px !important;
+}
+
+.mb-1 {
+  margin-bottom: 4px !important;
+}
+
+/* Tamanhos de ícones hierárquicos */
+.h-12 {
+  height: 48px !important;
+}
+
+.h-10 {
+  height: 40px !important;
+}
+
+.h-8 {
+  height: 32px !important;
+}
+
+.h-6 {
+  height: 24px !important;
+}
+
+.h-5 {
+  height: 20px !important;
+}
+
+.h-4 {
+  height: 16px !important;
+}
+
+.w-12 {
+  width: 48px !important;
+}
+
+.w-10 {
+  width: 40px !important;
+}
+
+.w-8 {
+  width: 32px !important;
+}
+
+.w-6 {
+  width: 24px !important;
+}
+
+.w-5 {
+  width: 20px !important;
+}
+
+.w-4 {
+  width: 16px !important;
+}
+
+/* Border radius hierárquico */
+.rounded-2xl {
+  border-radius: 16px !important;
+}
+
+.rounded-xl {
+  border-radius: 12px !important;
+}
+
+.rounded-lg {
+  border-radius: 10px !important;
+}
+
+.rounded-md {
+  border-radius: 8px !important;
+}
+
+.rounded-sm {
+  border-radius: 6px !important;
+}
+
+/* Sombras hierárquicas */
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Opacidade hierárquica */
+.opacity-100 {
+  opacity: 1 !important;
+}
+
+.opacity-90 {
+  opacity: 0.9 !important;
+}
+
+.opacity-75 {
+  opacity: 0.75 !important;
+}
+
+.opacity-50 {
+  opacity: 0.5 !important;
+}
+
+.opacity-25 {
+  opacity: 0.25 !important;
+}
+
+/* Font weights hierárquicos */
+.font-thin {
+  font-weight: 100 !important;
+}
+
+.font-light {
+  font-weight: 300 !important;
+}
+
+.font-normal {
+  font-weight: 400 !important;
+}
+
+.font-medium {
+  font-weight: 500 !important;
+}
+
+.font-semibold {
+  font-weight: 600 !important;
+}
+
+.font-bold {
+  font-weight: 700 !important;
+}
+
+.font-extrabold {
+  font-weight: 800 !important;
+}
+
+.font-black {
+  font-weight: 900 !important;
+}
+
+/* Line heights hierárquicos */
+.leading-tight {
+  line-height: 1.25 !important;
+}
+
+.leading-snug {
+  line-height: 1.375 !important;
+}
+
+.leading-normal {
+  line-height: 1.5 !important;
+}
+
+.leading-relaxed {
+  line-height: 1.625 !important;
+}
+
+.leading-loose {
+  line-height: 2 !important;
+}
+
+/* Letter spacing hierárquico */
+.tracking-tight {
+  letter-spacing: -0.025em !important;
+}
+
+.tracking-normal {
+  letter-spacing: 0em !important;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em !important;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em !important;
+}
+
+.tracking-widest {
+  letter-spacing: 0.1em !important;
+}
+
+/* === Gradientes para Card Headers === */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
+}
+
+.from-primary\/20 {
+  --tw-gradient-from: rgba(122, 162, 255, 0.2) !important;
+  --tw-gradient-to: rgba(122, 162, 255, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-primary\/5 {
+  --tw-gradient-to: rgba(122, 162, 255, 0.05) !important;
+}
+
+.from-info\/20 {
+  --tw-gradient-from: rgba(154, 167, 255, 0.2) !important;
+  --tw-gradient-to: rgba(154, 167, 255, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-info\/5 {
+  --tw-gradient-to: rgba(154, 167, 255, 0.05) !important;
+}
+
+.from-success\/20 {
+  --tw-gradient-from: rgba(90, 209, 154, 0.2) !important;
+  --tw-gradient-to: rgba(90, 209, 154, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-success\/5 {
+  --tw-gradient-to: rgba(90, 209, 154, 0.05) !important;
+}
+
+.from-warning\/20 {
+  --tw-gradient-from: rgba(255, 194, 75, 0.2) !important;
+  --tw-gradient-to: rgba(255, 194, 75, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-warning\/5 {
+  --tw-gradient-to: rgba(255, 194, 75, 0.05) !important;
+}
+
+.from-cyan\/20 {
+  --tw-gradient-from: rgba(138, 211, 255, 0.2) !important;
+  --tw-gradient-to: rgba(138, 211, 255, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-cyan\/5 {
+  --tw-gradient-to: rgba(138, 211, 255, 0.05) !important;
+}
+
+.from-rose\/20 {
+  --tw-gradient-from: rgba(255, 143, 163, 0.2) !important;
+  --tw-gradient-to: rgba(255, 143, 163, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-rose\/5 {
+  --tw-gradient-to: rgba(255, 143, 163, 0.05) !important;
+}
+
+.from-stroke\/20 {
+  --tw-gradient-from: rgba(36, 40, 55, 0.2) !important;
+  --tw-gradient-to: rgba(36, 40, 55, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-stroke\/5 {
+  --tw-gradient-to: rgba(36, 40, 55, 0.05) !important;
+}
+
+/* === Bordas suaves para inputs === */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  border: 1px solid rgba(36, 40, 55, 0.4) !important;
+  border-radius: 8px !important;
+  transition: border-color 0.2s ease !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #7AA2FF !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(122, 162, 255, 0.1) !important;
+}
+
+/* Bordas mais suaves para inputs com erro */
+input[type="text"].error,
+input[type="email"].error,
+input[type="password"].error,
+input[type="number"].error,
+input[type="search"].error,
+input[type="tel"].error,
+input[type="url"].error,
+textarea.error {
+  border-color: #FF6B6B !important;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.1) !important;
+}
+
+/* ===========================================
+   GRADIENTES PARA BOTÕES
+   =========================================== */
+
+/* Gradientes personalizados para botões */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #4A6CF7 0%, #7A9FFF 100%) !important;
+}
+
+.bg-gradient-primary:hover {
+  background: linear-gradient(135deg, #5A7CFF 0%, #8AAFFF 100%) !important;
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #22C55E 0%, #4ADE80 100%) !important;
+}
+
+.bg-gradient-success:hover {
+  background: linear-gradient(135deg, #32D56E 0%, #5AEE90 100%) !important;
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(135deg, #FF4444 0%, #FF6666 100%) !important;
+}
+
+.bg-gradient-danger:hover {
+  background: linear-gradient(135deg, #FF5555 0%, #FF7777 100%) !important;
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(135deg, #1A1F2D 0%, #2A2F3D 100%) !important;
+}
+
+.bg-gradient-secondary:hover {
+  background: linear-gradient(135deg, #2A2F3D 0%, #3A3F4D 100%) !important;
+}
+
+.bg-gradient-info {
+  background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%) !important;
+}
+
+.bg-gradient-info:hover {
+  background: linear-gradient(135deg, #9B6CF6 0%, #B78BFA 100%) !important;
+}
+
+/* Efeitos de hover para botões com gradiente */
+.bg-gradient-primary:hover,
+.bg-gradient-success:hover,
+.bg-gradient-danger:hover,
+.bg-gradient-info:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.bg-gradient-secondary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }

@@ -1,103 +1,628 @@
-import Image from "next/image";
+'use client';
+
+import {
+  Button,
+  Badge,
+  Chip,
+  Input,
+  Textarea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+  EmptyState,
+  Switch,
+  LoadingSpinner,
+} from '@/components/foundation';
+import {
+  SearchInput,
+  ProjectTile,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  AIPanel,
+  ProgressDrawer,
+} from '@/components/molecules';
+import {
+  IdeaBaseCard,
+  UnderstandingCard,
+  ScopeFeaturesCard,
+  TechStackCard,
+} from '@/components/cards';
+import {
+  ProjectsPage,
+  CanvasPage,
+  OutputsModal,
+  NewProjectModal,
+} from '@/components/organisms';
+import { Sparkles, FolderOpen, Atom, Layers, Building2 } from 'lucide-react';
+import { toast } from '@/hooks/useToast';
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div style={{
+      minHeight: '100vh',
+      background: '#0F1115', // bg-bg
+      padding: '32px', // p-8
+    }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-stroke">
+          <h1 className="text-4xl font-bold text-text mb-4 tracking-tight">
+            PIStack — Design System Showcase v3
+          </h1>
+          <p className="text-lg text-text-dim leading-relaxed mb-8">
+            Fundação + Moléculas + Cards implementados seguindo Atomic Design e Hierarquia Visual ✨
+          </p>
+          
+          {/* Navigation Links */}
+          <div className="bg-gradient-to-r from-primary/10 to-info/10 rounded-xl p-6 mb-8 border border-primary/20">
+            <h3 className="text-lg font-semibold text-text mb-4 text-center">Navegação Rápida</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a 
+                href="/projects" 
+                className="px-6 py-3 bg-gradient-to-br from-[#4A6CF7] to-[#7A9FFF] text-white rounded-lg hover:from-[#5A7CFF] hover:to-[#8AAFFF] transition-all duration-200 font-medium shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                📋 Lista de Projetos
+              </a>
+              <a 
+                href="/projects/1" 
+                className="px-6 py-3 bg-gradient-to-br from-[#22C55E] to-[#4ADE80] text-white rounded-lg hover:from-[#32D56E] hover:to-[#5AEE90] transition-all duration-200 font-medium shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                🎨 Canvas do Projeto
+              </a>
+              <a 
+                href="/auth" 
+                className="px-6 py-3 bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] text-white rounded-lg hover:from-[#9B6CF6] hover:to-[#B78BFA] transition-all duration-200 font-medium shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                🔐 Autenticação
+              </a>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* ===========================================
+            ÁTOMOS (Atoms) - Componentes Base
+            =========================================== */}
+        <section className="mb-16">
+          <div className="flex items-center gap-4 mb-8 p-6 bg-gradient-primary rounded-xl">
+            <Atom className="h-8 w-8 text-primary" />
+            <h2 className="text-3xl font-bold text-text tracking-tight">
+              Átomos (Atoms)
+            </h2>
+            <Badge status="READY" className="text-sm font-medium">16 Componentes</Badge>
+          </div>
+
+          {/* Buttons */}
+          <div className="mb-12">
+            <h3 className="text-xl font-semibold text-text mb-4">Buttons</h3>
+            <div className="card-elevated p-6">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <Button variant="primary">Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="ghost">Ghost</Button>
+                <Button variant="danger">Danger</Button>
+                <Button variant="success">Success</Button>
+                <Button variant="primary" size="sm">Small</Button>
+                <Button variant="primary" size="lg">Large</Button>
+                <Button variant="primary" loading>Loading</Button>
+                <Button variant="primary" disabled>Disabled</Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Badges</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <Badge status="DRAFT">Draft</Badge>
+                <Badge status="READY">Ready</Badge>
+                <Badge variant="primary">Primary</Badge>
+                <Badge variant="success">Success</Badge>
+                <Badge variant="warning">Warning</Badge>
+                <Badge variant="danger">Danger</Badge>
+                <Badge variant="info">Info</Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Chips (MoSCoW) */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Chips (MoSCoW)</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <Chip variant="must">Must Have</Chip>
+                <Chip variant="should">Should Have</Chip>
+                <Chip variant="could">Could Have</Chip>
+                <Chip variant="wont">Won't Have</Chip>
+                <Chip variant="must" onRemove={() => console.log('removed')}>Removable</Chip>
+              </div>
+            </div>
+          </div>
+
+          {/* Inputs */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Inputs</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <Input placeholder="Nome do projeto" />
+                <Input placeholder="Com prefix" prefix={<Sparkles className="h-4 w-4" />} />
+                <Input placeholder="Com erro" error helperText="Este campo é obrigatório" />
+                <Input placeholder="Disabled" disabled />
+              </div>
+            </div>
+          </div>
+
+          {/* Textarea */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Textarea</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <Textarea placeholder="Descreva a ideia do seu projeto..." rows={4} />
+            </div>
+          </div>
+
+          {/* Select */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Select</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <Select>
+                <SelectTrigger style={{ width: '280px' }}>
+                  <SelectValue placeholder="Selecione um template" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="site-app">Site / Aplicativo</SelectItem>
+                  <SelectItem value="produto-fisico">Produto Físico</SelectItem>
+                  <SelectItem value="evento">Evento</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Checkbox & Switch */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Checkbox & Switch</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Switch id="notifications" />
+                  <label htmlFor="notifications" style={{ fontSize: '14px', color: '#E6E9F2' }}>Notificações</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Skeleton</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Skeleton style={{ height: '48px', width: '100%' }} />
+                <Skeleton style={{ height: '32px', width: '75%' }} />
+                <Skeleton style={{ height: '32px', width: '50%' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Loading Spinner */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Loading Spinner</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <LoadingSpinner size="sm" />
+                <LoadingSpinner size="md" />
+                <LoadingSpinner size="lg" />
+              </div>
+            </div>
+          </div>
+
+          {/* Empty State */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Empty State</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '8px' }}>
+              <EmptyState
+                icon={<FolderOpen style={{ height: '32px', width: '32px' }} />}
+                title="Nenhum projeto criado"
+                description="Crie seu primeiro projeto para começar a transformar ideias em ação"
+                action={{
+                  label: 'Criar Novo Projeto',
+                  onClick: () => toast({ title: 'Criar Projeto', description: 'Ação de criar projeto' }),
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Toast Test */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Toast</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    toast({
+                      title: 'Sucesso!',
+                      description: 'Projeto criado com sucesso',
+                      variant: 'success',
+                    })
+                  }
+                >
+                  Toast Success
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() =>
+                    toast({
+                      title: 'Erro!',
+                      description: 'Não foi possível criar o projeto',
+                      variant: 'danger',
+                    })
+                  }
+                >
+                  Toast Danger
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    toast({
+                      title: 'Atenção',
+                      description: 'Você tem mudanças não salvas',
+                      variant: 'warning',
+                    })
+                  }
+                >
+                  Toast Warning
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===========================================
+            MOLÉCULAS (Molecules) - Componentes Compostos
+            =========================================== */}
+        <section className="mb-16">
+          <div className="flex items-center gap-4 mb-8 p-6 bg-gradient-success rounded-xl">
+            <Layers className="h-8 w-8 text-success" />
+            <h2 className="text-3xl font-bold text-text tracking-tight">
+              Moléculas (Molecules)
+            </h2>
+            <Badge status="READY" className="text-sm font-medium">7 Componentes</Badge>
+          </div>
+          
+          {/* SearchInput */}
+          <div style={{ marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>SearchInput</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <SearchInput
+                value=""
+                onChange={(value) => console.log('Search:', value)}
+                placeholder="Buscar projetos..."
+                style={{ maxWidth: '400px' }}
+              />
+            </div>
+          </div>
+
+          {/* ProjectTile */}
+          <div style={{ marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>ProjectTile</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                <ProjectTile
+                  id="1"
+                  name="E-commerce Platform"
+                  status="active"
+                  updatedAt={new Date()}
+                  template="Site/App"
+                  progress={75}
+                  onOpen={(id) => console.log('Open project:', id)}
+                  onRename={(id, name) => console.log('Rename:', id, name)}
+                  onDuplicate={(id) => console.log('Duplicate:', id)}
+                  onArchive={(id) => console.log('Archive:', id)}
+                  onDelete={(id) => console.log('Delete:', id)}
+                />
+                <ProjectTile
+                  id="2"
+                  name="Mobile App MVP"
+                  status="DRAFT"
+                  updatedAt={new Date(Date.now() - 86400000)}
+                  template="Site/App"
+                  progress={25}
+                  onOpen={(id) => console.log('Open project:', id)}
+                  onRename={(id, name) => console.log('Rename:', id, name)}
+                  onDuplicate={(id) => console.log('Duplicate:', id)}
+                  onArchive={(id) => console.log('Archive:', id)}
+                  onDelete={(id) => console.log('Delete:', id)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card Components */}
+          <div style={{ marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '500', color: '#E6E9F2', marginBottom: '16px' }}>Card Components</h3>
+            <div style={{ background: '#151821', border: '1px solid #242837', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ maxWidth: '500px' }}>
+                <div style={{ background: '#0F1115', border: '1px solid #242837', borderRadius: '12px', overflow: 'hidden' }}>
+                  <CardHeader
+                    icon={<Sparkles style={{ height: '20px', width: '20px' }} />}
+                    title="Ideia Base"
+                    status="READY"
+                    stageKey="ideia-base"
+                    onMenuAction={(action) => console.log('Menu action:', action)}
+                  />
+                  <CardBody>
+                    <p style={{ color: '#B9BECD', fontSize: '14px' }}>
+                      Esta é uma demonstração do CardBody com conteúdo de exemplo.
+                    </p>
+                  </CardBody>
+                  <CardFooter
+                    updatedAt={new Date()}
+                    author="João Silva"
+                    aiGenerated={true}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===========================================
+            CARDS ESPECÍFICOS - Por Etapa do PIStack
+            =========================================== */}
+        <section className="mb-16">
+          <div className="flex items-center gap-4 mb-8 p-6 bg-gradient-info rounded-xl">
+            <Building2 className="h-8 w-8 text-info" />
+            <h2 className="text-3xl font-bold text-text tracking-tight">
+              Cards por Etapa
+            </h2>
+            <Badge status="READY" className="text-sm font-medium">4 Cards</Badge>
+          </div>
+          
+          {/* IdeaBaseCard */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-primary mb-4">Ideia Base</h3>
+            <div className="max-w-4xl">
+              <IdeaBaseCard
+                idea={{
+                  title: "E-commerce Platform",
+                  description: "Uma plataforma de e-commerce moderna com foco em UX e performance",
+                  problem: "Lojas online com UX ruim e performance baixa",
+                  solution: "Interface intuitiva com carregamento rápido e checkout otimizado",
+                  targetAudience: "Empresas de médio porte que vendem online",
+                  valueProposition: "Aumento de 40% nas conversões com melhor UX"
+                }}
+                status="READY"
+                onUpdate={(field, value) => console.log('Update idea:', field, value)}
+                onAIGenerate={(field) => console.log('AI generate:', field)}
+                onMenuAction={(action) => console.log('Menu action:', action)}
+              />
+            </div>
+          </div>
+
+          {/* UnderstandingCard */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-info mb-4">Entendimento do Mercado</h3>
+            <div className="max-w-4xl">
+              <UnderstandingCard
+                understanding={{
+                  marketResearch: "O mercado de e-commerce no Brasil cresce 20% ao ano, com foco em mobile-first",
+                  competitors: "Shopify, WooCommerce, Nuvemshop dominam o mercado",
+                  userPersonas: "Empresários de 25-45 anos, tech-savvy, buscam simplicidade",
+                  marketSize: "R$ 200 bilhões em 2024",
+                  trends: "PWA, headless commerce, AI personalization",
+                  opportunities: "Mercado B2B, integração com marketplaces"
+                }}
+                status="READY"
+                onUpdate={(field, value) => console.log('Update understanding:', field, value)}
+                onAIGenerate={(field) => console.log('AI generate:', field)}
+                onMenuAction={(action) => console.log('Menu action:', action)}
+              />
+            </div>
+          </div>
+
+          {/* ScopeFeaturesCard */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-success mb-4">Escopo e Funcionalidades</h3>
+            <div className="max-w-4xl">
+              <ScopeFeaturesCard
+                scope={{
+                  projectGoals: "Criar uma plataforma de e-commerce que converta 40% mais que a concorrência",
+                  successMetrics: "Taxa de conversão, tempo de carregamento, NPS > 70",
+                  constraints: "Orçamento de R$ 100k, prazo de 6 meses",
+                  timeline: "6 meses, 12 sprints de 2 semanas",
+                  budget: "R$ 100.000",
+                  features: [
+                    {
+                      id: "1",
+                      title: "Catálogo de Produtos",
+                      description: "Sistema completo de gestão de produtos com variações",
+                      priority: "must",
+                      effort: "high",
+                      completed: true
+                    },
+                    {
+                      id: "2",
+                      title: "Carrinho de Compras",
+                      description: "Carrinho persistente com salvamento local",
+                      priority: "must",
+                      effort: "medium",
+                      completed: true
+                    },
+                    {
+                      id: "3",
+                      title: "Checkout Otimizado",
+                      description: "Processo de checkout em 1 clique",
+                      priority: "must",
+                      effort: "high",
+                      completed: false
+                    },
+                    {
+                      id: "4",
+                      title: "Dashboard Analytics",
+                      description: "Painel com métricas de vendas e conversão",
+                      priority: "should",
+                      effort: "medium",
+                      completed: false
+                    }
+                  ]
+                }}
+                status="DRAFT"
+                onUpdate={(field, value) => console.log('Update scope:', field, value)}
+                onFeatureAdd={(feature) => console.log('Add feature:', feature)}
+                onFeatureUpdate={(id, updates) => console.log('Update feature:', id, updates)}
+                onFeatureDelete={(id) => console.log('Delete feature:', id)}
+                onAIGenerate={(type) => console.log('AI generate:', type)}
+                onMenuAction={(action) => console.log('Menu action:', action)}
+              />
+            </div>
+          </div>
+
+          {/* TechStackCard */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-cyan mb-4">Stack Tecnológico</h3>
+            <div className="max-w-4xl">
+              <TechStackCard
+                techStack={{
+                  architecture: "Microserviços com API Gateway, separação frontend/backend",
+                  frontend: "Next.js 14, React 18, TypeScript, Tailwind CSS",
+                  backend: "Node.js, Express, Prisma ORM",
+                  database: "PostgreSQL com Redis para cache",
+                  infrastructure: "Vercel para frontend, Railway para backend",
+                  devops: "GitHub Actions, Docker, Vercel Analytics",
+                  choices: [
+                    {
+                      id: "1",
+                      category: "Frontend",
+                      name: "Next.js 14",
+                      description: "Framework React com SSR e otimizações",
+                      reason: "Performance, SEO, developer experience",
+                      alternatives: ["Vite", "Remix", "SvelteKit"],
+                      complexity: "medium",
+                      cost: "free",
+                      selected: true
+                    },
+                    {
+                      id: "2",
+                      category: "Backend",
+                      name: "Node.js + Express",
+                      description: "Runtime JavaScript com framework web",
+                      reason: "Consistência com frontend, ecosystem rico",
+                      alternatives: ["Python FastAPI", "Go Gin", "Rust Axum"],
+                      complexity: "low",
+                      cost: "free",
+                      selected: true
+                    },
+                    {
+                      id: "3",
+                      category: "Database",
+                      name: "PostgreSQL",
+                      description: "Banco relacional robusto e escalável",
+                      reason: "ACID compliance, JSON support, performance",
+                      alternatives: ["MongoDB", "MySQL", "Supabase"],
+                      complexity: "medium",
+                      cost: "low",
+                      selected: true
+                    }
+                  ]
+                }}
+                status="READY"
+                onUpdate={(field, value) => console.log('Update tech:', field, value)}
+                onTechChoiceAdd={(choice) => console.log('Add choice:', choice)}
+                onTechChoiceUpdate={(id, updates) => console.log('Update choice:', id, updates)}
+                onTechChoiceDelete={(id) => console.log('Delete choice:', id)}
+                onAIGenerate={(type) => console.log('AI generate:', type)}
+                onMenuAction={(action) => console.log('Menu action:', action)}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ===========================================
+            ORGANISMOS (Organisms) - Criados
+            =========================================== */}
+        <section className="mb-16">
+          <div className="flex items-center gap-4 mb-8 p-6 bg-gradient-warning rounded-xl">
+            <Building2 className="h-8 w-8 text-warning" />
+            <h2 className="text-3xl font-bold text-text tracking-tight">
+              Organismos (Organisms)
+            </h2>
+            <Badge status="READY" className="text-sm font-medium">Criados</Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* ProjectsPage */}
+            <a href="/projects" className="card-elevated p-6 block cursor-pointer group">
+              <h3 className="text-xl font-semibold text-primary mb-4">📋 ProjectsPage</h3>
+              <p className="text-text-dim mb-4">
+                Página principal para listar e gerenciar projetos com filtros, busca e visualizações.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge status="READY">Lista de Projetos</Badge>
+                <Badge status="READY">Filtros</Badge>
+                <Badge status="READY">Busca</Badge>
+                <Badge status="READY">Ordenação</Badge>
+              </div>
+              <div className="text-sm text-primary font-medium">
+                → Acessar Lista de Projetos
+              </div>
+            </a>
+
+            {/* CanvasPage */}
+            <a href="/projects/1" className="card-elevated p-6 block cursor-pointer group">
+              <h3 className="text-xl font-semibold text-success mb-4">🎨 CanvasPage</h3>
+              <p className="text-text-dim mb-4">
+                Página do canvas com controles de zoom, grid, snap e painéis laterais.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge status="READY">Canvas Controls</Badge>
+                <Badge status="READY">Zoom</Badge>
+                <Badge status="READY">Grid</Badge>
+                <Badge status="READY">AIPanel</Badge>
+              </div>
+              <div className="text-sm text-success font-medium">
+                → Acessar Canvas do Projeto
+              </div>
+            </a>
+
+            {/* OutputsModal */}
+            <div className="card-elevated p-6 opacity-75">
+              <h3 className="text-xl font-semibold text-info mb-4">📄 OutputsModal</h3>
+              <p className="text-text-dim mb-4">
+                Modal para visualizar e gerenciar outputs (PRD, Prompt Pack, Work Plan).
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge status="READY">Tabs</Badge>
+                <Badge status="READY">Regenerar</Badge>
+                <Badge status="READY">Download</Badge>
+                <Badge status="READY">Copiar</Badge>
+              </div>
+              <div className="text-sm text-text-dim">
+                Disponível no Canvas
+              </div>
+            </div>
+
+            {/* NewProjectModal */}
+            <div className="card-elevated p-6 opacity-75">
+              <h3 className="text-xl font-semibold text-cyan mb-4">➕ NewProjectModal</h3>
+              <p className="text-text-dim mb-4">
+                Modal para criar novos projetos com templates e configurações.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge status="READY">Templates</Badge>
+                <Badge status="READY">Categorias</Badge>
+                <Badge status="READY">Preview</Badge>
+                <Badge status="READY">Validação</Badge>
+              </div>
+              <div className="text-sm text-text-dim">
+                Disponível na Lista de Projetos
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
