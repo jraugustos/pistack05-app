@@ -57,11 +57,12 @@ const ScopeFeaturesCard = React.forwardRef<HTMLDivElement, ScopeFeaturesCardProp
 
     const handleAddFeature = () => {
       if (newFeature.title.trim()) {
-        onFeatureAdd({
-          ...newFeature,
+        const feature: Feature = {
           id: Date.now().toString(),
+          ...newFeature,
           completed: false,
-        });
+        };
+        onFeatureAdd(feature);
         setNewFeature({
           title: '',
           description: '',

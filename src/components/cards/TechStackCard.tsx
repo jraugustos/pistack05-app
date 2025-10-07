@@ -77,12 +77,13 @@ const TechStackCard = React.forwardRef<HTMLDivElement, TechStackCardProps>(
 
     const handleAddChoice = () => {
       if (newChoice.name.trim() && newChoice.category) {
-        onTechChoiceAdd({
-          ...newChoice,
+        const choice: TechChoice = {
           id: Date.now().toString(),
+          ...newChoice,
           alternatives: newChoice.alternatives.split(',').map(s => s.trim()).filter(Boolean),
           selected: true,
-        });
+        };
+        onTechChoiceAdd(choice);
         setNewChoice({
           category: '',
           name: '',

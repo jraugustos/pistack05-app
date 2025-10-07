@@ -60,7 +60,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
           <div className="min-w-0 flex-1">
             <h3 className="text-xl font-bold text-text truncate">{title}</h3>
             <div className="flex items-center gap-2 mt-1">
-              <Badge status={status === 'READY' ? 'ready' : 'draft'}>
+              <Badge status={status === 'READY' ? 'READY' : 'DRAFT'}>
                 {status === 'READY' ? 'Pronto' : 'Rascunho'}
               </Badge>
             </div>

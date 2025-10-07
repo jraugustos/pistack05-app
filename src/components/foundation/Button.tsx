@@ -17,6 +17,10 @@ const buttonVariants = cva(
           'bg-gradient-to-br from-[#FF4444] to-[#FF6666] text-white hover:from-[#FF5555] hover:to-[#FF7777] active:from-[#FF3333] active:to-[#FF5555] shadow-lg hover:shadow-xl',
         success:
           'bg-gradient-to-br from-[#22C55E] to-[#4ADE80] text-white hover:from-[#32D56E] hover:to-[#5AEE90] active:from-[#12B54E] active:to-[#3ACE70] shadow-lg hover:shadow-xl',
+        outline:
+          'border border-stroke bg-transparent text-text hover:bg-bg-elev hover:border-stroke-strong',
+        default:
+          'bg-bg-elev text-text hover:bg-bg-soft border border-stroke',
       },
       size: {
         sm: 'h-9 px-4 text-xs',

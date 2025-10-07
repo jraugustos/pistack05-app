@@ -12,7 +12,8 @@ import {
   Code,
   Calendar,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 import type { Project, ProjectTemplate } from '@/types';
 
@@ -37,8 +38,7 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
     const [formData, setFormData] = React.useState({
       name: '',
       description: '',
-      template: 'site-app' as ProjectTemplate,
-      category: 'web' as 'web' | 'mobile' | 'desktop' | 'api' | 'other',
+      template_id: 'site-app' as ProjectTemplate,
     });
 
     const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -78,15 +78,8 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
       }
     ];
 
-    const categories = [
-      { id: 'web', name: 'Web', icon: <Layout className="h-4 w-4" /> },
-      { id: 'mobile', name: 'Mobile', icon: <Code className="h-4 w-4" /> },
-      { id: 'desktop', name: 'Desktop', icon: <FolderOpen className="h-4 w-4" /> },
-      { id: 'api', name: 'API', icon: <BookOpen className="h-4 w-4" /> },
-      { id: 'other', name: 'Outro', icon: <Lightbulb className="h-4 w-4" /> },
-    ];
 
-    const selectedTemplate = templates.find(t => t.id === formData.template);
+    const selectedTemplate = templates.find(t => t.id === formData.template_id);
 
     const validateForm = () => {
       const newErrors: Record<string, string> = {};
@@ -113,19 +106,15 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
       onCreate({
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
-        template: formData.template,
-        category: formData.category,
+        template_id: formData.template_id,
         status: 'draft',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       });
 
       // Reset form
       setFormData({
         name: '',
         description: '',
-        template: 'site-app',
-        category: 'web',
+        template_id: 'site-app',
       });
       setErrors({});
     };
@@ -143,7 +132,7 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
         isOpen={isOpen}
         onClose={onClose}
         title="Novo Projeto"
-        className="max-w-2xl"
+        className="max-w-4xl"
         {...props}
       >
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -185,24 +174,6 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
                 </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Categoria
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <Chip
-                      key={category.id}
-                      variant={formData.category === category.id ? 'must' : 'could'}
-                      onClick={() => handleInputChange('category', category.id)}
-                      className="cursor-pointer"
-                    >
-                      {category.icon}
-                      <span className="ml-1">{category.name}</span>
-                    </Chip>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -213,59 +184,61 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
               Escolha um Template
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {templates.map((template) => (
                 <div
                   key={template.id}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
-                    formData.template === template.id
-                      ? "border-primary bg-primary/5"
-                      : "border-stroke hover:border-primary/50"
+                    "border rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg",
+                    formData.template_id === template.id
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                      : "border-stroke hover:border-primary/50 bg-bg-elev"
                   )}
-                  onClick={() => handleInputChange('template', template.id)}
+                  onClick={() => handleInputChange('template_id', template.id)}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className={cn(
-                      "p-2 rounded-lg",
-                      formData.template === template.id
-                        ? "bg-primary/20 text-primary"
-                        : "bg-bg-elev text-text-dim"
-                    )}>
-                      {template.icon}
+                  <div className="space-y-4">
+                    {/* Header */}
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "p-3 rounded-lg",
+                        formData.template_id === template.id
+                          ? "bg-primary/20 text-primary"
+                          : "bg-bg text-text-dim"
+                      )}>
+                        {template.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-text text-lg">{template.name}</h4>
+                          {formData.template_id === template.id && (
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                          )}
+                        </div>
+                        <p className="text-sm text-text-dim mt-1">{template.description}</p>
+                      </div>
                     </div>
                     
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-text">{template.name}</h4>
-                        {formData.template === template.id && (
-                          <CheckCircle className="h-4 w-4 text-primary" />
-                        )}
+                    {/* Features */}
+                    <div>
+                      <p className="text-xs font-semibold text-text-dim mb-2 uppercase tracking-wide">Funcionalidades</p>
+                      <div className="flex flex-wrap gap-2">
+                        {template.features.map((feature) => (
+                          <Badge key={feature} status="draft" className="text-xs px-2 py-1">
+                            {feature}
+                          </Badge>
+                        ))}
                       </div>
-                      <p className="text-sm text-text-dim mb-3">{template.description}</p>
-                      
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-xs font-medium text-text-dim mb-1">Funcionalidades:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {template.features.map((feature) => (
-                              <Badge key={feature} status="DRAFT" className="text-xs">
-                                {feature}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <p className="text-xs font-medium text-text-dim mb-1">Etapas:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {template.stages.map((stage) => (
-                              <Chip key={stage} variant="should" className="text-xs">
-                                {stage}
-                              </Chip>
-                            ))}
-                          </div>
-                        </div>
+                    </div>
+                    
+                    {/* Stages */}
+                    <div>
+                      <p className="text-xs font-semibold text-text-dim mb-2 uppercase tracking-wide">Etapas</p>
+                      <div className="flex flex-wrap gap-2">
+                        {template.stages.map((stage) => (
+                          <Chip key={stage} variant="could" className="text-xs px-2 py-1">
+                            {stage}
+                          </Chip>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -275,34 +248,31 @@ const NewProjectModal = React.forwardRef<HTMLDivElement, NewProjectModalProps>(
           </div>
 
           {/* Preview */}
-          {selectedTemplate && (
+          {selectedTemplate && formData.name && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-text flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
                 Preview do Projeto
               </h3>
               
-              <div className="border border-stroke rounded-lg p-4 bg-bg-elev">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-primary/20 text-primary rounded-lg">
+              <div className="border border-stroke rounded-xl p-6 bg-bg-elev">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-primary/20 text-primary rounded-lg">
                     {selectedTemplate.icon}
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-text">
-                      {formData.name || 'Nome do Projeto'}
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-text text-lg">
+                      {formData.name}
                     </h4>
                     <p className="text-sm text-text-dim">
-                      {formData.description || 'Descrição do projeto...'}
+                      {formData.description || 'Sem descrição'}
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 text-xs text-text-dim">
-                  <span className="flex items-center gap-1">
-                    <Badge status="DRAFT">Rascunho</Badge>
-                  </span>
-                  <span>Template: {selectedTemplate.name}</span>
-                  <span>Categoria: {categories.find(c => c.id === formData.category)?.name}</span>
+                <div className="flex items-center gap-4 text-xs">
+                  <Badge status="draft">Rascunho</Badge>
+                  <span className="text-text-dim">Template: {selectedTemplate.name}</span>
                 </div>
               </div>
             </div>

@@ -9,13 +9,12 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
-  template: ProjectTemplate;
-  category: 'web' | 'mobile' | 'desktop' | 'api' | 'other';
+  template_id: string;
   status: ProjectStatus;
-  ownerId: string;
-  graph: GraphJSON | null;
-  createdAt: string;
-  updatedAt: string;
+  owner_id: string;
+  graph?: any; // JSONB field
+  created_at: string;
+  updated_at: string;
 }
 
 export type ProjectTemplate = 'site-app' | 'mobile-app' | 'api-service' | 'landing-page';
