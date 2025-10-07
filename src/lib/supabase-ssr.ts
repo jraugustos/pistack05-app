@@ -1,46 +1,32 @@
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { auth } from '@clerk/nextjs/server'
-import { cookies } from 'next/headers'
 
 /**
  * Helper para criar cliente Supabase no servidor (SSR)
  * Usa integração nativa Clerk + Supabase (nova abordagem)
  */
 export async function createClerkSupabaseClientSsr() {
-  const { userId } = await auth()
-  
-  const cookieStore = await cookies()
-  
-  const supabase = createServerClient(
+  const { getToken } = await auth()
+  let token: string | undefined
+  try {
+    token = await getToken({ template: 'supabase' }) || undefined
+  } catch {
+    token = undefined
+  }
+
+  const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_KEY!,
     {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
+      global: {
+        fetch: async (url: string, options: any = {}) => {
+          const headers = new Headers(options?.headers)
+          if (token) headers.set('Authorization', `Bearer ${token}`)
+          return fetch(url, { ...options, headers })
         },
       },
     }
   )
-
-  // Se o usuário está autenticado, definir o user_id para RLS
-  if (userId) {
-    await supabase.auth.setUser({
-      id: userId,
-      // Adicionar outros campos se necessário
-    })
-  }
 
   return supabase
 }

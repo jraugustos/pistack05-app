@@ -8,6 +8,6 @@ export { TechStackCard } from './TechStackCard';
 export type { IdeaBaseCardProps } from './IdeaBaseCard';
 export type { UnderstandingCardProps } from './UnderstandingCard';
 export type { ScopeFeaturesCardProps, Feature } from './ScopeFeaturesCard';
-export type { TechStackCardProps, TechChoice } from './TechStackCard';
+export type { TechStackCardProps, TechStackFields } from './TechStackCard';
 
 

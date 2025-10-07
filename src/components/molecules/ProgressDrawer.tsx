@@ -1,152 +1,96 @@
 import * as React from 'react';
-import { ChevronRight, CheckCircle2, Circle, Clock } from 'lucide-react';
-import { Button } from '@/components/foundation';
 import { cn } from '@/lib/utils';
+import { Button, Badge } from '@/components/foundation';
+import { X, CheckCircle, Circle } from 'lucide-react';
 
-export interface Stage {
+export interface ProgressStage {
   key: string;
-  title: string;
-  status: 'completed' | 'current' | 'pending';
+  label: string;
   progress: number; // 0-100
-  description?: string;
 }
 
 export interface ProgressDrawerProps {
-  stages: Stage[];
-  currentStage: string;
-  onStageClick?: (stageKey: string) => void;
+  stages: ProgressStage[];
+  onClose: () => void;
   className?: string;
 }
 
 const ProgressDrawer = React.forwardRef<HTMLDivElement, ProgressDrawerProps>(
-  ({ stages, currentStage, onStageClick, className }, ref) => {
-    const getStageIcon = (status: Stage['status']) => {
-      switch (status) {
-        case 'completed':
-          return <CheckCircle2 className="h-5 w-5 text-success" />;
-        case 'current':
-          return <Clock className="h-5 w-5 text-primary" />;
-        case 'pending':
-          return <Circle className="h-5 w-5 text-text-dim" />;
-        default:
-          return <Circle className="h-5 w-5 text-text-dim" />;
-      }
-    };
-
-    const getStageColor = (status: Stage['status']) => {
-      switch (status) {
-        case 'completed':
-          return 'text-success';
-        case 'current':
-          return 'text-primary';
-        case 'pending':
-          return 'text-text-dim';
-        default:
-          return 'text-text-dim';
-      }
-    };
-
-    const getStageAccent = (stageKey: string) => {
-      const accents = {
-        'ideia-base': 'border-l-primary',
-        'entendimento': 'border-l-info',
-        'escopo': 'border-l-success',
-        'design': 'border-l-warning',
-        'tecnologia': 'border-l-cyan',
-        'planejamento': 'border-l-rose',
-      };
-      return accents[stageKey as keyof typeof accents] || 'border-l-stroke';
-    };
+  ({ stages, onClose, className }, ref) => {
+    const totalProgress = stages.reduce((acc, s) => acc + s.progress, 0) / stages.length;
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          'w-80 bg-bg-elev border-r border-stroke h-full flex flex-col',
-          'shadow-1',
-          className
-        )}
-      >
-        {/* Header */}
-        <div className="p-4 border-b border-stroke">
-          <h3 className="font-semibold text-text mb-1">Progresso do Projeto</h3>
-          <p className="text-sm text-text-dim">
-            {stages.filter(s => s.status === 'completed').length} de {stages.length} etapas concluídas
-          </p>
-        </div>
+      <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center">
+        <div 
+          ref={ref}
+          className={cn(
+            'bg-bg border border-stroke rounded-lg shadow-xl w-full max-w-md',
+            className
+          )}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-stroke">
+            <div>
+              <h2 className="text-lg font-semibold text-text">Progresso do Projeto</h2>
+              <p className="text-sm text-text-muted">{Math.round(totalProgress)}% concluído</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
 
-        {/* Stages List */}
-        <div className="flex-1 overflow-y-auto">
-          {stages.map((stage, index) => (
-            <div key={stage.key} className="relative">
-              {/* Stage Item */}
-              <Button
-                variant="ghost"
-                className={cn(
-                  'w-full justify-start p-4 h-auto rounded-none border-l-2',
-                  getStageAccent(stage.key),
-                  stage.status === 'current' && 'bg-primary/5',
-                  'hover:bg-bg-elev/50'
-                )}
-                onClick={() => onStageClick?.(stage.key)}
-              >
-                <div className="flex items-start gap-3 w-full">
-                  {/* Icon */}
-                  <div className={cn('flex-shrink-0 mt-0.5', getStageColor(stage.status))}>
-                    {getStageIcon(stage.status)}
+          {/* Progress Bar Global */}
+          <div className="p-4 border-b border-stroke">
+            <div className="h-2 bg-bg-soft rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${totalProgress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Stages List */}
+          <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
+            {stages.map((stage) => (
+              <div key={stage.key} className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  {stage.progress >= 100 ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : stage.progress > 0 ? (
+                    <Circle className="w-5 h-5 text-primary fill-primary/20" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-text-muted" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-sm font-medium text-text">{stage.label}</h4>
+                    <Badge variant={stage.progress >= 100 ? 'success' : stage.progress > 0 ? 'primary' : 'secondary'}>
+                      {Math.round(stage.progress)}%
+                    </Badge>
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className={cn(
-                        'font-medium text-sm',
-                        getStageColor(stage.status)
-                      )}>
-                        {stage.title}
-                      </h4>
-                      {stage.status === 'current' && (
-                        <ChevronRight className="h-4 w-4 text-primary" />
+                  <div className="h-1.5 bg-bg-soft rounded-full overflow-hidden">
+                    <div 
+                      className={cn(
+                        'h-full transition-all duration-300',
+                        stage.progress >= 100 ? 'bg-green-600' : 'bg-primary'
                       )}
-                    </div>
-                    
-                    {stage.description && (
-                      <p className="text-xs text-text-dim mb-2">
-                        {stage.description}
-                      </p>
-                    )}
-
-                    {/* Progress Bar */}
-                    {stage.status === 'current' && stage.progress > 0 && (
-                      <div className="w-full">
-                        <div className="flex justify-between text-xs text-text-dim mb-1">
-                          <span>Progresso</span>
-                          <span>{stage.progress}%</span>
-                        </div>
-                        <div className="w-full bg-stroke rounded-full h-1.5">
-                          <div
-                            className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${stage.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                      style={{ width: `${stage.progress}%` }}
+                    />
                   </div>
                 </div>
-              </Button>
+              </div>
+            ))}
+          </div>
 
-              {/* Connector Line */}
-              {index < stages.length - 1 && (
-                <div className="absolute left-6 top-12 w-0.5 h-4 bg-stroke" />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-stroke">
-          <div className="text-xs text-text-dim text-center">
-            Clique em uma etapa para navegar
+          {/* Footer */}
+          <div className="p-4 border-t border-stroke flex justify-between items-center">
+            <p className="text-xs text-text-muted">
+              {stages.filter(s => s.progress >= 100).length} de {stages.length} etapas concluídas
+            </p>
+            <Button variant="primary" size="sm" onClick={onClose}>
+              Fechar
+            </Button>
           </div>
         </div>
       </div>
@@ -157,5 +101,3 @@ const ProgressDrawer = React.forwardRef<HTMLDivElement, ProgressDrawerProps>(
 ProgressDrawer.displayName = 'ProgressDrawer';
 
 export { ProgressDrawer };
-
-

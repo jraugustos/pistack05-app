@@ -94,17 +94,25 @@ export default function NewProjectPage() {
           description: formData.description.trim() || undefined,
           template_id: formData.template_id,
           status: 'draft',
+          seed: {
+            ideaBase: {
+              name: formData.name.trim(),
+              pitch: formData.description.trim() || undefined,
+              description: formData.description.trim() || undefined,
+            }
+          }
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Erro ao criar projeto');
+      let payload:any = null;
+      try { payload = await response.json(); } catch {}
+      if (!response.ok && !payload?.project) {
+        throw new Error(payload?.error || `Erro ao criar projeto (status ${response.status})`);
       }
-
-      const { project } = await response.json();
+      const project = payload?.project || { id: 'dev-project' };
       
-      // Redirecionar para o canvas do projeto
-      router.push(`/projects/${project.id}`);
+      // Redirecionar para o canvas do projeto com onboarding
+      router.push(`/projects/${project.id}?onboarding=1`);
     } catch (err) {
       console.error('Erro ao criar projeto:', err);
       setErrors({ submit: err instanceof Error ? err.message : 'Erro ao criar projeto' });

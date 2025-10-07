@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Grid, List, SortAsc, SortDesc, FolderOpen } from 'lucide-react';
-import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/foundation';
+import { Plus, Search, Filter, Grid, List, SortAsc, SortDesc, FolderOpen, ChevronDown, Sparkles, FileText } from 'lucide-react';
+import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/foundation';
 import { ProjectTile } from '@/components/molecules';
 // Removed NewProjectModal import - using dedicated page instead
 import { EmptyState } from '@/components/foundation';
@@ -206,13 +206,31 @@ export default function ProjectsPage() {
             </p>
           </div>
           
-          <Button
-            onClick={() => router.push('/projects/new')}
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Novo Projeto
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Novo Projeto
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => router.push('/projects/new')}>
+                <FileText className="h-4 w-4 mr-2" />
+                <div className="flex-1">
+                  <div className="font-medium">Formulário Completo</div>
+                  <div className="text-xs text-text-dim">Versão tradicional com todos os campos</div>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/projects/new-v2')}>
+                <Sparkles className="h-4 w-4 mr-2 text-primary" />
+                <div className="flex-1">
+                  <div className="font-medium">Chat Guiado ✨</div>
+                  <div className="text-xs text-text-dim">Experiência conversacional (Beta)</div>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Filters */}

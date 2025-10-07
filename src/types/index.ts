@@ -49,15 +49,14 @@ export interface Card {
   stageKey: StageKey;
   typeKey: CardTypeKey;
   title: string;
-  summary: string;
+  summary: string | null;
   fields: Record<string, any>;
   status: CardStatus;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  createdAt: string;
-  updatedAt: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  version: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // === Graph Types ===

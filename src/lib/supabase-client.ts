@@ -1,33 +1,20 @@
 'use client'
 
 import { createBrowserClient } from '@supabase/ssr'
-import { useUser } from '@clerk/nextjs'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 
 /**
- * Hook para criar cliente Supabase no cliente (CSR)
- * Usa integração nativa Clerk + Supabase
+ * Hook simples para obter o client do Supabase no browser.
+ * Não tenta "setar usuário" (não existe `auth.setUser` no client v2). 
+ * A autenticação é tratada no SSR por header Authorization quando necessário.
  */
 export function useSupabaseClient() {
-  const { user } = useUser()
-  const [supabase, setSupabase] = useState<any>(null)
-
-  useEffect(() => {
-    const supabaseClient = createBrowserClient(
+  const supabase = useMemo(() => {
+    return createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_KEY!
     )
-
-    setSupabase(supabaseClient)
-
-    // Se o usuário está autenticado, sincronizar com Supabase
-    if (user) {
-      supabaseClient.auth.setUser({
-        id: user.id,
-        email: user.primaryEmailAddress?.emailAddress,
-      })
-    }
-  }, [user])
+  }, [])
 
   return supabase
 }

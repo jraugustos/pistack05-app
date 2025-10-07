@@ -1,265 +1,146 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Button, Badge, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/foundation';
+import { Button, Badge } from '@/components/foundation';
 import { Modal } from '@/components/foundation';
-import { 
-  Download, 
-  Copy, 
-  RefreshCw, 
-  FileText, 
-  Code, 
-  Calendar,
-  CheckCircle,
-  Clock,
-  AlertCircle
-} from 'lucide-react';
-import type { Project, Output } from '@/types';
+import { Download, Copy, RefreshCw, X } from 'lucide-react';
 
 export interface OutputsModalProps {
-  isOpen: boolean;
+  projectId: string;
+  open: boolean;
   onClose: () => void;
-  project: Project;
-  outputs: Output[];
-  isLoading?: boolean;
-  activeTab: 'prd' | 'prompt-pack' | 'work-plan';
-  onTabChange: (tab: OutputsModalProps['activeTab']) => void;
-  onRegenerate: (type: OutputsModalProps['activeTab']) => void;
-  onDownload: (type: OutputsModalProps['activeTab']) => void;
-  onCopy: (type: OutputsModalProps['activeTab']) => void;
+  onRegenerate?: (type: 'work-plan' | 'prd' | 'prompt-pack') => void;
 }
 
 const OutputsModal = React.forwardRef<HTMLDivElement, OutputsModalProps>(
-  (
-    {
-      isOpen,
-      onClose,
-      project,
-      outputs,
-      isLoading = false,
-      activeTab,
-      onTabChange,
-      onRegenerate,
-      onDownload,
-      onCopy,
-      ...props
-    },
-    ref
-  ) => {
-    const [isGenerating, setIsGenerating] = React.useState(false);
+  ({ projectId, open, onClose, onRegenerate }, ref) => {
+    const [loading, setLoading] = React.useState(true);
+    const [content, setContent] = React.useState('');
+    const [error, setError] = React.useState<string | null>(null);
 
-    const handleRegenerate = async (type: OutputsModalProps['activeTab']) => {
-      setIsGenerating(true);
+    React.useEffect(() => {
+      if (open && projectId) {
+        loadWorkPlan();
+      }
+    }, [open, projectId]);
+
+    const loadWorkPlan = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        await onRegenerate(type);
+        const res = await fetch(`/api/outputs/work-plan?project_id=${projectId}`);
+        if (!res.ok) throw new Error('Failed to load work plan');
+        const json = await res.json();
+        if (json.outputs && json.outputs.length > 0) {
+          setContent(json.outputs[0].content);
+        } else {
+          setContent('Nenhum Work Plan gerado ainda.');
+        }
+      } catch (err) {
+        console.error('Load work plan error:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
-        setIsGenerating(false);
+        setLoading(false);
       }
     };
 
-    const getOutputByType = (type: OutputsModalProps['activeTab']) => {
-      return outputs.find(output => output.type === type);
-    };
-
-    const getOutputStatus = (type: OutputsModalProps['activeTab']) => {
-      const output = getOutputByType(type);
-      if (!output) return 'missing';
-      if (output.status === 'generating') return 'generating';
-      if (output.status === 'ready') return 'ready';
-      return 'draft';
-    };
-
-    const getStatusIcon = (status: string) => {
-      switch (status) {
-        case 'ready':
-          return <CheckCircle className="h-4 w-4 text-success" />;
-        case 'generating':
-          return <RefreshCw className="h-4 w-4 text-warning animate-spin" />;
-        case 'draft':
-          return <Clock className="h-4 w-4 text-warning" />;
-        default:
-          return <AlertCircle className="h-4 w-4 text-text-dim" />;
+    const handleRegenerate = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/outputs/work-plan?project_id=${projectId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ regenerate: true }),
+        });
+        if (!res.ok) {
+          const json = await res.json();
+          throw new Error(json.details || json.error || 'Failed to regenerate');
+        }
+        const json = await res.json();
+        setContent(json.output.content);
+        onRegenerate?.('work-plan');
+      } catch (err) {
+        console.error('Regenerate error:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
     };
 
-    const getStatusText = (status: string) => {
-      switch (status) {
-        case 'ready':
-          return 'Pronto';
-        case 'generating':
-          return 'Gerando...';
-        case 'draft':
-          return 'Rascunho';
-        default:
-          return 'Não gerado';
-      }
+    const handleCopy = () => {
+      navigator.clipboard.writeText(content);
+      // TODO: Toast de sucesso
     };
 
-    const tabs = [
-      {
-        id: 'prd' as const,
-        label: 'PRD',
-        icon: <FileText className="h-4 w-4" />,
-        description: 'Product Requirements Document'
-      },
-      {
-        id: 'prompt-pack' as const,
-        label: 'Prompt Pack',
-        icon: <Code className="h-4 w-4" />,
-        description: 'Conjunto de prompts para desenvolvimento'
-      },
-      {
-        id: 'work-plan' as const,
-        label: 'Work Plan',
-        icon: <Calendar className="h-4 w-4" />,
-        description: 'Plano de trabalho detalhado'
-      }
-    ];
+    const handleDownload = () => {
+      const blob = new Blob([content], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `work-plan-${projectId}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    if (!open) return null;
 
     return (
-      <Modal
-        ref={ref}
-        isOpen={isOpen}
-        onClose={onClose}
-        title={`Outputs - ${project.name}`}
-        className="max-w-4xl"
-        {...props}
-      >
-        <div className="space-y-6">
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={onTabChange}>
-            <TabsList className="grid w-full grid-cols-3">
-              {tabs.map((tab) => {
-                const status = getOutputStatus(tab.id);
-                return (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    className="flex items-center gap-2"
-                  >
-                    {tab.icon}
-                    <span>{tab.label}</span>
-                    <Badge 
-                      status={status === 'ready' ? 'ready' : 'draft'}
-                      className="ml-2"
-                    >
-                      {getStatusText(status)}
-                    </Badge>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div ref={ref} className="bg-bg border border-stroke rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-stroke">
+            <div>
+              <h2 className="text-lg font-semibold text-text">Work Plan</h2>
+              <p className="text-sm text-text-muted">Plano de trabalho do projeto</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
 
-            {tabs.map((tab) => {
-              const output = getOutputByType(tab.id);
-              const status = getOutputStatus(tab.id);
-              
-              return (
-                <TabsContent key={tab.id} value={tab.id} className="space-y-4">
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-text flex items-center gap-2">
-                        {tab.icon}
-                        {tab.label}
-                      </h3>
-                      <p className="text-sm text-text-dim">{tab.description}</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(status)}
-                      <span className="text-sm text-text-dim">
-                        {getStatusText(status)}
-                      </span>
-                    </div>
-                  </div>
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {loading && (
+              <div className="flex items-center justify-center py-12">
+                <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+                <span className="ml-2 text-text-muted">Carregando...</span>
+              </div>
+            )}
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => handleRegenerate(tab.id)}
-                      disabled={isGenerating || status === 'generating'}
-                      className="gap-2"
-                    >
-                      <RefreshCw className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-                      {status === 'generating' ? 'Gerando...' : 'Regenerar'}
-                    </Button>
-                    
-                    {status === 'ready' && (
-                      <>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => onCopy(tab.id)}
-                          className="gap-2"
-                        >
-                          <Copy className="h-4 w-4" />
-                          Copiar
-                        </Button>
-                        
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => onDownload(tab.id)}
-                          className="gap-2"
-                        >
-                          <Download className="h-4 w-4" />
-                          Download
-                        </Button>
-                      </>
-                    )}
-                  </div>
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
 
-                  {/* Content */}
-                  <div className="border border-stroke rounded-lg bg-bg-elev">
-                    {status === 'generating' ? (
-                      <div className="p-8 text-center">
-                        <RefreshCw className="h-8 w-8 text-primary animate-spin mx-auto mb-4" />
-                        <p className="text-text-dim">Gerando {tab.label.toLowerCase()}...</p>
-                      </div>
-                    ) : status === 'ready' && output ? (
-                      <div className="p-6">
-                        <div className="prose prose-invert max-w-none">
-                          <pre className="whitespace-pre-wrap text-sm text-text">
-                            {output.content}
-                          </pre>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-8 text-center">
-                        <AlertCircle className="h-8 w-8 text-text-dim mx-auto mb-4" />
-                        <p className="text-text-dim mb-4">
-                          {tab.label} ainda não foi gerado
-                        </p>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleRegenerate(tab.id)}
-                          disabled={isGenerating}
-                        >
-                          Gerar {tab.label}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+            {!loading && !error && (
+              <div className="prose prose-sm max-w-none">
+                <pre className="whitespace-pre-wrap text-sm text-text font-mono bg-bg-soft p-4 rounded-lg border border-stroke">
+                  {content}
+                </pre>
+              </div>
+            )}
+          </div>
 
-                  {/* Metadata */}
-                  {output && (
-                    <div className="text-xs text-text-dim space-y-1">
-                      <p>Criado em: {new Date(output.createdAt).toLocaleString('pt-BR')}</p>
-                      {output.updatedAt && (
-                        <p>Atualizado em: {new Date(output.updatedAt).toLocaleString('pt-BR')}</p>
-                      )}
-                      <p>Tamanho: {output.content?.length || 0} caracteres</p>
-                    </div>
-                  )}
-                </TabsContent>
-              );
-            })}
-          </Tabs>
+          {/* Actions */}
+          <div className="flex items-center justify-between p-4 border-t border-stroke">
+            <Button variant="secondary" size="sm" onClick={handleRegenerate} disabled={loading}>
+              <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+              Regenerar
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="secondary" size="sm" onClick={handleCopy}>
+                <Copy className="w-4 h-4" />
+                Copiar
+              </Button>
+              <Button variant="primary" size="sm" onClick={handleDownload}>
+                <Download className="w-4 h-4" />
+                Download
+              </Button>
+            </div>
+          </div>
         </div>
-      </Modal>
+      </div>
     );
   }
 );
@@ -267,5 +148,3 @@ const OutputsModal = React.forwardRef<HTMLDivElement, OutputsModalProps>(
 OutputsModal.displayName = 'OutputsModal';
 
 export { OutputsModal };
-
-

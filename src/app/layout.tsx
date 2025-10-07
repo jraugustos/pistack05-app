@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/foundation";
 import { TooltipProvider } from "@/components/foundation";
+import { ToastContainer } from "@/components/foundation/ToastContainer";
 import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({
@@ -29,6 +30,7 @@ export default function RootLayout({
           <TooltipProvider delayDuration={300}>
             {children}
             <Toaster />
+            <ToastContainer />
           </TooltipProvider>
         </body>
       </html>

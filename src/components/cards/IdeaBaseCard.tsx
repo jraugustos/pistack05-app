@@ -18,12 +18,13 @@ export interface IdeaBaseCardProps {
   status: 'DRAFT' | 'READY';
   onUpdate: (field: keyof IdeaBaseCardProps['idea'], value: string) => void;
   onAIGenerate: (field: keyof IdeaBaseCardProps['idea']) => void;
+  onChecklistClick?: (target: { stageKey: string; typeKey: string }) => void;
   onMenuAction?: (action: 'duplicate' | 'delete' | 'link') => void;
   className?: string;
 }
 
 const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
-  ({ idea, status, onUpdate, onAIGenerate, onMenuAction, className }, ref) => {
+  ({ idea, status, onUpdate, onAIGenerate, onChecklistClick, onMenuAction, className }, ref) => {
     const fields = [
       {
         key: 'description' as const,
@@ -128,6 +129,22 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                 </div>
               ))}
             </div>
+
+            {/* Stage Checklist */}
+            {typeof onChecklistClick === 'function' && (
+              <div className="p-3 bg-bg border border-stroke rounded-md">
+                <h4 className="text-sm font-medium text-text mb-2">Próximas etapas</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="default" size="sm" onClick={() => onChecklistClick({ stageKey: 'escopo', typeKey: 'scope.features' })}>
+                    Criar Escopo (Funcionalidades)
+                  </Button>
+                  <Button variant="default" size="sm" onClick={() => onChecklistClick({ stageKey: 'tech', typeKey: 'tech.stack' })}>
+                    Definir Tech Stack
+                  </Button>
+                </div>
+                <p className="text-xs text-text-dim mt-2">Adicione cards essenciais para habilitar o Work Plan.</p>
+              </div>
+            )}
 
             {/* Summary */}
             {idea.title && (

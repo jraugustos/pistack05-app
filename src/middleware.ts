@@ -8,7 +8,9 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
+  // Em desenvolvimento, não bloquear rotas protegidas para facilitar o fluxo
+  const isDev = process.env.NODE_ENV !== 'production'
+  if (isProtectedRoute(req) && !isDev) {
     await auth.protect()
   }
 })

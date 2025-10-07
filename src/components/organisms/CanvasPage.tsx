@@ -1,343 +1,477 @@
+'use client';
+
 import * as React from 'react';
+import Draggable from 'react-draggable';
 import { cn } from '@/lib/utils';
-import { Button, Badge, Skeleton } from '@/components/foundation';
-import { CardHeader, CardBody, CardFooter, AIPanel, ProgressDrawer } from '@/components/molecules';
-import { IdeaBaseCard, UnderstandingCard, ScopeFeaturesCard, TechStackCard } from '@/components/cards';
+import { Button, Badge } from '@/components/foundation';
+import { AIPanel, ProgressDrawer } from '@/components/molecules';
+import { OutputsModal } from '@/components/organisms/OutputsModal';
+import { IdeaBaseCard, ScopeFeaturesCard, TechStackCard } from '@/components/cards';
+import { CanvasViewport } from '@/components/canvas/CanvasViewport';
+import { useCards } from '@/hooks/useCards';
+import { useCardsStore } from '@/lib/stores/useCardsStore';
+import { TelemetryService } from '@/lib/services/TelemetryService';
+import { GraphService } from '@/lib/services/GraphService';
 import { 
   ZoomIn, 
   ZoomOut, 
   Maximize2, 
   Grid3X3, 
   Magnet, 
-  Settings, 
   Download, 
   Share2,
   ArrowLeft,
-  MoreVertical,
-  Save,
   Eye,
-  EyeOff
+  EyeOff,
+  Hand
 } from 'lucide-react';
 import type { Project, Card } from '@/types';
 
 export interface CanvasPageProps {
-  projectId?: string;
-  project?: Project;
+  projectId: string;
+  project: Project;
   cards?: Card[];
   isLoading?: boolean;
-  zoom?: number;
-  showGrid?: boolean;
-  snapToGrid?: boolean;
-  isAIPanelOpen?: boolean;
-  isProgressDrawerOpen?: boolean;
-  onZoomIn?: () => void;
-  onZoomOut?: () => void;
-  onZoomFit?: () => void;
-  onToggleGrid?: () => void;
-  onToggleSnap?: () => void;
-  onToggleAIPanel?: () => void;
-  onToggleProgressDrawer?: () => void;
-  onCardChange?: (cardId: string, changes: Partial<Card>) => void;
-  onCardCreate?: (stageKey: string, typeKey: string) => void;
-  onCardDelete?: (cardId: string) => void;
-  onCardDuplicate?: (cardId: string) => void;
-  onSave?: () => void;
-  onExport?: () => void;
-  onShare?: () => void;
-  onBack?: () => void;
+  onboarding?: boolean;
 }
 
-// Mock data para demonstração
-const mockProject: Project = {
-  id: '1',
-  name: 'E-commerce Platform',
-  description: 'Plataforma completa de e-commerce com carrinho, pagamentos e gestão de produtos',
-  status: 'active',
-  createdAt: new Date('2024-01-15'),
-  updatedAt: new Date('2024-01-20'),
-  category: 'web',
-  template: 'ecommerce'
+// Componente auxiliar para card draggable com ref estável
+interface DraggableCardProps {
+  card: Card;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  onDragStop: (cardId: string, x: number, y: number) => void;
+  onDelete: (cardId: string) => void;
+  renderCard: (card: Card) => React.ReactNode;
+}
+
+const DraggableCard: React.FC<DraggableCardProps> = ({ card, position, size, onDragStop, onDelete, renderCard }) => {
+  const nodeRef = React.useRef<HTMLDivElement>(null);
+  const [showDelete, setShowDelete] = React.useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm('Tem certeza que deseja excluir este card?')) {
+      onDelete(card.id);
+    }
+  };
+
+  // Não mostrar delete no Ideia Base
+  const isIdeaBase = card.typeKey === 'idea.base';
+
+  return (
+    <Draggable
+      defaultPosition={{ x: position.x, y: position.y }}
+      onStop={(e, data) => onDragStop(card.id, data.x, data.y)}
+      handle=".card-drag-handle"
+      nodeRef={nodeRef}
+    >
+      <div
+        ref={nodeRef}
+        className="absolute bg-bg border border-stroke rounded-lg shadow-lg"
+        style={{
+          width: size.width,
+          minHeight: size.height,
+        }}
+        onMouseEnter={() => setShowDelete(true)}
+        onMouseLeave={() => setShowDelete(false)}
+      >
+        {/* Adicionar handle de drag visível */}
+        <div className="card-drag-handle absolute top-0 left-0 right-0 h-2 cursor-grab active:cursor-grabbing hover:bg-primary/20 transition-colors rounded-t-lg z-10" />
+        
+        {/* Botão de deletar (apenas cards gerados) */}
+        {!isIdeaBase && showDelete && (
+          <button
+            onClick={handleDelete}
+            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md z-20 transition-all"
+            title="Excluir card"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+        
+        {renderCard(card)}
+      </div>
+    </Draggable>
+  );
 };
 
-const mockCards: Card[] = [
-  {
-    id: 'card-1',
-    stageKey: 'ideia-base',
-    typeKey: 'problem-statement',
-    title: 'Problema Principal',
-    content: 'Os usuários têm dificuldade para encontrar produtos específicos na plataforma atual',
-    position: { x: 100, y: 100 },
-    size: { width: 300, height: 200 },
-    status: 'draft',
-    priority: 'must',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'card-2',
-    stageKey: 'entendimento',
-    typeKey: 'user-persona',
-    title: 'Persona Principal',
-    content: 'João, 35 anos, empresário, busca praticidade nas compras online',
-    position: { x: 500, y: 100 },
-    size: { width: 300, height: 200 },
-    status: 'draft',
-    priority: 'should',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
 const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
-  (
-    {
-      projectId = '1',
-      project = mockProject,
-      cards = mockCards,
-      isLoading = false,
-      zoom = 1,
-      showGrid = true,
-      snapToGrid = true,
-      isAIPanelOpen = false,
-      isProgressDrawerOpen = false,
-      onZoomIn = () => {},
-      onZoomOut = () => {},
-      onZoomFit = () => {},
-      onToggleGrid = () => {},
-      onToggleSnap = () => {},
-      onToggleAIPanel = () => {},
-      onToggleProgressDrawer = () => {},
-      onCardChange = () => {},
-      onCardCreate = () => {},
-      onCardDelete = () => {},
-      onCardDuplicate = () => {},
-      onSave = () => {},
-      onExport = () => {},
-      onShare = () => {},
-      onBack = () => {},
-      ...props
-    },
-    ref
-  ) => {
-    const stageCards = React.useMemo(() => {
-      const stages = {
-        'ideia-base': cards.filter(card => card.stageKey === 'ideia-base'),
-        'entendimento': cards.filter(card => card.stageKey === 'entendimento'),
-        'escopo': cards.filter(card => card.stageKey === 'escopo'),
-        'design': cards.filter(card => card.stageKey === 'design'),
-        'desenvolvimento': cards.filter(card => card.stageKey === 'desenvolvimento'),
-        'testes': cards.filter(card => card.stageKey === 'testes'),
-        'deploy': cards.filter(card => card.stageKey === 'deploy'),
-        'manutencao': cards.filter(card => card.stageKey === 'manutencao')
-      };
-      return stages;
+  ({ projectId, project, cards: initialCards = [], onboarding = false }, ref) => {
+    // Store e API
+    const {
+      cards,
+      loading,
+      error,
+      loadCards,
+      createCard,
+      updateCard,
+      deleteCard,
+      generateAI,
+      confirmReady,
+      getCardsByStage,
+      getReadyCount,
+    } = useCards(projectId);
+
+    // UI State
+    const [showGrid, setShowGrid] = React.useState(true);
+    const [snapToGrid, setSnapToGrid] = React.useState(false);
+    const [panMode, setPanMode] = React.useState(false);
+    const [progressOpen, setProgressOpen] = React.useState(false);
+    const [outputsOpen, setOutputsOpen] = React.useState(false);
+    const [selectedCardId, setSelectedCardId] = React.useState<string | null>(null);
+    const [aiMode, setAiMode] = React.useState<'generate' | 'expand' | 'review'>('generate');
+    const [aiLoading, setAiLoading] = React.useState(false);
+    const [aiDiff, setAiDiff] = React.useState<any>(null);
+    
+    // Viewport ref
+    const viewportRef = React.useRef<any>(null);
+
+    // Toggle pan mode
+    const handleTogglePanMode = React.useCallback(() => {
+      viewportRef.current?.togglePanMode();
+      setPanMode(prev => !prev);
+    }, []);
+
+    // Inicializar cards do SSR e carregar layout
+    React.useEffect(() => {
+      console.log('[CanvasPage] Inicializando com cards:', { 
+        initialCards: initialCards?.length, 
+        projectId 
+      });
+      
+      if (initialCards && initialCards.length > 0) {
+        console.log('[CanvasPage] Usando cards do SSR:', initialCards);
+        useCardsStore.getState().setCards(initialCards);
+      } else {
+        console.log('[CanvasPage] Carregando cards da API...');
+        loadCards();
+      }
+
+      // Carregar layout salvo
+      GraphService.loadLayout(projectId).then((layout) => {
+        if (layout && viewportRef.current) {
+          viewportRef.current.setViewport(layout.viewport);
+        }
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [projectId]);
+
+    // Autosave de layout
+    const handleViewportChange = React.useCallback((viewport: { x: number; y: number; zoom: number }) => {
+      GraphService.saveLayout(projectId, viewport, cards).catch(err => {
+        console.error('Failed to save layout:', err);
+      });
+    }, [projectId, cards]);
+
+    const handleCardDragStop = React.useCallback((cardId: string, x: number, y: number) => {
+      updateCard(cardId, { 
+        position: { x, y } 
+      }).catch(err => {
+        console.error('Failed to update card position:', err);
+      });
+    }, [updateCard]);
+
+    // Handlers
+    const handleChecklistCreate = async (target: { stageKey: string; typeKey: string }) => {
+      try {
+        TelemetryService.checklistClickStage(target.stageKey, target.typeKey, { projectId });
+        
+        // Calcular posição em cascade
+        const position = GraphService.getCascadePosition(cards);
+        
+        await createCard({
+          stage_key: target.stageKey,
+          type_key: target.typeKey,
+          title: target.typeKey === 'scope.features' ? 'Funcionalidades' : 'Stack Tecnológico',
+          summary: '',
+          fields: {},
+          x: position.x,
+          y: position.y,
+          w: 360,
+          h: 240,
+        });
+      } catch (err) {
+        console.error('Failed to create card:', err);
+      }
+    };
+
+    const handleFitView = React.useCallback(() => {
+      if (viewportRef.current && cards.length > 0) {
+        const container = viewportRef.current;
+        const viewport = GraphService.fitView(
+          cards,
+          container.clientWidth || 1200,
+          container.clientHeight || 800
+        );
+        viewportRef.current.setViewport(viewport);
+      }
     }, [cards]);
 
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center h-screen bg-bg">
-          <div className="text-center">
-            <Skeleton className="h-8 w-64 mb-4" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-      );
-    }
+    const handleAIGenerate = async (cardId: string, mode: 'generate' | 'expand' | 'review', prompt?: string) => {
+      setSelectedCardId(cardId);
+      setAiMode(mode);
+      setAiLoading(true);
+      setAiDiff(null);
+      try {
+        const fields = await generateAI(cardId, mode, prompt);
+        setAiDiff({ before: {}, after: fields });
+        TelemetryService.cardGenerated(cardId, mode, { projectId });
+      } catch (err) {
+        console.error('AI generation failed:', err);
+      } finally {
+        setAiLoading(false);
+      }
+    };
+
+    const handleAIApply = async () => {
+      if (!selectedCardId || !aiDiff?.after) return;
+      try {
+        await updateCard(selectedCardId, { fields: aiDiff.after });
+        setAiDiff(null);
+        setSelectedCardId(null);
+      } catch (err) {
+        console.error('Failed to apply AI content:', err);
+      }
+    };
+
+    const handleConfirmReady = async (cardId: string) => {
+      try {
+        const card = cards.find(c => c.id === cardId);
+        await confirmReady(cardId);
+        if (card) {
+          TelemetryService.cardConfirmed(cardId, card.typeKey, { projectId });
+        }
+        const newReadyCount = getReadyCount();
+        if (newReadyCount >= 2) {
+          TelemetryService.workplanEnabled(newReadyCount, { projectId });
+        }
+      } catch (err) {
+        console.error('Failed to confirm card:', err);
+      }
+    };
+
+    const handleGenerateWorkPlan = async () => {
+      try {
+        const res = await fetch(`/api/outputs/work-plan?project_id=${projectId}`, {
+          method: 'POST',
+        });
+        if (!res.ok) throw new Error('Failed to generate work plan');
+        TelemetryService.outputGenerated('work-plan', { projectId });
+        setOutputsOpen(true);
+      } catch (err) {
+        console.error('Work plan generation failed:', err);
+      }
+    };
+
+    // Computed
+    const readyCount = getReadyCount();
+
+    // Renderizar card baseado no tipo
+    const renderCard = (card: Card) => {
+      switch (card.typeKey) {
+        case 'idea.base':
+          return (
+            <IdeaBaseCard
+              status={card.status as any}
+              idea={card.fields || {}}
+              onUpdate={(updates) => updateCard(card.id, { fields: updates })}
+              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
+              onChecklistClick={handleChecklistCreate}
+              onMenuAction={(action) => {
+                if (action === 'confirm') handleConfirmReady(card.id);
+              }}
+            />
+          );
+        case 'scope.features':
+          return (
+            <ScopeFeaturesCard
+              status={card.status as any}
+              features={card.fields?.features || []}
+              onUpdate={(updates) => updateCard(card.id, { fields: { ...card.fields, ...updates } })}
+              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
+              onConfirm={() => handleConfirmReady(card.id)}
+            />
+          );
+        case 'tech.stack':
+          return (
+            <TechStackCard
+              status={card.status as any}
+              stack={card.fields || {}}
+              onUpdate={(updates) => updateCard(card.id, { fields: { ...card.fields, ...updates } })}
+              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
+              onConfirm={() => handleConfirmReady(card.id)}
+            />
+          );
+        default:
+          return null;
+      }
+    };
 
     return (
-      <div ref={ref} className="h-screen bg-bg flex flex-col" {...props}>
+      <div ref={ref} className="flex flex-col h-screen bg-bg">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-stroke bg-bg-elev">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold text-text">{project.name}</h1>
-              <p className="text-sm text-text-dim">{project.description}</p>
+        <header className="border-b border-stroke bg-bg-soft/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-lg font-semibold text-text">{project.name}</h1>
+                <p className="text-sm text-text-muted">Canvas Livre</p>
+              </div>
+              <Badge variant="secondary">{project.status}</Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setProgressOpen(true)}>
+                <Eye className="w-4 h-4" />
+                Progresso
+              </Button>
+              <Button 
+                variant="primary" 
+                size="sm" 
+                onClick={handleGenerateWorkPlan}
+                disabled={readyCount < 2}
+              >
+                <Download className="w-4 h-4" />
+                Work Plan
+                {readyCount >= 2 && <Badge variant="success" className="ml-2">{readyCount} READY</Badge>}
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Share2 className="w-4 h-4" />
+              </Button>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onSave}>
-              <Save className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onExport}>
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onShare}>
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        </header>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-4 border-b border-stroke bg-bg-elev">
+        <div className="border-b border-stroke bg-bg px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onZoomOut}>
-              <ZoomOut className="h-4 w-4" />
+            <Button 
+              variant={panMode ? 'secondary' : 'ghost'} 
+              size="sm" 
+              onClick={handleTogglePanMode}
+              title="Modo Pan (Espaço)"
+            >
+              <Hand className="w-4 h-4" />
+              {panMode && <span className="ml-1.5">Pan</span>}
             </Button>
-            <span className="text-sm text-text-dim min-w-[60px] text-center">
-              {Math.round(zoom * 100)}%
-            </span>
-            <Button variant="ghost" size="sm" onClick={onZoomIn}>
-              <ZoomIn className="h-4 w-4" />
+            <div className="w-px h-5 bg-stroke mx-1" />
+            <Button variant="ghost" size="sm" onClick={() => viewportRef.current?.zoomOut()}>
+              <ZoomOut className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={onZoomFit}>
-              <Maximize2 className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={() => viewportRef.current?.zoomIn()}>
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleFitView}>
+              <Maximize2 className="w-4 h-4" />
+              Ajustar Visualização
             </Button>
           </div>
-
           <div className="flex items-center gap-2">
             <Button 
-              variant={showGrid ? "primary" : "ghost"} 
+              variant={showGrid ? 'secondary' : 'ghost'} 
               size="sm" 
-              onClick={onToggleGrid}
+              onClick={() => setShowGrid(!showGrid)}
             >
-              <Grid3X3 className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant={snapToGrid ? "primary" : "ghost"} 
-              size="sm" 
-              onClick={onToggleSnap}
-            >
-              <Magnet className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onToggleAIPanel}>
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onToggleProgressDrawer}>
-              <Settings className="h-4 w-4" />
+              <Grid3X3 className="w-4 h-4" />
+              Grid
             </Button>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Canvas Area */}
-          <div className="flex-1 relative overflow-auto">
-            <div 
-              className="relative min-h-full min-w-full p-8"
-              style={{ 
-                transform: `scale(${zoom})`,
-                transformOrigin: 'top left'
-              }}
-            >
-              {/* Grid Background */}
-              {showGrid && (
-                <div 
-                  className="absolute inset-0 opacity-20"
-                  style={{
-                    backgroundImage: `
-                      linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-                    `,
-                    backgroundSize: '20px 20px'
-                  }}
+        {/* Onboarding hint */}
+        {onboarding && (
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 max-w-2xl px-4">
+            <div className="rounded-lg bg-primary/10 border border-primary/20 p-4 text-center backdrop-blur-sm">
+              <p className="text-sm text-primary">
+                Bem-vindo ao Canvas Livre! Pressione <kbd className="px-1.5 py-0.5 bg-primary/20 border border-primary/30 rounded text-xs font-mono mx-1">Espaço</kbd> 
+                e arraste para navegar, ou use o botão <Hand className="inline w-3.5 h-3.5 mx-1" /> Mão no toolbar.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Canvas Viewport */}
+        <div className="flex-1">
+          <CanvasViewport
+            ref={viewportRef}
+            showGrid={showGrid}
+            onViewportChange={handleViewportChange}
+          >
+            {/* Renderizar todos os cards em posição absoluta */}
+            {cards.map((card) => {
+              // Garantir valores default se position/size não existirem
+              const position = card.position || { x: 80, y: 80 };
+              const size = card.size || { width: 360, height: 240 };
+              
+              return (
+                <DraggableCard
+                  key={card.id}
+                  card={card}
+                  position={position}
+                  size={size}
+                  onDragStop={handleCardDragStop}
+                  onDelete={deleteCard}
+                  renderCard={renderCard}
                 />
-              )}
-
-              {/* Stage Columns */}
-              <div className="grid grid-cols-4 gap-8 min-h-[800px]">
-                {/* Ideia Base */}
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-lg p-4 border border-primary/20">
-                    <h3 className="text-lg font-semibold text-primary">Ideia Base</h3>
-                    <p className="text-sm text-text-dim">Definição do problema e solução</p>
-                  </div>
-                  <div className="space-y-4">
-                    {stageCards['ideia-base'].map((card) => (
-                      <IdeaBaseCard 
-                        key={card.id} 
-                        idea={{
-                          title: card.title,
-                          description: card.content || '',
-                          problem: '',
-                          solution: '',
-                          targetAudience: '',
-                          valueProposition: ''
-                        }}
-                        status="DRAFT"
-                        onUpdate={() => {}}
-                        onAIGenerate={() => {}}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Entendimento */}
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-success/20 to-success/5 rounded-lg p-4 border border-success/20">
-                    <h3 className="text-lg font-semibold text-success">Entendimento</h3>
-                    <p className="text-sm text-text-dim">Pesquisa e descoberta</p>
-                  </div>
-                  <div className="space-y-4">
-                    {stageCards['entendimento'].map((card) => (
-                      <UnderstandingCard 
-                        key={card.id} 
-                        card={card}
-                        onUpdate={() => {}}
-                        onAIGenerate={() => {}}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Escopo */}
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-warning/20 to-warning/5 rounded-lg p-4 border border-warning/20">
-                    <h3 className="text-lg font-semibold text-warning">Escopo</h3>
-                    <p className="text-sm text-text-dim">Definição de funcionalidades</p>
-                  </div>
-                  <div className="space-y-4">
-                    {stageCards['escopo'].map((card) => (
-                      <ScopeFeaturesCard 
-                        key={card.id} 
-                        card={card}
-                        onUpdate={() => {}}
-                        onAIGenerate={() => {}}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tech Stack */}
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-info/20 to-info/5 rounded-lg p-4 border border-info/20">
-                    <h3 className="text-lg font-semibold text-info">Tech Stack</h3>
-                    <p className="text-sm text-text-dim">Tecnologias e arquitetura</p>
-                  </div>
-                  <div className="space-y-4">
-                    {stageCards['design'].map((card) => (
-                      <TechStackCard 
-                        key={card.id} 
-                        card={card}
-                        onUpdate={() => {}}
-                        onAIGenerate={() => {}}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Side Panels */}
-          {isAIPanelOpen && (
-            <div className="w-80 border-l border-stroke bg-bg-elev">
-              <AIPanel />
-            </div>
-          )}
-
-          {isProgressDrawerOpen && (
-            <div className="w-80 border-l border-stroke bg-bg-elev">
-              <ProgressDrawer />
-            </div>
-          )}
+              );
+            })}
+          </CanvasViewport>
         </div>
+
+        {/* AI Panel */}
+        {selectedCardId && (
+          <AIPanel
+            mode={aiMode}
+            loading={aiLoading}
+            prompt=""
+            diff={aiDiff}
+            onModeChange={setAiMode}
+            onApply={handleAIApply}
+            onClose={() => {
+              setSelectedCardId(null);
+              setAiDiff(null);
+            }}
+          />
+        )}
+
+        {/* Progress Drawer */}
+        {progressOpen && (
+          <ProgressDrawer
+            stages={[
+              { 
+                key: 'ideia-base', 
+                label: 'Ideia Base', 
+                progress: cards.filter(c => c.stageKey === 'ideia-base' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'ideia-base').length) * 100 
+              },
+              { 
+                key: 'escopo', 
+                label: 'Escopo', 
+                progress: cards.filter(c => c.stageKey === 'escopo' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'escopo').length) * 100 
+              },
+              { 
+                key: 'tech', 
+                label: 'Tech Stack', 
+                progress: cards.filter(c => c.stageKey === 'tech' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'tech').length) * 100 
+              },
+            ]}
+            onClose={() => setProgressOpen(false)}
+          />
+        )}
+
+        {/* Outputs Modal */}
+        {outputsOpen && (
+          <OutputsModal
+            projectId={projectId}
+            open={outputsOpen}
+            onClose={() => setOutputsOpen(false)}
+            onRegenerate={(type) => console.log('Regenerate', type)}
+          />
+        )}
       </div>
     );
   }
