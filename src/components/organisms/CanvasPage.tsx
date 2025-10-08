@@ -1,32 +1,21 @@
 'use client';
 
 import * as React from 'react';
-import Draggable from 'react-draggable';
-import { cn } from '@/lib/utils';
 import { Button, Badge } from '@/components/foundation';
 import { AIPanel, ProgressDrawer } from '@/components/molecules';
 import { OutputsModal } from '@/components/organisms/OutputsModal';
-import { IdeaBaseCard, ScopeFeaturesCard, TechStackCard } from '@/components/cards';
-import { CanvasViewport } from '@/components/canvas/CanvasViewport';
-import { ConnectionOverlay } from '@/components/canvas/ConnectionOverlay';
+import { ReactFlowCanvas } from '@/components/canvas/ReactFlowCanvas';
 import { useCards } from '@/hooks/useCards';
 import { useCardsStore } from '@/lib/stores/useCardsStore';
 import { TelemetryService } from '@/lib/services/TelemetryService';
 import { GraphService } from '@/lib/services/GraphService';
 import { toast } from '@/lib/stores/useToastStore';
+import { getCascadePosition } from '@/lib/utils/reactFlowAdapters';
 import { 
-  ZoomIn, 
-  ZoomOut, 
-  Maximize2, 
-  Grid3X3, 
-  Magnet, 
   Download, 
   Share2,
   ArrowLeft,
-  Eye,
-  EyeOff,
-  Hand,
-  Link2
+  Eye
 } from 'lucide-react';
 import type { Project, Card, Edge } from '@/types';
 
@@ -38,117 +27,6 @@ export interface CanvasPageProps {
   isLoading?: boolean;
   onboarding?: boolean;
 }
-
-// Componente auxiliar para card draggable com ref estável
-interface DraggableCardProps {
-  card: Card;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  onDragStop: (cardId: string, x: number, y: number) => void;
-  onDelete: (cardId: string) => void;
-  onClick?: (cardId: string) => void;
-  isSourceCard?: boolean;
-  connectionMode?: boolean;
-  onConnectionDragStart?: (cardId: string, e: React.MouseEvent) => void;
-  renderCard: (card: Card) => React.ReactNode;
-}
-
-const DraggableCard: React.FC<DraggableCardProps> = ({ 
-  card, 
-  position, 
-  size, 
-  onDragStop, 
-  onDelete, 
-  onClick,
-  isSourceCard = false,
-  connectionMode = false,
-  onConnectionDragStart,
-  renderCard 
-}) => {
-  const nodeRef = React.useRef<HTMLDivElement>(null);
-  const [showDelete, setShowDelete] = React.useState(false);
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm('Tem certeza que deseja excluir este card?')) {
-      onDelete(card.id);
-    }
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    // Apenas propagar clique se houver handler
-    if (onClick) {
-      e.stopPropagation();
-      onClick(card.id);
-    }
-  };
-
-  const handleConnectionDragStart = (e: React.MouseEvent) => {
-    if (connectionMode && onConnectionDragStart) {
-      e.stopPropagation();
-      onConnectionDragStart(card.id, e);
-    }
-  };
-
-  // Não mostrar delete no Ideia Base
-  const isIdeaBase = card.typeKey === 'idea.base';
-
-  return (
-    <Draggable
-      defaultPosition={{ x: position.x, y: position.y }}
-      onStop={(e, data) => onDragStop(card.id, data.x, data.y)}
-      handle=".card-drag-handle"
-      nodeRef={nodeRef}
-    >
-      <div
-        ref={nodeRef}
-        onClick={handleClick}
-        className={cn(
-          "absolute bg-bg border border-stroke rounded-lg shadow-lg transition-all",
-          onClick && "cursor-pointer hover:shadow-xl",
-          isSourceCard && "ring-4 ring-primary ring-opacity-50"
-        )}
-        style={{
-          width: size.width,
-          minHeight: size.height,
-        }}
-        onMouseEnter={() => setShowDelete(true)}
-        onMouseLeave={() => setShowDelete(false)}
-      >
-        {/* Adicionar handle de drag visível */}
-        <div className="card-drag-handle absolute top-0 left-0 right-0 h-2 cursor-grab active:cursor-grabbing hover:bg-primary/20 transition-colors rounded-t-lg z-10" />
-        
-        {/* Botão de deletar (apenas cards gerados) */}
-        {!isIdeaBase && showDelete && !connectionMode && (
-          <button
-            onClick={handleDelete}
-            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md z-20 transition-all"
-            title="Excluir card"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
-
-        {/* Botão de conexão (modo conexão ativo) */}
-        {connectionMode && (
-          <div 
-            className="absolute -top-3 -right-3 w-8 h-8 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center shadow-lg z-20 cursor-grab active:cursor-grabbing transition-all hover:scale-110"
-            onMouseDown={handleConnectionDragStart}
-            title="Arraste para conectar a outro card"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-            </svg>
-          </div>
-        )}
-        
-        {renderCard(card)}
-      </div>
-    </Draggable>
-  );
-};
 
 const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
   ({ projectId, project, cards: initialCards = [], edges: initialEdges = [], onboarding = false }, ref) => {
@@ -168,10 +46,6 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     } = useCards(projectId);
 
     // UI State
-    const [showGrid, setShowGrid] = React.useState(true);
-    const [snapToGrid, setSnapToGrid] = React.useState(false);
-    const [panMode, setPanMode] = React.useState(false);
-    const [connectionMode, setConnectionMode] = React.useState(false);
     const [progressOpen, setProgressOpen] = React.useState(false);
     const [outputsOpen, setOutputsOpen] = React.useState(false);
     const [selectedCardId, setSelectedCardId] = React.useState<string | null>(null);
@@ -181,20 +55,8 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     
     // Edges state
     const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
-    const [tempConnection, setTempConnection] = React.useState<{ sourceCardId: string; mouseX: number; mouseY: number } | null>(null);
-    const [sourceCardForConnection, setSourceCardForConnection] = React.useState<string | null>(null);
-    
-    // Viewport ref
-    const viewportRef = React.useRef<any>(null);
-    const canvasContainerRef = React.useRef<HTMLDivElement>(null);
 
-    // Toggle pan mode
-    const handleTogglePanMode = React.useCallback(() => {
-      viewportRef.current?.togglePanMode();
-      setPanMode(prev => !prev);
-    }, []);
-
-    // Inicializar cards do SSR e carregar layout
+    // Inicializar cards do SSR
     React.useEffect(() => {
       console.log('[CanvasPage] Inicializando com cards:', { 
         initialCards: initialCards?.length, 
@@ -208,40 +70,32 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
         console.log('[CanvasPage] Carregando cards da API...');
         loadCards();
       }
-
-      // Carregar layout salvo
-      GraphService.loadLayout(projectId).then((layout) => {
-        if (layout && viewportRef.current) {
-          viewportRef.current.setViewport(layout.viewport);
-        }
-      });
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 
-    // Autosave de layout
-    const handleViewportChange = React.useCallback((viewport: { x: number; y: number; zoom: number }) => {
-      GraphService.saveLayout(projectId, viewport, cards).catch(err => {
-        console.error('Failed to save layout:', err);
-      });
-    }, [projectId, cards]);
+    // Atualizar edges quando initialEdges mudar
+    React.useEffect(() => {
+      setEdges(initialEdges);
+    }, [initialEdges]);
 
-    const handleCardDragStop = React.useCallback((cardId: string, x: number, y: number) => {
-      updateCard(cardId, { 
-        position: { x, y } 
-      }).catch(err => {
-        console.error('Failed to update card position:', err);
-      });
-    }, [updateCard]);
-
-    // Handlers
+    // Handlers para cards
     const handleChecklistCreate = async (target: { stageKey: string; typeKey: string }) => {
       try {
         TelemetryService.checklistClickStage(target.stageKey, target.typeKey, { projectId });
         
         // Calcular posição em cascade
-        const position = GraphService.getCascadePosition(cards);
+        const position = getCascadePosition(
+          cards.map(c => ({
+            id: c.id,
+            position: c.position || { x: 80, y: 80 },
+            style: { 
+              width: c.size?.width || 360, 
+              minHeight: c.size?.height || 240 
+            }
+          } as any))
+        );
         
-        await createCard({
+        const newCard = await createCard({
           stage_key: target.stageKey,
           type_key: target.typeKey,
           title: target.typeKey === 'scope.features' ? 'Funcionalidades' : 'Stack Tecnológico',
@@ -252,422 +106,264 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
           w: 360,
           h: 240,
         });
+
+        // Auto-conectar ao Ideia Base
+        const ideaBaseCard = cards.find(c => c.typeKey === 'idea.base');
+        if (ideaBaseCard && newCard) {
+          await handleCreateEdge(ideaBaseCard.id, newCard.id);
+        }
+
+        TelemetryService.cardGenerated(target.typeKey, { projectId, cardId: newCard?.id });
       } catch (err) {
         console.error('Failed to create card:', err);
+        toast.error('Erro ao criar card');
       }
     };
 
-    const handleFitView = React.useCallback(() => {
-      if (viewportRef.current && cards.length > 0) {
-        const container = viewportRef.current;
-        const viewport = GraphService.fitView(
-          cards,
-          container.clientWidth || 1200,
-          container.clientHeight || 800
-        );
-        viewportRef.current.setViewport(viewport);
-      }
-    }, [cards]);
-
-    const handleAIGenerate = async (cardId: string, mode: 'generate' | 'expand' | 'review', prompt?: string) => {
-      setSelectedCardId(cardId);
-      setAiMode(mode);
-      setAiLoading(true);
-      setAiDiff(null);
+    const handleCardUpdate = async (cardId: string, fields: any) => {
       try {
-        const fields = await generateAI(cardId, mode, prompt);
-        setAiDiff({ before: {}, after: fields });
-        TelemetryService.cardGenerated(cardId, mode, { projectId });
+        await updateCard(cardId, { fields });
+        toast.success('Card atualizado');
       } catch (err) {
-        console.error('AI generation failed:', err);
+        console.error('Failed to update card:', err);
+        toast.error('Erro ao atualizar card');
+      }
+    };
+
+    const handleCardDelete = async (cardId: string) => {
+      try {
+        await deleteCard(cardId);
+        // Remover edges relacionadas
+        setEdges(prev => prev.filter(e => e.sourceCardId !== cardId && e.targetCardId !== cardId));
+        toast.success('Card excluído');
+      } catch (err) {
+        console.error('Failed to delete card:', err);
+        toast.error('Erro ao excluir card');
+      }
+    };
+
+    const handleCardGenerate = async (cardId: string, mode: 'generate' | 'expand' | 'review') => {
+      try {
+        setAiMode(mode);
+        setAiLoading(true);
+        const diff = await generateAI(cardId, mode);
+        setAiDiff(diff);
+        setSelectedCardId(cardId);
+      } catch (err) {
+        console.error('Failed to generate AI:', err);
+        toast.error('Erro ao gerar conteúdo');
       } finally {
         setAiLoading(false);
       }
     };
 
-    const handleAIApply = async () => {
-      if (!selectedCardId || !aiDiff?.after) return;
+    const handleCardConfirmReady = async (cardId: string) => {
       try {
-        await updateCard(selectedCardId, { fields: aiDiff.after });
-        setAiDiff(null);
-        setSelectedCardId(null);
-      } catch (err) {
-        console.error('Failed to apply AI content:', err);
-      }
-    };
-
-    const handleConfirmReady = async (cardId: string) => {
-      try {
-        const card = cards.find(c => c.id === cardId);
         await confirmReady(cardId);
-        if (card) {
-          TelemetryService.cardConfirmed(cardId, card.typeKey, { projectId });
-        }
-        const newReadyCount = getReadyCount();
-        if (newReadyCount >= 2) {
-          TelemetryService.workplanEnabled(newReadyCount, { projectId });
-        }
+        toast.success('Card confirmado como READY 🎉');
+        TelemetryService.cardConfirmed(cardId, { projectId });
       } catch (err) {
         console.error('Failed to confirm card:', err);
+        toast.error('Erro ao confirmar card');
       }
     };
 
-    const handleGenerateWorkPlan = async () => {
+    const handleNodePositionChange = async (cardId: string, x: number, y: number) => {
       try {
-        const res = await fetch(`/api/outputs/work-plan?project_id=${projectId}`, {
-          method: 'POST',
-        });
-        if (!res.ok) throw new Error('Failed to generate work plan');
-        TelemetryService.outputGenerated('work-plan', { projectId });
-        setOutputsOpen(true);
+        await updateCard(cardId, { position: { x, y } });
       } catch (err) {
-        console.error('Work plan generation failed:', err);
+        console.error('Failed to update card position:', err);
       }
     };
 
-    // Connection handlers
-    const handleToggleConnectionMode = React.useCallback(() => {
-      setConnectionMode(prev => !prev);
-      setSourceCardForConnection(null);
-      setTempConnection(null);
-      if (connectionMode) {
-        toast.info('Modo de conexão', 'Desativado');
-      } else {
-        toast.success('Modo de conexão', 'Arraste do botão 🔗 de um card para outro');
-      }
-    }, [connectionMode]);
-
-    const handleConnectionDragStart = React.useCallback((sourceCardId: string, e: React.MouseEvent) => {
-      setSourceCardForConnection(sourceCardId);
-      
-      // Criar conexão temporária que segue o mouse
-      const updateTempConnection = (clientX: number, clientY: number) => {
-        if (canvasContainerRef.current) {
-          const rect = canvasContainerRef.current.getBoundingClientRect();
-          const scrollLeft = canvasContainerRef.current.scrollLeft || 0;
-          const scrollTop = canvasContainerRef.current.scrollTop || 0;
-          
-          setTempConnection({
-            sourceCardId,
-            mouseX: clientX - rect.left + scrollLeft,
-            mouseY: clientY - rect.top + scrollTop,
-          });
-        }
-      };
-
-      updateTempConnection(e.clientX, e.clientY);
-
-      const handleMouseMove = (moveEvent: MouseEvent) => {
-        updateTempConnection(moveEvent.clientX, moveEvent.clientY);
-      };
-
-      const handleMouseUp = (upEvent: MouseEvent) => {
-        // Verificar se mouse up foi em cima de um card
-        const target = upEvent.target as HTMLElement;
-        const cardElement = target.closest('[data-card-id]');
-        
-        if (cardElement) {
-          const targetCardId = cardElement.getAttribute('data-card-id');
-          if (targetCardId && targetCardId !== sourceCardId) {
-            handleCreateEdge(sourceCardId, targetCardId);
-          }
-        }
-        
-        setSourceCardForConnection(null);
-        setTempConnection(null);
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }, []);
-
-    const handleCreateEdge = async (sourceCardId: string, targetCardId: string) => {
+    // Handlers para edges
+    const handleCreateEdge = async (sourceId: string, targetId: string) => {
       try {
         // Verificar se edge já existe localmente
-        const edgeExists = edges.some(
-          e => e.sourceCardId === sourceCardId && e.targetCardId === targetCardId
+        const existingEdge = edges.find(
+          e => e.sourceCardId === sourceId && e.targetCardId === targetId
         );
-
-        if (edgeExists) {
-          toast.info('Conexão já existe', 'Estes cards já estão conectados');
-          return;
+        if (existingEdge) {
+          throw new Error('Conexão já existe');
         }
 
-        const res = await fetch('/api/edges', {
+        const response = await fetch('/api/edges', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             project_id: projectId,
-            source_card_id: sourceCardId,
-            target_card_id: targetCardId,
+            source_card_id: sourceId,
+            target_card_id: targetId,
           }),
         });
 
-        if (!res.ok) {
-          const error = await res.json();
-          if (res.status === 409) {
-            toast.info('Conexão já existe', 'Estes cards já estão conectados');
-            return;
-          }
-          throw new Error(error.error || 'Failed to create connection');
+        if (response.status === 409) {
+          throw new Error('Conexão já existe');
         }
 
-        const { edge } = await res.json();
+        if (!response.ok) {
+          throw new Error('Failed to create edge');
+        }
+
+        const { edge } = await response.json();
         setEdges(prev => [...prev, edge]);
-        toast.success('Conexão criada! 🎉', 'Cards conectados com sucesso');
-      } catch (err) {
-        console.error('Failed to create edge:', err);
-        toast.error('Erro ao criar conexão', err instanceof Error ? err.message : 'Erro desconhecido');
+      } catch (error: any) {
+        throw error;
       }
     };
 
     const handleDeleteEdge = async (edgeId: string) => {
       try {
-        const res = await fetch(`/api/edges/${edgeId}`, {
+        const response = await fetch(`/api/edges/${edgeId}`, {
           method: 'DELETE',
         });
 
-        if (!res.ok) throw new Error('Failed to delete edge');
+        if (!response.ok) {
+          throw new Error('Failed to delete edge');
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
 
-        setEdges(prev => prev.filter(e => e.id !== edgeId));
-        toast.success('Conexão removida', 'A conexão foi excluída');
+    // AIPanel handlers
+    const handleAIApply = async () => {
+      if (!selectedCardId || !aiDiff) return;
+
+      try {
+        await updateCard(selectedCardId, { fields: aiDiff });
+        setAiDiff(null);
+        toast.success('Alterações aplicadas! ✅');
       } catch (err) {
-        console.error('Failed to delete edge:', err);
-        toast.error('Erro ao remover conexão', 'Tente novamente');
+        console.error('Failed to apply AI changes:', err);
+        toast.error('Erro ao aplicar alterações');
       }
     };
 
+    const handleAIClose = () => {
+      setAiDiff(null);
+      setSelectedCardId(null);
+    };
 
-    // Computed
+    // Outputs
+    const handleGenerateOutput = async (type: 'workplan' | 'prd' | 'promptpack') => {
+      try {
+        TelemetryService.outputGenerated(type, { projectId });
+        toast.info('Gerando output...');
+        
+        // TODO: implementar geração real
+        setTimeout(() => {
+          toast.success('Output gerado! 🎉');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to generate output:', err);
+        toast.error('Erro ao gerar output');
+      }
+    };
+
     const readyCount = getReadyCount();
-
-    // Renderizar card baseado no tipo
-    const renderCard = (card: Card) => {
-      switch (card.typeKey) {
-        case 'idea.base':
-          return (
-            <IdeaBaseCard
-              status={card.status as any}
-              idea={card.fields || {}}
-              onUpdate={(updates) => updateCard(card.id, { fields: updates })}
-              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
-              onChecklistClick={handleChecklistCreate}
-              onMenuAction={(action) => {
-                if (action === 'confirm') handleConfirmReady(card.id);
-              }}
-            />
-          );
-        case 'scope.features':
-          return (
-            <ScopeFeaturesCard
-              status={card.status as any}
-              features={card.fields?.features || []}
-              onUpdate={(updates) => updateCard(card.id, { fields: { ...card.fields, ...updates } })}
-              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
-              onConfirm={() => handleConfirmReady(card.id)}
-            />
-          );
-        case 'tech.stack':
-      return (
-            <TechStackCard
-              status={card.status as any}
-              stack={card.fields || {}}
-              onUpdate={(updates) => updateCard(card.id, { fields: { ...card.fields, ...updates } })}
-              onAIGenerate={(mode, prompt) => handleAIGenerate(card.id, mode, prompt)}
-              onConfirm={() => handleConfirmReady(card.id)}
-            />
-          );
-        default:
-          return null;
-      }
-    };
+    const workPlanEnabled = readyCount >= 2;
 
     return (
-      <div ref={ref} className="flex flex-col h-screen bg-bg">
+      <div ref={ref} className="h-screen flex flex-col bg-bg">
         {/* Header */}
-        <header className="border-b border-stroke bg-bg-soft/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
-                <ArrowLeft className="w-4 h-4" />
+        <header className="flex items-center justify-between px-6 py-4 border-b border-stroke bg-bg-soft">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+              <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-                <h1 className="text-lg font-semibold text-text">{project.name}</h1>
-                <p className="text-sm text-text-muted">Canvas Livre</p>
-              </div>
-              <Badge variant="secondary">{project.status}</Badge>
+              <h1 className="text-lg font-semibold text-text">{project.name}</h1>
+              <p className="text-sm text-text-dim flex items-center gap-2">
+                <Badge variant="secondary">{project.status}</Badge>
+                Canvas Livre
+              </p>
             </div>
+          </div>
+
           <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setProgressOpen(true)}>
-                <Eye className="w-4 h-4" />
-                Progresso
+            {onboarding && (
+              <div className="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm animate-pulse">
+                💡 Arraste cards, conecte-os pelas alças laterais!
+              </div>
+            )}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setProgressOpen(true)}
+              title="Ver progresso"
+            >
+              <Eye className="w-5 h-5" />
             </Button>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={handleGenerateWorkPlan}
-                disabled={readyCount < 2}
-              >
-                <Download className="w-4 h-4" />
-                Work Plan
-                {readyCount >= 2 && <Badge variant="success" className="ml-2">{readyCount} READY</Badge>}
+
+            <Button
+              variant="default"
+              onClick={() => setOutputsOpen(true)}
+              disabled={!workPlanEnabled}
+              title={workPlanEnabled ? 'Gerar Work Plan' : 'Precisa de 2+ cards READY'}
+            >
+              📋 Work Plan {workPlanEnabled && '✅'}
             </Button>
-            <Button variant="ghost" size="sm">
-                <Share2 className="w-4 h-4" />
+
+            <Button variant="ghost" size="icon">
+              <Share2 className="w-5 h-5" />
+            </Button>
+
+            <Button variant="ghost" size="icon">
+              <Download className="w-5 h-5" />
             </Button>
           </div>
-        </div>
         </header>
 
-        {/* Toolbar */}
-        <div className="border-b border-stroke bg-bg px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button 
-              variant={panMode ? 'secondary' : 'ghost'} 
-              size="sm" 
-              onClick={handleTogglePanMode}
-              title="Modo Pan (Espaço)"
-            >
-              <Hand className="w-4 h-4" />
-              {panMode && <span className="ml-1.5">Pan</span>}
-            </Button>
-            <div className="w-px h-5 bg-stroke mx-1" />
-            <Button variant="ghost" size="sm" onClick={() => viewportRef.current?.zoomOut()}>
-              <ZoomOut className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => viewportRef.current?.zoomIn()}>
-              <ZoomIn className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleFitView}>
-              <Maximize2 className="w-4 h-4" />
-              Ajustar Visualização
-            </Button>
+        {/* Canvas + AIPanel */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* React Flow Canvas */}
+          <div className="flex-1 relative">
+            <ReactFlowCanvas
+              projectId={projectId}
+              initialCards={cards}
+              initialEdges={edges}
+              onCardUpdate={handleCardUpdate}
+              onCardDelete={handleCardDelete}
+              onCardGenerate={handleCardGenerate}
+              onCardConfirmReady={handleCardConfirmReady}
+              onChecklistClick={handleChecklistCreate}
+              onCreateEdge={handleCreateEdge}
+              onDeleteEdge={handleDeleteEdge}
+              onNodePositionChange={handleNodePositionChange}
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant={connectionMode ? 'secondary' : 'ghost'} 
-              size="sm" 
-              onClick={handleToggleConnectionMode}
-              title="Modo de Conexão"
-            >
-              <Link2 className="w-4 h-4" />
-              {connectionMode && <span className="ml-1.5">Conectar</span>}
-            </Button>
-            <div className="w-px h-5 bg-stroke mx-1" />
-            <Button 
-              variant={showGrid ? 'secondary' : 'ghost'} 
-              size="sm" 
-              onClick={() => setShowGrid(!showGrid)}
-            >
-              <Grid3X3 className="w-4 h-4" />
-              Grid
-            </Button>
+
+          {/* AIPanel (sempre visível, mas pode estar em idle) */}
+          <div className="w-80 lg:w-96 border-l border-stroke bg-bg-soft">
+            <AIPanel
+              mode={aiMode}
+              loading={aiLoading}
+              prompt=""
+              diff={aiDiff}
+              onModeChange={setAiMode}
+              onApply={handleAIApply}
+              onClose={handleAIClose}
+            />
           </div>
         </div>
 
-        {/* Onboarding hint */}
-        {onboarding && (
-          <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 max-w-2xl px-4">
-            <div className="rounded-lg bg-primary/10 border border-primary/20 p-4 text-center backdrop-blur-sm">
-              <p className="text-sm text-primary">
-                Bem-vindo ao Canvas Livre! Pressione <kbd className="px-1.5 py-0.5 bg-primary/20 border border-primary/30 rounded text-xs font-mono mx-1">Espaço</kbd> 
-                e arraste para navegar, ou use o botão <Hand className="inline w-3.5 h-3.5 mx-1" /> Mão no toolbar.
-              </p>
-                  </div>
-                </div>
-        )}
-
-        {/* Canvas Viewport */}
-        <div className="flex-1" ref={canvasContainerRef}>
-          <CanvasViewport
-            ref={viewportRef}
-            showGrid={showGrid}
-            onViewportChange={handleViewportChange}
-          >
-            {/* ConnectionOverlay - renderiza linhas */}
-            <ConnectionOverlay
-              edges={edges}
-              cards={cards}
-              onDeleteEdge={handleDeleteEdge}
-              connectionMode={connectionMode}
-              tempConnection={tempConnection}
-            />
-            
-            {/* Renderizar todos os cards em posição absoluta */}
-            {cards.map((card) => {
-              // Garantir valores default se position/size não existirem
-              const position = card.position || { x: 80, y: 80 };
-              const size = card.size || { width: 360, height: 240 };
-              const isSourceCard = sourceCardForConnection === card.id;
-              
-              return (
-                <div key={card.id} data-card-id={card.id}>
-                  <DraggableCard
-                    card={card}
-                    position={position}
-                    size={size}
-                    onDragStop={handleCardDragStop}
-                    onDelete={deleteCard}
-                    isSourceCard={isSourceCard}
-                    connectionMode={connectionMode}
-                    onConnectionDragStart={handleConnectionDragStart}
-                    renderCard={renderCard}
-                  />
-                </div>
-              );
-            })}
-          </CanvasViewport>
-          </div>
-
-        {/* AI Panel */}
-        {selectedCardId && (
-          <AIPanel
-            mode={aiMode}
-            loading={aiLoading}
-            prompt=""
-            diff={aiDiff}
-            onModeChange={setAiMode}
-            onApply={handleAIApply}
-            onClose={() => {
-              setSelectedCardId(null);
-              setAiDiff(null);
-            }}
-          />
-        )}
-
-        {/* Progress Drawer */}
+        {/* Modals */}
         {progressOpen && (
           <ProgressDrawer
-            stages={[
-              { 
-                key: 'ideia-base', 
-                label: 'Ideia Base', 
-                progress: cards.filter(c => c.stageKey === 'ideia-base' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'ideia-base').length) * 100 
-              },
-              { 
-                key: 'escopo', 
-                label: 'Escopo', 
-                progress: cards.filter(c => c.stageKey === 'escopo' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'escopo').length) * 100 
-              },
-              { 
-                key: 'tech', 
-                label: 'Tech Stack', 
-                progress: cards.filter(c => c.stageKey === 'tech' && c.status === 'READY').length / Math.max(1, cards.filter(c => c.stageKey === 'tech').length) * 100 
-              },
-            ]}
-            onClose={() => setProgressOpen(false)}
+            open={progressOpen}
+            onOpenChange={setProgressOpen}
+            cards={cards}
           />
         )}
 
-        {/* Outputs Modal */}
         {outputsOpen && (
           <OutputsModal
-            projectId={projectId}
             open={outputsOpen}
-            onClose={() => setOutputsOpen(false)}
-            onRegenerate={(type) => console.log('Regenerate', type)}
+            onOpenChange={setOutputsOpen}
+            outputs={[]}
+            onRegenerate={handleGenerateOutput}
           />
         )}
       </div>

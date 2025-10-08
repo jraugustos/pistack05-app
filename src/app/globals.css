@@ -1308,3 +1308,98 @@ textarea.error {
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
+
+/* ============================================
+   React Flow Customização
+   ============================================ */
+
+/* Canvas background */
+.react-flow {
+  background: var(--bg);
+}
+
+/* Nodes - remover estilo padrão (nossos cards já têm) */
+.react-flow__node {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Edges - linhas de conexão */
+.react-flow__edge-path {
+  stroke: var(--primary);
+  stroke-width: 2;
+  transition: stroke-width 0.2s;
+}
+
+.react-flow__edge-path:hover {
+  stroke-width: 3;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--primary);
+  stroke-width: 3;
+}
+
+/* Handles - pontos de conexão */
+.react-flow__handle {
+  background: var(--primary);
+  border: 2px solid var(--bg);
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+}
+
+.react-flow__handle-connecting {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.react-flow__handle-valid {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+/* Controls - botões de zoom */
+.react-flow__controls {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background: var(--bg-soft);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  transition: background 0.2s;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--bg-elev);
+}
+
+/* Background - grid */
+.react-flow__background {
+  opacity: 0.4;
+}
+
+/* Selection */
+.react-flow__nodesselection {
+  background: rgba(122, 162, 255, 0.1);
+  border: 1px dashed var(--primary);
+}
+
+/* Attribution (remover ou estilizar) */
+.react-flow__attribution {
+  opacity: 0.3;
+  font-size: 10px;
+}
+
+/* Panel (nosso hint de navegação) */
+.react-flow__panel {
+  margin: 12px;
+}
