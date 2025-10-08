@@ -6,28 +6,33 @@ import { Textarea } from '@/components/foundation';
 import { Badge } from '@/components/foundation';
 import { cn } from '@/lib/utils';
 
+import type { Card } from '@/types';
+
 export interface IdeaBaseCardProps {
-  idea: {
-    title: string;
-    description: string;
-    problem: string;
-    solution: string;
-    targetAudience: string;
-    valueProposition: string;
-  };
-  status: 'DRAFT' | 'READY';
-  onUpdate: (field: keyof IdeaBaseCardProps['idea'], value: string) => void;
-  onAIGenerate: (field: keyof IdeaBaseCardProps['idea']) => void;
+  card: Card;
+  onUpdate?: (fields: any) => void;
+  onGenerate?: (mode: 'generate' | 'expand' | 'review') => void;
+  onConfirmReady?: () => void;
   onChecklistClick?: (target: { stageKey: string; typeKey: string }) => void;
-  onMenuAction?: (action: 'duplicate' | 'delete' | 'link') => void;
   className?: string;
 }
 
 const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
-  ({ idea, status, onUpdate, onAIGenerate, onChecklistClick, onMenuAction, className }, ref) => {
+  ({ card, onUpdate, onGenerate, onConfirmReady, onChecklistClick, className }, ref) => {
+    // Extrair dados dos fields do card
+    const idea = {
+      name: card.fields?.name || '',
+      pitch: card.fields?.pitch || '',
+      problem: card.fields?.problem || '',
+      solution: card.fields?.solution || '',
+      targetAudience: card.fields?.targetAudience || '',
+      valueProposition: card.fields?.valueProposition || '',
+    };
+    
+    const status = card.status;
     const fields = [
       {
-        key: 'description' as const,
+        key: 'pitch' as const,
         label: 'Descrição da Ideia',
         placeholder: 'Descreva sua ideia de forma clara e objetiva...',
         icon: <Lightbulb className="h-4 w-4" />,
@@ -115,7 +120,7 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onAIGenerate(field.key)}
+                      onClick={() => onGenerate?.('generate')}
                       className="h-6 px-2 text-xs"
                     >
                       <Sparkles className="h-3 w-3 mr-1" />
@@ -124,7 +129,12 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                   </div>
                   <Textarea
                     value={idea[field.key] || ''}
-                    onChange={(e) => onUpdate(field.key, e.target.value)}
+                    onChange={(e) => {
+                      if (onUpdate) {
+                        const updatedFields = { ...card.fields, [field.key]: e.target.value };
+                        onUpdate(updatedFields);
+                      }
+                    }}
                     placeholder={field.placeholder}
                     rows={3}
                     className="resize-none"
