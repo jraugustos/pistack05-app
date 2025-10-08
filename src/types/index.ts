@@ -59,6 +59,17 @@ export interface Card {
   updatedAt: Date;
 }
 
+// === Edge Types ===
+export interface Edge {
+  id: string;
+  projectId: string;
+  sourceCardId: string;
+  targetCardId: string;
+  label?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // === Graph Types ===
 export interface GraphNode {
   id: string;

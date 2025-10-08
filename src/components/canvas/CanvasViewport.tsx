@@ -85,8 +85,7 @@ export const CanvasViewport = React.forwardRef<HTMLDivElement, CanvasViewportPro
 
     // Zoom com scroll wheel
     const handleWheel = useCallback((e: React.WheelEvent) => {
-      e.preventDefault();
-      
+      // Não usar preventDefault em eventos de wheel (causa warning)
       const delta = e.deltaY * -0.001;
       const newZoom = Math.min(Math.max(0.1, viewport.zoom + delta), 3);
       

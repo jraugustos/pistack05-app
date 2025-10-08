@@ -67,10 +67,23 @@ export function useCards(projectId: string) {
     size?: { width: number; height: number };
   }) => {
     try {
+      // Converter position/size para x,y,w,h para a API
+      const apiUpdates: any = { ...updates };
+      if (updates.position) {
+        apiUpdates.x = updates.position.x;
+        apiUpdates.y = updates.position.y;
+        delete apiUpdates.position;
+      }
+      if (updates.size) {
+        apiUpdates.w = updates.size.width;
+        apiUpdates.h = updates.size.height;
+        delete apiUpdates.size;
+      }
+
       const res = await fetch(`/api/cards/${cardId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(apiUpdates),
       });
       if (!res.ok) throw new Error('Failed to update card');
       const json = await res.json();

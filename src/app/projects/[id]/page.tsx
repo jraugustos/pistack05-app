@@ -1,6 +1,6 @@
 import { createClerkSupabaseClientSsr } from '@/lib/supabase-ssr';
 import { CanvasPage } from '@/components/organisms/CanvasPage';
-import { mapSupabaseCards } from '@/lib/utils/mappers';
+import { mapSupabaseCards, mapSupabaseEdges } from '@/lib/utils/mappers';
 
 interface ProjectPageProps {
   params: { id: string };
@@ -12,13 +12,15 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
   const search = await searchParams;
   const supabase = await createClerkSupabaseClientSsr();
 
-  const [{ data: project }, { data: cards }] = await Promise.all([
+  const [{ data: project }, { data: cards }, { data: edges }] = await Promise.all([
     supabase.from('projects').select('*').eq('id', id).single(),
-    supabase.from('cards').select('*').eq('project_id', id)
+    supabase.from('cards').select('*').eq('project_id', id),
+    supabase.from('edges').select('*').eq('project_id', id)
   ]);
 
-  // Mapear cards do Supabase para o formato esperado
+  // Mapear cards e edges do Supabase para o formato esperado
   const mappedCards = cards ? mapSupabaseCards(cards) : [];
+  const mappedEdges = edges ? mapSupabaseEdges(edges) : [];
 
   // Fallback para desenvolvimento: se não encontrar projeto, renderiza stub
   const projectStub = project || ({
@@ -40,6 +42,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
       projectId={id}
       project={projectStub as any}
       cards={mappedCards}
+      edges={mappedEdges}
       isLoading={isLoading}
       onboarding={onboarding}
     />
