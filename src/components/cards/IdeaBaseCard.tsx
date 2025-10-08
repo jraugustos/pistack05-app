@@ -63,7 +63,10 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
       },
     ];
 
-    const completedFields = fields.filter(field => idea[field.key]?.trim()).length;
+    const completedFields = fields.filter(field => {
+      const value = idea[field.key];
+      return value && typeof value === 'string' && value.trim().length > 0;
+    }).length;
     const totalFields = fields.length;
     const completionPercentage = Math.round((completedFields / totalFields) * 100);
 

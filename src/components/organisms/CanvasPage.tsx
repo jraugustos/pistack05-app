@@ -272,13 +272,13 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
             <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div>
-              <h1 className="text-lg font-semibold text-text">{project.name}</h1>
-              <p className="text-sm text-text-dim flex items-center gap-2">
-                <Badge variant="secondary">{project.status}</Badge>
-                Canvas Livre
-              </p>
+          <div>
+            <h1 className="text-lg font-semibold text-text">{project.name}</h1>
+            <div className="text-sm text-text-dim flex items-center gap-2">
+              <Badge variant="secondary">{project.status}</Badge>
+              <span>Canvas Livre</span>
             </div>
+          </div>
           </div>
 
           <div className="flex items-center gap-2">
