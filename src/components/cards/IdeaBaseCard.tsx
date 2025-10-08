@@ -89,7 +89,6 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
           title="Ideia Base"
           status={status}
           stageKey="ideia-base"
-          onMenuAction={onMenuAction}
         />
 
         <CardBody>

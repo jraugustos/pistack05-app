@@ -95,7 +95,8 @@ function ReactFlowCanvasInner({
         setEdges((eds) => addEdge(params, eds));
         toast.success('Conexão criada! 🎉');
       } catch (error: any) {
-        if (error.message?.includes('já existe')) {
+        const errorMessage = error?.message || String(error);
+        if (errorMessage.includes('já existe')) {
           toast.info('Conexão já existe');
         } else {
           toast.error('Erro ao criar conexão');
