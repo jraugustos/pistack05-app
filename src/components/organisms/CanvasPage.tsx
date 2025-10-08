@@ -83,6 +83,15 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
       try {
         TelemetryService.checklistClickStage(target.stageKey, target.typeKey, { projectId });
         
+        // Se já existir o card, focar nele em vez de criar outro
+        const existing = cards.find(c => c.stageKey === target.stageKey && c.typeKey === target.typeKey);
+        if (existing) {
+          toast.info('Este card já existe. Focando nele.');
+          // Focar via prop para o ReactFlowCanvas
+          setSelectedCardId(existing.id);
+          return;
+        }
+
         // Calcular posição em cascade
         const position = getCascadePosition(
           cards.map(c => ({
@@ -324,6 +333,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
               projectId={projectId}
               initialCards={cards}
               initialEdges={edges}
+              focusCardId={selectedCardId || undefined}
               onCardUpdate={handleCardUpdate}
               onCardDelete={handleCardDelete}
               onCardGenerate={handleCardGenerate}

@@ -14,10 +14,15 @@ export function IdeaBaseNode({ data, selected }: NodeProps) {
   return (
     <div
       className={`
-        bg-bg border-2 rounded-lg shadow-lg transition-all
-        ${selected ? 'border-primary ring-2 ring-primary/30' : 'border-stroke'}
+        bg-bg border-2 rounded-lg shadow-lg transition-all relative
+        ${selected ? 'border-primary ring-2 ring-primary/30' : 'border-primary/60'}
       `}
+      style={{ boxShadow: '0 0 18px rgba(122, 162, 255, 0.25)' }}
     >
+      {/* Badge Origem */}
+      <div className="absolute -top-3 left-3 text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
+        Origem
+      </div>
       {/* Handle de saída (direita) - para conectar a outros cards */}
       <Handle
         type="source"

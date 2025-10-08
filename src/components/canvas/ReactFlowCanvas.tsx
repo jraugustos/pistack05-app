@@ -4,6 +4,7 @@ import React, { useCallback, useRef } from 'react';
 import ReactFlow, {
   Controls,
   Background,
+  MiniMap,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -36,6 +37,7 @@ interface ReactFlowCanvasProps {
   projectId: string;
   initialCards: Card[];
   initialEdges: PiStackEdge[];
+  focusCardId?: string;
   onCardUpdate: (cardId: string, fields: any) => void;
   onCardDelete: (cardId: string) => void;
   onCardGenerate: (cardId: string, mode: 'generate' | 'expand' | 'review') => void;
@@ -50,6 +52,7 @@ function ReactFlowCanvasInner({
   projectId,
   initialCards,
   initialEdges,
+  focusCardId,
   onCardUpdate,
   onCardDelete,
   onCardGenerate,
@@ -60,7 +63,7 @@ function ReactFlowCanvasInner({
   onNodePositionChange,
 }: ReactFlowCanvasProps) {
   const { toast } = useToastStore();
-  const { fitView } = useReactFlow();
+  const { fitView, getNode } = useReactFlow();
 
   // Handlers para passar aos nodes
   const handlers = {
@@ -169,6 +172,15 @@ function ReactFlowCanvasInner({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Focar card solicitado externamente
+  React.useEffect(() => {
+    if (!focusCardId) return;
+    const node = getNode(focusCardId);
+    if (node) {
+      fitView({ nodes: [node], padding: 0.25, duration: 300 });
+    }
+  }, [focusCardId, getNode, fitView]);
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -201,6 +213,26 @@ function ReactFlowCanvasInner({
         color="rgba(255, 255, 255, 0.05)"
         gap={16}
         variant={BackgroundVariant.Dots}
+      />
+
+      {/* MiniMap para navegação */}
+      <MiniMap
+        nodeStrokeColor={(n) => {
+          switch (n.type) {
+            case 'ideaBase':
+              return '#7AA2FF';
+            case 'scopeFeatures':
+              return '#5AD19A';
+            case 'techStack':
+              return '#8AD3FF';
+            default:
+              return '#242837';
+          }
+        }}
+        nodeColor={(n) => '#1A1D2E'}
+        maskColor="rgba(15,17,21,0.8)"
+        pannable
+        zoomable
       />
 
       {/* Hint de navegação */}
