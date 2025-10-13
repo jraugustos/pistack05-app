@@ -60,12 +60,16 @@ export interface Card {
 }
 
 // === Edge Types ===
+export type EdgeType = 'derives' | 'depends' | 'references';
+
 export interface Edge {
   id: string;
   projectId: string;
   sourceCardId: string;
   targetCardId: string;
   label?: string | null;
+  edgeType?: EdgeType; // Tipo de conexão (derives, depends, references)
+  color?: string; // Cor customizada (opcional)
   createdAt: Date;
   updatedAt: Date;
 }

@@ -28,6 +28,45 @@ export class AIGenerationService {
    * Gera conteúdo para um card baseado no modo
    */
   static async generate(request: AIGenerationRequest): Promise<AIGenerationResponse> {
+    // Verificar feature flag de agente
+    const agentEnabled = process.env.NEXT_PUBLIC_AGENT_ENABLED === 'true';
+    
+    if (agentEnabled) {
+      try {
+        return await this.generateViaAgent(request);
+      } catch (error) {
+        console.error('[AIGeneration] Agent failed, falling back to legacy:', error);
+        // Fallback para modo legacy em caso de erro
+      }
+    }
+
+    // Modo legacy (mock)
+    return await this.generateLegacy(request);
+  }
+
+  /**
+   * Gera conteúdo via Agent Builder (novo caminho)
+   */
+  private static async generateViaAgent(request: AIGenerationRequest): Promise<AIGenerationResponse> {
+    const { cardId, mode, prompt } = request;
+
+    // Buscar contexto do card
+    const { card, projectContext } = await ContextService.getCardContext(cardId);
+
+    // Construir mensagem para o agente
+    const message = prompt || `Por favor, ${mode === 'generate' ? 'gere' : mode === 'expand' ? 'expanda' : 'revise'} o conteúdo do card ${card.typeKey} com título "${card.title}". ${mode === 'generate' ? 'Crie campos completos e estruturados.' : mode === 'expand' ? 'Adicione mais detalhes aos campos existentes.' : 'Revise e sugira melhorias.'}`;
+
+    // Chamar agente via API (precisa de threadId, mas por simplicidade, criar um temporário ou usar existente)
+    // Por ora, retornar mock estruturado - a integração completa requer threadId gerenciado pelo frontend
+    
+    console.log('[AIGeneration] Agent mode not fully integrated yet, using legacy fallback');
+    return await this.generateLegacy(request);
+  }
+
+  /**
+   * Modo legacy: gera conteúdo usando mocks (fallback)
+   */
+  private static async generateLegacy(request: AIGenerationRequest): Promise<AIGenerationResponse> {
     const { cardId, mode, prompt } = request;
 
     // Buscar contexto do card e do projeto

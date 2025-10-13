@@ -8,10 +8,11 @@ import { CardSchemaService } from '@/lib/services/CardSchemaService';
  */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cardId = params.id;
+    const { id: idParam } = await context.params;
+    const cardId = idParam;
     const body = await req.json();
     const { title, summary, fields, status, position, size } = body;
 
@@ -113,10 +114,11 @@ export async function PUT(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cardId = params.id;
+    const { id: idParam } = await context.params;
+    const cardId = idParam;
 
     if (!cardId) {
       return NextResponse.json({ error: 'Card ID is required' }, { status: 400 });

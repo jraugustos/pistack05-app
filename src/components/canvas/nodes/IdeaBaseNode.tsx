@@ -14,15 +14,25 @@ export function IdeaBaseNode({ data, selected }: NodeProps) {
   return (
     <div
       className={`
-        bg-bg border-2 rounded-lg shadow-lg transition-all relative
-        ${selected ? 'border-primary ring-2 ring-primary/30' : 'border-primary/60'}
+        bg-bg border rounded-lg shadow-lg transition-all relative
+        ${selected ? 'border-primary/70 ring-1 ring-primary/40' : 'border-stroke/60'}
       `}
-      style={{ boxShadow: '0 0 18px rgba(122, 162, 255, 0.25)' }}
+      style={{ boxShadow: '0 0 14px rgba(122, 162, 255, 0.18)' }}
     >
-      {/* Badge Origem */}
-      <div className="absolute -top-3 left-3 text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
-        Origem
-      </div>
+      {/* Gradient border with smooth transition */}
+      <div
+        className={`pointer-events-none absolute -inset-[1px] rounded-lg -z-10 opacity-60`}
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(122,162,255,0.5), rgba(90,209,154,0.45), rgba(138,211,255,0.5))',
+          backgroundSize: '200% 200%',
+          animation: 'border-gradient 10s ease-in-out infinite',
+          WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          padding: '1px'
+        }}
+      />
       {/* Handle de saída (direita) - para conectar a outros cards */}
       <Handle
         type="source"
@@ -42,10 +52,12 @@ export function IdeaBaseNode({ data, selected }: NodeProps) {
       {/* Card original */}
       <IdeaBaseCard
         card={card}
+        cards={data.cards} // Array de todos os cards para verificar status
         onUpdate={(fields) => data.onUpdate?.(card.id, fields)}
         onGenerate={(mode) => data.onGenerate?.(card.id, mode)}
         onConfirmReady={() => data.onConfirmReady?.(card.id)}
         onChecklistClick={data.onChecklistClick}
+        onFocusCard={data.onFocusCard} // Callback para focar card
       />
     </div>
   );

@@ -8,6 +8,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        'border-gradient': {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+      },
+      animation: {
+        'border-gradient': 'border-gradient 8s ease-in-out infinite',
+      },
       colors: {
         // Neutros (Dark)
         bg: "var(--bg)",
@@ -55,6 +65,9 @@ const config: Config = {
       boxShadow: {
         "1": "var(--shadow-1)",
         "2": "var(--shadow-2)",
+      },
+      borderWidth: {
+        "3": "3px",
       },
     },
   },

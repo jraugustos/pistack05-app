@@ -1323,6 +1323,21 @@ textarea.error {
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
+  transition: filter 0.2s;
+}
+
+/* Node selecionado - highlight sutil */
+.react-flow__node.selected {
+  filter: drop-shadow(0 0 12px rgba(122, 162, 255, 0.4));
+}
+
+/* Node Ideia Base - destaque especial */
+.react-flow__node.node-idea-base {
+  filter: drop-shadow(0 0 16px rgba(122, 162, 255, 0.25));
+}
+
+.react-flow__node.node-idea-base.selected {
+  filter: drop-shadow(0 0 20px rgba(122, 162, 255, 0.5));
 }
 
 /* Edges - linhas de conexão */
@@ -1338,6 +1353,26 @@ textarea.error {
 
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: var(--primary);
+  stroke-width: 3;
+}
+
+/* Edges animadas para cards DRAFT */
+@keyframes dash-flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.react-flow__edge.edge-draft .react-flow__edge-path {
+  stroke: var(--warning);
+  stroke-dasharray: 8 4;
+  animation: dash-flow 1s linear infinite;
+}
+
+.react-flow__edge.edge-draft:hover .react-flow__edge-path {
   stroke-width: 3;
 }
 
@@ -1364,27 +1399,75 @@ textarea.error {
   border-color: #10b981;
 }
 
-/* Controls - botões de zoom */
+/* Controls - botões de zoom com glass effect */
 .react-flow__controls {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
   overflow: hidden;
+  background: rgba(21, 24, 33, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(36, 40, 55, 0.3);
 }
 
 .react-flow__controls-button {
-  background: var(--bg-soft);
-  border: 1px solid var(--stroke);
+  background: rgba(21, 24, 33, 0.6);
+  border: 1px solid rgba(36, 40, 55, 0.3);
   color: var(--text);
-  transition: background 0.2s;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
 .react-flow__controls-button:hover {
-  background: var(--bg-elev);
+  background: rgba(122, 162, 255, 0.2);
+  border-color: rgba(122, 162, 255, 0.5);
+  color: var(--primary);
+}
+
+.react-flow__controls-button:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 /* Background - grid */
 .react-flow__background {
   opacity: 0.4;
+}
+
+/* Animações customizadas para instruções e AI panel */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-bottom {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out;
 }
 
 /* Selection */
@@ -1402,4 +1485,23 @@ textarea.error {
 /* Panel (nosso hint de navegação) */
 .react-flow__panel {
   margin: 12px;
+}
+
+/* Glass Effect para AI Panel */
+.glass-effect {
+  background: rgba(21, 24, 33, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(36, 40, 55, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* MiniMap Glass Effect */
+.minimap-glass {
+  position: absolute !important;
+  bottom: 4rem !important;
+  left: 1rem !important;
+  z-index: 30 !important;
 }

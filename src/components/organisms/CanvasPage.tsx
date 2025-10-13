@@ -4,20 +4,25 @@ import * as React from 'react';
 import { Button, Badge } from '@/components/foundation';
 import { AIPanel, ProgressDrawer } from '@/components/molecules';
 import { OutputsModal } from '@/components/organisms/OutputsModal';
-import { ReactFlowCanvas } from '@/components/canvas/ReactFlowCanvas';
+import { ReactFlowCanvas, type ReactFlowCanvasHandle } from '@/components/canvas/ReactFlowCanvas';
 import { useCards } from '@/hooks/useCards';
 import { useCardsStore } from '@/lib/stores/useCardsStore';
 import { TelemetryService } from '@/lib/services/TelemetryService';
 import { GraphService } from '@/lib/services/GraphService';
 import { toast } from '@/lib/stores/useToastStore';
 import { getCascadePosition } from '@/lib/utils/reactFlowAdapters';
+import { cn } from '@/lib/utils';
 import { 
   Download, 
   Share2,
   ArrowLeft,
-  Eye
+  Eye,
+  Sparkles,
+  Trash2,
+  Image as ImageIcon
 } from 'lucide-react';
 import type { Project, Card, Edge } from '@/types';
+import { toPng } from 'html-to-image';
 
 export interface CanvasPageProps {
   projectId: string;
@@ -52,9 +57,32 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     const [aiMode, setAiMode] = React.useState<'generate' | 'expand' | 'review'>('generate');
     const [aiLoading, setAiLoading] = React.useState(false);
     const [aiDiff, setAiDiff] = React.useState<any>(null);
+    const [aiPanelOpen, setAiPanelOpen] = React.useState(false);
+    const agentEnabled = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_AGENT_ENABLED === 'true';
+    const [agentMessages, setAgentMessages] = React.useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+    const [agentThreadId, setAgentThreadId] = React.useState<string | null>(null);
+    const [isOrganizing, setIsOrganizing] = React.useState(false);
     
     // Edges state
     const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
+
+    // Ref para ReactFlowCanvas (auto-layout)
+    const canvasRef = React.useRef<ReactFlowCanvasHandle>(null);
+
+    // State para rastrear seleção múltipla
+    const [selectedCount, setSelectedCount] = React.useState(0);
+
+    // Atualizar contador de selecionados periodicamente
+    React.useEffect(() => {
+      const interval = setInterval(() => {
+        if (canvasRef.current) {
+          const selected = canvasRef.current.getSelectedNodes();
+          setSelectedCount(selected.length);
+        }
+      }, 200);
+
+      return () => clearInterval(interval);
+    }, []);
 
     // Inicializar cards do SSR
     React.useEffect(() => {
@@ -77,6 +105,31 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     React.useEffect(() => {
       setEdges(initialEdges);
     }, [initialEdges]);
+
+    // Inicializar agent session (threadId)
+    React.useEffect(() => {
+      async function initAgentSession() {
+        if (!agentEnabled) return;
+        
+        try {
+          const res = await fetch('/api/agent/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectId }),
+          });
+          
+          if (!res.ok) throw new Error('Failed to initialize agent session');
+          
+          const data = await res.json();
+          setAgentThreadId(data.threadId);
+          console.log('[Agent] Session initialized:', data.threadId);
+        } catch (error) {
+          console.error('[Agent] Failed to initialize session:', error);
+        }
+      }
+      
+      initAgentSession();
+    }, [projectId, agentEnabled]);
 
     // Handlers para cards
     const handleChecklistCreate = async (target: { stageKey: string; typeKey: string }) => {
@@ -155,6 +208,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
       try {
         setAiMode(mode);
         setAiLoading(true);
+        setAiPanelOpen(true); // Abrir painel quando IA for acionada
         const diff = await generateAI(cardId, mode);
         setAiDiff(diff);
         setSelectedCardId(cardId);
@@ -252,6 +306,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     const handleAIClose = () => {
       setAiDiff(null);
       setSelectedCardId(null);
+      setAiPanelOpen(false); // Fechar painel
     };
 
     // Outputs
@@ -270,66 +325,294 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
       }
     };
 
+    // Auto-Layout
+    const handleAutoLayout = () => {
+      if (canvasRef.current) {
+        setIsOrganizing(true);
+        canvasRef.current.applyAutoLayout();
+        toast.success('Layout organizado! ✨');
+        TelemetryService.track('canvas_auto_layout', { projectId, cardCount: cards.length });
+        
+        // Reset após animação
+        setTimeout(() => {
+          setIsOrganizing(false);
+        }, 500);
+      }
+    };
+
+    // Bulk Delete - deletar múltiplos cards selecionados
+    const handleBulkDelete = async () => {
+      if (!canvasRef.current) return;
+
+      const selectedNodes = canvasRef.current.getSelectedNodes();
+      if (selectedNodes.length === 0) {
+        toast.info('Nenhum card selecionado');
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Deseja realmente deletar ${selectedNodes.length} card(s) selecionado(s)? Esta ação não pode ser desfeita.`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        // Deletar todos os cards em paralelo
+        await Promise.all(
+          selectedNodes.map(node => deleteCard(node.id))
+        );
+
+        // Remover edges relacionadas
+        setEdges(prev => 
+          prev.filter(e => 
+            !selectedNodes.some(n => n.id === e.sourceCardId || n.id === e.targetCardId)
+          )
+        );
+
+        toast.success(`${selectedNodes.length} card(s) excluído(s) com sucesso! 🗑️`);
+        TelemetryService.track('canvas_bulk_delete', { projectId, count: selectedNodes.length });
+      } catch (err) {
+        console.error('Failed to bulk delete cards:', err);
+        toast.error('Erro ao deletar cards');
+      }
+    };
+
+    // Export PNG - exportar canvas como imagem
+    const handleExportPNG = async () => {
+      try {
+        toast.info('Gerando imagem...');
+
+        // Encontrar o elemento do viewport do React Flow
+        const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
+        
+        if (!viewport) {
+          toast.error('Canvas não encontrado');
+          return;
+        }
+
+        // Gerar imagem com alta qualidade (2x scale)
+        const dataUrl = await toPng(viewport, {
+          quality: 1.0,
+          pixelRatio: 2, // 2x para alta resolução
+          backgroundColor: '#0F1115', // bg color
+        });
+
+        // Criar link de download
+        const link = document.createElement('a');
+        link.download = `${project.name.replace(/\s+/g, '-').toLowerCase()}-canvas.png`;
+        link.href = dataUrl;
+        link.click();
+
+        toast.success('Canvas exportado como PNG! 📸');
+        TelemetryService.track('canvas_export_png', { projectId, cardCount: cards.length });
+      } catch (err) {
+        console.error('Failed to export canvas:', err);
+        toast.error('Erro ao exportar canvas');
+      }
+    };
+
+    // Agent: enviar mensagem (ChatKit headless)
+    const handleSendAgentMessage = async (text: string) => {
+      // Verificar se há threadId
+      if (!agentThreadId) {
+        toast.error('Sessão do agente não inicializada');
+        return;
+      }
+
+      try {
+        // Abrir painel quando enviar mensagem
+        setAiPanelOpen(true);
+        
+        // Append mensagem do usuário
+        setAgentMessages(prev => [...prev, { role: 'user', content: text }]);
+
+        // Descobrir typeKey do card focado (se houver)
+        const focusedCard = selectedCardId ? cards.find(c => c.id === selectedCardId) : undefined;
+        const typeKey = focusedCard?.typeKey || focusedCard?.type_key;
+
+        const res = await fetch('/api/agent/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            message: text,
+            threadId: agentThreadId,
+            cardId: selectedCardId,
+            typeKey,
+          }),
+        });
+        
+        if (!res.ok) throw new Error('Falha ao enviar mensagem ao agente');
+        
+        const data = await res.json();
+        
+        // Processar toolResults para sincronizar store
+        if (data.toolResults && Array.isArray(data.toolResults)) {
+          for (const tr of data.toolResults) {
+            console.log('[Agent] Processing tool result:', tr.tool, tr.result);
+            
+            if (tr.tool === 'create_card' && tr.result?.card) {
+              // Adicionar card ao store
+              useCardsStore.getState().addCard(tr.result.card);
+              toast.success('Card criado pelo agente');
+            } else if (tr.tool === 'update_card_fields' && tr.result?.cardId) {
+              // Atualizar card no store
+              const updatedCard = cards.find(c => c.id === tr.result.cardId);
+              if (updatedCard) {
+                useCardsStore.getState().updateCard(tr.result.cardId, {
+                  fields: tr.result.fields || tr.result.updates,
+                });
+                toast.success('Card atualizado pelo agente');
+              }
+            } else if (tr.tool === 'confirm_card_ready' && tr.result?.cardId) {
+              // Confirmar card como READY
+              useCardsStore.getState().updateCard(tr.result.cardId, {
+                status: 'READY',
+              });
+              toast.success('Card confirmado como READY');
+            } else if (tr.tool === 'create_edge' && tr.result?.edge) {
+              // Adicionar edge
+              setEdges(prev => [...prev, tr.result.edge]);
+              toast.success('Conexão criada pelo agente');
+            }
+          }
+        }
+        
+        // Processar mensagens do assistente
+        const assistantTexts: string[] = Array.isArray(data.messages)
+          ? data.messages.map((m: any) => String(m.content))
+          : [String(data.text || 'Ok')];
+        
+        setAgentMessages(prev => [
+          ...prev,
+          ...assistantTexts.map(t => ({ role: 'assistant' as const, content: t }))
+        ]);
+      } catch (err) {
+        setAgentMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: 'Ocorreu um erro ao processar a mensagem.' 
+        }]);
+        console.error('[Agent] error:', err);
+      }
+    };
+
     const readyCount = getReadyCount();
     const workPlanEnabled = readyCount >= 2;
 
     return (
-      <div ref={ref} className="h-screen flex flex-col bg-bg">
+      <div ref={ref} className="h-screen flex flex-col bg-bg overflow-hidden max-w-full">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-stroke bg-bg-soft">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          <div>
-            <h1 className="text-lg font-semibold text-text">{project.name}</h1>
-            <div className="text-sm text-text-dim flex items-center gap-2">
-              <Badge variant="secondary">{project.status}</Badge>
-              <span>Canvas Livre</span>
-            </div>
-          </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {onboarding && (
-              <div className="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm animate-pulse">
-                💡 Arraste cards, conecte-os pelas alças laterais!
+        <header className="relative overflow-hidden">
+          {/* Gradiente de fundo (padrão do projeto) */}
+          <div className="absolute inset-0 bg-[radial-gradient(1200px_400px_at_-10%_-50%,_rgba(122,162,255,0.25),_transparent_60%),radial-gradient(800px_300px_at_110%_-10%,_rgba(138,211,255,0.18),_transparent_60%)]"></div>
+          
+          <div className="relative flex items-center justify-between px-8 py-8 border-b border-stroke bg-bg-elev/80 backdrop-blur-sm">
+            <div className="flex items-center gap-6">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => window.history.back()}
+                className="hover:bg-bg/50 rounded-lg"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-text tracking-tight">{project.name}</h1>
+                <Badge
+                  variant={project.status === 'draft' ? 'draft' : project.status === 'active' ? 'primary' : 'warning'}
+                  className="capitalize"
+                >
+                  {project.status}
+                </Badge>
               </div>
-            )}
+            </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setProgressOpen(true)}
-              title="Ver progresso"
-            >
-              <Eye className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-3">
 
-            <Button
-              variant="default"
-              onClick={() => setOutputsOpen(true)}
-              disabled={!workPlanEnabled}
-              title={workPlanEnabled ? 'Gerar Work Plan' : 'Precisa de 2+ cards READY'}
-            >
-              📋 Work Plan {workPlanEnabled && '✅'}
-            </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setProgressOpen(true)}
+                  title="Ver progresso"
+                  className="hover:bg-bg/50 rounded-lg"
+                >
+                  <Eye className="w-5 h-5" />
+                </Button>
 
-            <Button variant="ghost" size="icon">
-              <Share2 className="w-5 h-5" />
-            </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleAutoLayout}
+                  disabled={isOrganizing || cards.length < 2}
+                  title="Organizar cards automaticamente"
+                  className="gap-2 hover:bg-bg/50 rounded-lg"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  {isOrganizing ? 'Organizando...' : 'Organizar'}
+                </Button>
 
-            <Button variant="ghost" size="icon">
-              <Download className="w-5 h-5" />
-            </Button>
+                {selectedCount > 1 && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleBulkDelete}
+                    title={`Deletar ${selectedCount} cards selecionados`}
+                    className="gap-2 text-danger hover:text-danger hover:bg-danger/10 rounded-lg"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Deletar {selectedCount}
+                  </Button>
+                )}
+
+                <Button
+                  variant="default"
+                  onClick={() => setOutputsOpen(true)}
+                  disabled={!workPlanEnabled}
+                  title={workPlanEnabled ? 'Gerar Work Plan' : 'Precisa de 2+ cards READY'}
+                  className="rounded-lg"
+                >
+                  📋 Work Plan {workPlanEnabled && '✅'}
+                </Button>
+
+                <Button variant="ghost" size="icon" title="Compartilhar (em breve)" className="hover:bg-bg/50 rounded-lg">
+                  <Share2 className="w-5 h-5" />
+                </Button>
+
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={handleExportPNG}
+                  title="Exportar canvas como PNG"
+                  className="hover:bg-bg/50 rounded-lg"
+                >
+                  <ImageIcon className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
           </div>
         </header>
 
         {/* Canvas + AIPanel */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden min-h-0">
           {/* React Flow Canvas */}
           <div className="flex-1 relative">
+            {/* AI Panel Toggle Button */}
+            {!aiPanelOpen && (
+              <div className="absolute top-4 right-4 z-40">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setAiPanelOpen(true)}
+                  className="glass-effect rounded-full w-12 h-12 bg-bg-elev/80 backdrop-blur-md border border-stroke/50 shadow-lg hover:bg-primary/20 hover:border-primary/50 transition-all duration-200"
+                  title="Abrir Assistente IA"
+                >
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </Button>
+              </div>
+            )}
+
             <ReactFlowCanvas
+              ref={canvasRef}
               projectId={projectId}
               initialCards={cards}
               initialEdges={edges}
@@ -345,13 +628,21 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
             />
           </div>
 
-          {/* AIPanel (sempre visível, mas pode estar em idle) */}
-          <div className="w-80 lg:w-96 border-l border-stroke bg-bg-soft">
+          {/* AIPanel como overlay (só visível quando aberto) */}
+          <div className={cn(
+            "absolute top-4 right-4 z-50 h-full pointer-events-auto transition-all duration-300 ease-out",
+            aiPanelOpen 
+              ? "opacity-100 translate-x-0 animate-slide-in-right" 
+              : "opacity-0 translate-x-full pointer-events-none"
+          )}>
             <AIPanel
               mode={aiMode}
               loading={aiLoading}
               prompt=""
               diff={aiDiff}
+              agentEnabled={agentEnabled}
+              messages={agentMessages}
+              onSendMessage={agentEnabled ? handleSendAgentMessage : undefined}
               onModeChange={setAiMode}
               onApply={handleAIApply}
               onClose={handleAIClose}

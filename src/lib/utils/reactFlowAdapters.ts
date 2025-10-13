@@ -68,20 +68,40 @@ export function cardsToNodes(cards: Card[], handlers?: any): Node[] {
  * Converte um Edge do PiStack para ReactFlowEdge
  */
 export function edgeToReactFlowEdge(edge: Edge): ReactFlowEdge {
+  // Se tem edgeType, usar custom edge
+  const edgeType = edge.edgeType;
+  const useCustomEdge = !!edgeType;
+
+  // Cores por tipo
+  const colorMap: Record<string, string> = {
+    derives: '#7AA2FF',
+    depends: '#FFC24B',
+    references: '#8A90A6',
+  };
+
+  const color = edge.color || (edgeType ? colorMap[edgeType] : undefined) || 'var(--primary)';
+
   return {
     id: edge.id,
     source: edge.sourceCardId,
     target: edge.targetCardId,
     label: edge.label,
-    type: 'smoothstep', // ou 'bezier', 'straight', 'step'
-    animated: true, // animação sutil
+    type: useCustomEdge ? 'custom' : 'smoothstep',
+    animated: !useCustomEdge, // Animação apenas para edges simples
+    data: useCustomEdge
+      ? {
+          edgeType: edge.edgeType,
+          label: edge.label,
+          color: edge.color,
+        }
+      : undefined,
     style: {
-      stroke: 'var(--primary)',
+      stroke: color,
       strokeWidth: 2,
     },
     markerEnd: {
       type: 'arrowclosed' as const,
-      color: 'var(--primary)',
+      color: color,
     },
   };
 }

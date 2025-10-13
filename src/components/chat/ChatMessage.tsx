@@ -76,8 +76,8 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
               )}
             </div>
 
-            {/* Spacer for user messages */}
-            {!isBot && <div className="flex-shrink-0 w-8" />}
+            {/* Spacer reduzido ao mínimo solicitado */}
+            {!isBot && <div className="flex-shrink-0 w-2" />}
           </div>
 
           {/* Additional Content (options, cards, etc) */}

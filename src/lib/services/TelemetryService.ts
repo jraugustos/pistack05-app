@@ -82,6 +82,51 @@ class TelemetryServiceClass {
   }
 
   /**
+   * Eventos de Agente IA
+   */
+  agentMessage(event: { 
+    projectId: string; 
+    userId?: string; 
+    message: string; 
+    latency: number; 
+    tokensUsed?: number;
+  }) {
+    this.track('agent_message', {
+      message_length: event.message.length,
+      latency_ms: event.latency,
+      tokens_used: event.tokensUsed || 0,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  agentToolCall(event: {
+    projectId: string;
+    userId?: string;
+    toolName: string;
+    success: boolean;
+    duration: number;
+    error?: string;
+  }) {
+    this.track('agent_tool_call', {
+      tool_name: event.toolName,
+      success: event.success,
+      duration_ms: event.duration,
+      error: event.error,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  agentError(event: {
+    projectId: string;
+    userId?: string;
+    error: string;
+    context?: Record<string, any>;
+  }) {
+    this.track('agent_error', {
+      error: event.error,
+      ...event.context,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  /**
    * Flush events para backend (stub)
    */
   private async flush() {
