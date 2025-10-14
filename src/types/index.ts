@@ -32,6 +32,8 @@ export type StageKey =
 
 export type CardTypeKey =
   | 'idea.base'
+  | 'idea.enricher'
+  | 'idea.target-audience'
   | 'understanding.discovery'
   | 'understanding.value-prop'
   | 'scope.features'
@@ -163,5 +165,23 @@ export interface ChecklistItem {
 // === Component Props Types ===
 export interface BaseComponentProps {
   className?: string;
+}
+
+// === IdeaEnricher Fields ===
+export interface IdeaEnricherFields {
+  whatWeWantToCreate: string; // O que queremos criar
+  problemSolved: string; // Problema/dor que resolve
+  proposedSolution: string; // Solução proposta
+  constraintsAssumptions: string; // Restrições e suposições
+}
+
+// === TargetAudience Fields ===
+export interface TargetAudienceFields {
+  primaryAudience: string; // Público principal
+  secondaryAudience: string; // Público secundário
+  demographics: string; // Demografia (idade, localização, renda, etc)
+  psychographics: string; // Psicografia (interesses, valores, estilo de vida)
+  painPoints: string; // Dores e necessidades
+  behaviors: string; // Comportamentos e hábitos
 }
 

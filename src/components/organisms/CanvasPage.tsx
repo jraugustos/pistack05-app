@@ -56,6 +56,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     const [selectedCardId, setSelectedCardId] = React.useState<string | null>(null);
     const [aiMode, setAiMode] = React.useState<'generate' | 'expand' | 'review'>('generate');
     const [aiLoading, setAiLoading] = React.useState(false);
+    const [enrichmentLoading, setEnrichmentLoading] = React.useState(false); // Estado dedicado para enrichment
     const [aiDiff, setAiDiff] = React.useState<any>(null);
     const [aiPanelOpen, setAiPanelOpen] = React.useState(false);
     const agentEnabled = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_AGENT_ENABLED === 'true';
@@ -182,14 +183,139 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
       }
     };
 
-    const handleCardUpdate = async (cardId: string, fields: any) => {
+    // Handler para criar IdeaEnricher via agent
+    const handleEnrichIdea = async (ideaBaseCardId: string) => {
+      const startTime = Date.now();
+
       try {
-        await updateCard(cardId, { fields });
-        toast.success('Card atualizado');
+        // Verificar se já existe IdeaEnricher
+        const existing = cards.find(c => c.typeKey === 'idea.enricher');
+        if (existing) {
+          toast.info('Card de enriquecimento já existe. Focando nele.');
+          setSelectedCardId(existing.id);
+          return;
+        }
+
+        // Encontrar o IdeaBase card (pode ser pelo ID passado ou pelo tipo)
+        let ideaBaseCard = cards.find(c => c.id === ideaBaseCardId);
+        if (!ideaBaseCard) {
+          // Se não encontrou pelo ID, procurar pelo tipo
+          ideaBaseCard = cards.find(c => c.typeKey === 'idea.base');
+        }
+
+        if (!ideaBaseCard) {
+          toast.error('Card de ideia base não encontrado');
+          return;
+        }
+
+        // Verificar se a ideia base tem descrição
+        if (!ideaBaseCard.fields?.pitch || ideaBaseCard.fields.pitch.trim().length === 0) {
+          toast.error('A ideia base deve ter uma descrição para ser enriquecida');
+          return;
+        }
+
+        // Telemetria: início do enrichment
+        TelemetryService.enrichmentStarted({
+          projectId,
+          ideaBaseCardId: ideaBaseCard.id,
+        });
+
+        // Feedback visual progressivo
+        toast.info('Analisando ideia...');
+        setEnrichmentLoading(true);
+
+        // Feedback intermediário após 3s
+        const feedbackTimeout = setTimeout(() => {
+          if (enrichmentLoading) {
+            toast.info('Gerando insights estruturados...');
+          }
+        }, 3000);
+
+        // Chamar endpoint de enriquecimento automático
+        const res = await fetch('/api/agent/enrich-idea', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            ideaBaseCardId: ideaBaseCard.id
+          }),
+        });
+
+        clearTimeout(feedbackTimeout);
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Failed to enrich idea');
+        }
+
+        const { cardId, fields, duration } = await res.json();
+
+        // Telemetria: sucesso
+        TelemetryService.enrichmentCompleted({
+          projectId,
+          cardId,
+          duration: duration || Date.now() - startTime,
+          fieldsCount: Object.keys(fields || {}).length,
+        });
+
+        // Adicionar card ao store diretamente (evita reload)
+        const newCard: Card = {
+          id: cardId,
+          projectId,
+          stageKey: 'entendimento',
+          typeKey: 'idea.enricher',
+          title: 'Enriquecimento da Ideia',
+          summary: fields?.whatWeWantToCreate?.slice(0, 150) || '',
+          fields: fields || {},
+          status: 'DRAFT',
+          position: { x: 0, y: 0 }, // Será atualizado pelo canvas
+          size: { width: 400, height: 600 },
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        useCardsStore.getState().addCard(newCard);
+
+        // Focar no card criado
+        setSelectedCardId(cardId);
+
+        toast.success('Ideia enriquecida com sucesso! 🎉');
       } catch (err) {
-        console.error('Failed to update card:', err);
-        toast.error('Erro ao atualizar card');
+        console.error('Failed to enrich idea:', err);
+
+        // Telemetria: falha
+        TelemetryService.enrichmentFailed({
+          projectId,
+          reason: err instanceof Error ? err.message : 'Unknown error',
+          duration: Date.now() - startTime,
+        });
+
+        toast.error(err instanceof Error ? err.message : 'Erro ao enriquecer ideia');
+      } finally {
+        setEnrichmentLoading(false);
       }
+    };
+
+    // Debounced update handler (500ms delay)
+    const debouncedUpdateRef = React.useRef<NodeJS.Timeout>();
+
+    const handleCardUpdate = async (cardId: string, fields: any) => {
+      // Limpar timeout anterior
+      if (debouncedUpdateRef.current) {
+        clearTimeout(debouncedUpdateRef.current);
+      }
+
+      // Agendar update após 500ms de inatividade
+      debouncedUpdateRef.current = setTimeout(async () => {
+        try {
+          await updateCard(cardId, { fields });
+          // Toast removido para evitar spam - update é silencioso
+        } catch (err) {
+          console.error('Failed to update card:', err);
+          toast.error('Erro ao atualizar card');
+        }
+      }, 500);
     };
 
     const handleCardDelete = async (cardId: string) => {
@@ -617,6 +743,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
               initialCards={cards}
               initialEdges={edges}
               focusCardId={selectedCardId || undefined}
+              enrichmentLoading={enrichmentLoading}
               onCardUpdate={handleCardUpdate}
               onCardDelete={handleCardDelete}
               onCardGenerate={handleCardGenerate}
@@ -625,6 +752,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
               onCreateEdge={handleCreateEdge}
               onDeleteEdge={handleDeleteEdge}
               onNodePositionChange={handleNodePositionChange}
+              onEnrichIdea={handleEnrichIdea}
             />
           </div>
 

@@ -11,10 +11,12 @@ import type { Card, Edge } from '@/types';
 export function getNodeType(typeKey: string): string {
   const typeMap: Record<string, string> = {
     'idea.base': 'ideaBase',
+    'idea.enricher': 'ideaEnricher',
+    'idea.target-audience': 'targetAudience',
     'scope.features': 'scopeFeatures',
     'tech.stack': 'techStack',
   };
-  
+
   return typeMap[typeKey] || 'default';
 }
 
@@ -29,6 +31,10 @@ export function cardToNode(
     onGenerate?: (cardId: string, mode: 'generate' | 'expand' | 'review') => void;
     onConfirmReady?: (cardId: string) => void;
     onChecklistClick?: (params: { stageKey: string; typeKey: string }) => void;
+    onEnrichIdea?: (ideaBaseCardId: string) => void;
+    onFocusCard?: (cardId: string) => void;
+    enrichmentLoading?: boolean;
+    cards?: Card[];
   } = {}
 ): Node {
   const position = card.position || { x: 80, y: 80 };
@@ -45,6 +51,10 @@ export function cardToNode(
       onGenerate: handlers.onGenerate,
       onConfirmReady: handlers.onConfirmReady,
       onChecklistClick: handlers.onChecklistClick,
+      onEnrichIdea: handlers.onEnrichIdea,
+      onFocusCard: handlers.onFocusCard,
+      enrichmentLoading: handlers.enrichmentLoading,
+      cards: handlers.cards,
     },
     // Configurações do React Flow
     draggable: true,

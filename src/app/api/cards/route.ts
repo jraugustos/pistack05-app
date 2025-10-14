@@ -29,6 +29,39 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
+    // Validações específicas para idea.enricher
+    if (type_key === 'idea.enricher') {
+      const supabase = await createClerkSupabaseClientSsr();
+      
+      // Verificar se já existe um idea.enricher no projeto
+      const { data: existingEnricher } = await supabase
+        .from('cards')
+        .select('id')
+        .eq('project_id', project_id)
+        .eq('type_key', 'idea.enricher')
+        .single();
+
+      if (existingEnricher) {
+        return NextResponse.json({ 
+          error: 'Já existe um card de enriquecimento neste projeto. Apenas um é permitido.' 
+        }, { status: 400 });
+      }
+
+      // Verificar se existe idea.base no projeto
+      const { data: ideaBase } = await supabase
+        .from('cards')
+        .select('id')
+        .eq('project_id', project_id)
+        .eq('type_key', 'idea.base')
+        .single();
+
+      if (!ideaBase) {
+        return NextResponse.json({ 
+          error: 'É necessário ter um card de ideia base antes de criar o enriquecimento.' 
+        }, { status: 400 });
+      }
+    }
+
     // Merge com defaults e valida schema
     const mergedFields = CardSchemaService.mergeWithDefaults(type_key, fields);
     const validation = CardSchemaService.validateFields(type_key, mergedFields);

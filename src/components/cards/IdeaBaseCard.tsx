@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Lightbulb, Sparkles, Target, Users, Circle, Clock, CheckCircle } from 'lucide-react';
-import { CardHeader, CardBody, CardFooter } from '@/components/molecules';
+import { Lightbulb, Sparkles, Target, Circle, Clock, CheckCircle } from 'lucide-react';
+import { CardBody, CardFooter } from '@/components/molecules';
 import { Button } from '@/components/foundation';
 import { Textarea } from '@/components/foundation';
 import { Badge } from '@/components/foundation';
+import { LoadingSpinner } from '@/components/foundation';
 import { cn } from '@/lib/utils';
 
 import type { Card } from '@/types';
@@ -11,16 +12,18 @@ import type { Card } from '@/types';
 export interface IdeaBaseCardProps {
   card: Card;
   cards?: Card[]; // Array de todos os cards para verificar status
-  onUpdate?: (fields: any) => void;
+  enrichmentLoading?: boolean; // Loading state para enriquecimento
+  onUpdate?: (fields: Record<string, unknown>) => void;
   onGenerate?: (mode: 'generate' | 'expand' | 'review') => void;
   onConfirmReady?: () => void;
   onChecklistClick?: (target: { stageKey: string; typeKey: string }) => void;
   onFocusCard?: (cardId: string) => void; // Nova prop para focar em card existente
+  onEnrichIdea?: () => void; // Nova prop para criar IdeaEnricher
   className?: string;
 }
 
 const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
-  ({ card, cards = [], onUpdate, onGenerate, onConfirmReady, onChecklistClick, onFocusCard, className }, ref) => {
+  ({ card, cards = [], enrichmentLoading = false, onUpdate, onGenerate, onConfirmReady, onChecklistClick, onFocusCard, onEnrichIdea, className }, ref) => {
     // Extrair dados dos fields do card
     const idea = {
       name: card.fields?.name || '',
@@ -39,8 +42,13 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
       return { status: 'in_progress' as const, cardId: existingCard.id };
     };
 
+    // Verificar se existe IdeaEnricher (não precisa estar READY)
+    const ideaEnricher = cards.find(c => c.typeKey === 'idea.enricher');
+    const isIdeaEnriched = !!ideaEnricher; // Apenas verifica se existe
+
     // Definir checklist com informações de cada etapa
     const checklistItems = [
+      { stageKey: 'ideia-base', typeKey: 'idea.target-audience', label: 'Público-Alvo', description: 'Defina quem é o público' },
       { stageKey: 'escopo', typeKey: 'scope.features', label: 'Funcionalidades', description: 'Defina as features principais' },
       { stageKey: 'tech', typeKey: 'tech.stack', label: 'Tech Stack', description: 'Escolha as tecnologias' },
     ];
@@ -64,20 +72,16 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
       return value && typeof value === 'string' && value.trim().length > 0;
     }).length;
     const totalFields = fields.length;
-    const completionPercentage = Math.round((completedFields / totalFields) * 100);
 
     return (
       <div
         ref={ref}
         className={cn(
+          'idea-base-card',
           'bg-bg-elev rounded-lg overflow-hidden',
-          'border border-stroke',
           'transition-all duration-200',
           className
         )}
-        style={{
-          boxShadow: '0 0 20px rgba(122, 162, 255, 0.3)',
-        }}
       >
         <div className="flex items-center justify-between p-4 border-b border-stroke bg-gradient-to-r from-primary/10 to-transparent">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -121,20 +125,22 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                       {field.label}
                       {field.required && <span className="text-danger">*</span>}
                     </label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onGenerate?.('generate')}
-                      className="h-6 px-2 text-xs"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1" />
-                      IA
-                    </Button>
+                    {onGenerate && status !== 'READY' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onGenerate?.('generate')}
+                        className="h-6 px-2 text-xs"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        IA
+                      </Button>
+                    )}
                   </div>
                   <Textarea
                     value={idea[field.key] || ''}
                     onChange={(e) => {
-                      if (onUpdate) {
+                      if (onUpdate && status !== 'READY') {
                         const updatedFields = { ...card.fields, [field.key]: e.target.value };
                         onUpdate(updatedFields);
                       }
@@ -142,10 +148,46 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                     placeholder={field.placeholder}
                     rows={3}
                     className="resize-none"
+                    disabled={status === 'READY'}
                   />
                 </div>
               ))}
             </div>
+
+            {/* Botão Enriquecer Ideia */}
+            {!ideaEnricher && onEnrichIdea && status !== 'READY' && (
+              <div className="flex justify-center">
+                <Button
+                  onClick={onEnrichIdea}
+                  variant="primary"
+                  className="w-full"
+                  disabled={enrichmentLoading}
+                >
+                  {enrichmentLoading ? (
+                    <>
+                      <LoadingSpinner className="h-4 w-4 mr-2" />
+                      Enriquecendo...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Enriquecer Ideia
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Mensagem quando ideia base está READY */}
+            {status === 'READY' && (
+              <div className="flex justify-center">
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 w-full">
+                  <p className="text-xs text-primary text-center">
+                    <span className="font-medium">Ideia base confirmada</span> - Não pode ser alterada pois é a fundação do projeto
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Stage Checklist */}
             {typeof onChecklistClick === 'function' && (
@@ -186,6 +228,10 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                         variant={itemStatus.status === 'pending' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => {
+                          if (!isIdeaEnriched) {
+                            // Bloquear se ideia não foi enriquecida
+                            return;
+                          }
                           if (itemStatus.status === 'pending') {
                             // Criar novo card
                             onChecklistClick({ stageKey: item.stageKey, typeKey: item.typeKey });
@@ -196,8 +242,10 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                         }}
                         className={cn(
                           'w-full justify-start gap-3 h-auto py-3 px-3 rounded-lg',
-                          itemStatus.status !== 'pending' && 'hover:bg-bg-elev/50'
+                          itemStatus.status !== 'pending' && 'hover:bg-bg-elev/50',
+                          !isIdeaEnriched && 'opacity-50 cursor-not-allowed'
                         )}
+                        disabled={!isIdeaEnriched}
                       >
                         <StatusIcon className={cn('w-4 h-4', iconColor)} />
                         <div className="flex-1 text-left">
@@ -209,9 +257,18 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
                   })}
                 </div>
 
-                <p className="text-xs text-text-dim mt-6 pt-2 flex items-center gap-1">
-                  <Lightbulb className="w-3 h-3" />
-                  Adicione 2+ cards para habilitar o Work Plan
+                <p className="text-xs text-text-dim mt-6 pt-12 flex items-center gap-2">
+                  {!isIdeaEnriched ? (
+                    <>
+                      <Target className="w-3 h-3 flex-shrink-0" />
+                      <span>Enriqueça para desbloquear as próximas etapas</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lightbulb className="w-3 h-3 flex-shrink-0" />
+                      <span>Adicione 2+ cards para habilitar o Work Plan</span>
+                    </>
+                  )}
                 </p>
               </div>
             )}
@@ -229,10 +286,29 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
           </div>
         </CardBody>
 
-        <CardFooter
-          updatedAt={new Date()}
-          aiGenerated={completedFields > 0}
-        />
+        <CardFooter>
+          <div className="flex justify-between items-center">
+            <div className="text-xs text-text-dim">
+              {totalFields - completedFields} campos obrigatórios restantes
+            </div>
+            {onConfirmReady && status !== 'READY' && completedFields === totalFields && (
+              <Button
+                onClick={onConfirmReady}
+                variant="primary"
+                className="flex items-center gap-2"
+              >
+                <Lightbulb className="h-4 w-4" />
+                Confirmar Ideia Base
+              </Button>
+            )}
+            {status === 'READY' && (
+              <div className="flex items-center gap-2 text-success">
+                <span className="text-success">✓</span>
+                <span className="text-xs font-medium">Ideia Base Confirmada</span>
+              </div>
+            )}
+          </div>
+        </CardFooter>
       </div>
     );
   }

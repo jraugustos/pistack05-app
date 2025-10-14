@@ -1331,13 +1331,28 @@ textarea.error {
   filter: drop-shadow(0 0 12px rgba(122, 162, 255, 0.4));
 }
 
-/* Node Ideia Base - destaque especial */
+/* Node Ideia Base - destaque especial com borda branca */
 .react-flow__node.node-idea-base {
   filter: drop-shadow(0 0 16px rgba(122, 162, 255, 0.25));
 }
 
 .react-flow__node.node-idea-base.selected {
   filter: drop-shadow(0 0 20px rgba(122, 162, 255, 0.5));
+}
+
+/* Cards específicos - hierarquia visual */
+/* Ideia Base - card principal com borda branca destacada */
+.idea-base-card {
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow:
+    0 0 24px rgba(122, 162, 255, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Cards secundários - SEM borda, apenas sombra suave */
+.secondary-card {
+  border: none !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Edges - linhas de conexão */

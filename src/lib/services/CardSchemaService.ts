@@ -26,6 +26,26 @@ const CARD_SCHEMAS: Record<string, CardSchema> = {
       valueProposition: { type: 'string', default: '' },
     },
   },
+  'idea.enricher': {
+    typeKey: 'idea.enricher',
+    fields: {
+      whatWeWantToCreate: { type: 'string', default: '' },
+      problemSolved: { type: 'string', default: '' },
+      proposedSolution: { type: 'string', default: '' },
+      constraintsAssumptions: { type: 'string', default: '' },
+    },
+  },
+  'idea.target-audience': {
+    typeKey: 'idea.target-audience',
+    fields: {
+      primaryAudience: { type: 'string', required: true, default: '' },
+      secondaryAudience: { type: 'string', default: '' },
+      demographics: { type: 'string', required: true, default: '' },
+      psychographics: { type: 'string', required: true, default: '' },
+      painPoints: { type: 'string', required: true, default: '' },
+      behaviors: { type: 'string', default: '' },
+    },
+  },
   'scope.features': {
     typeKey: 'scope.features',
     fields: {

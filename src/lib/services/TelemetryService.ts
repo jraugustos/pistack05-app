@@ -127,6 +127,45 @@ class TelemetryServiceClass {
   }
 
   /**
+   * Eventos de Enriquecimento de Ideia
+   */
+  enrichmentStarted(event: {
+    projectId: string;
+    userId?: string;
+    ideaBaseCardId: string;
+  }) {
+    this.track('enrichment_started', {
+      idea_base_card_id: event.ideaBaseCardId,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  enrichmentCompleted(event: {
+    projectId: string;
+    userId?: string;
+    cardId: string;
+    duration: number;
+    fieldsCount: number;
+  }) {
+    this.track('enrichment_completed', {
+      card_id: event.cardId,
+      duration_ms: event.duration,
+      fields_count: event.fieldsCount,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  enrichmentFailed(event: {
+    projectId: string;
+    userId?: string;
+    reason: string;
+    duration?: number;
+  }) {
+    this.track('enrichment_failed', {
+      reason: event.reason,
+      duration_ms: event.duration || 0,
+    }, { projectId: event.projectId, userId: event.userId });
+  }
+
+  /**
    * Flush events para backend (stub)
    */
   private async flush() {

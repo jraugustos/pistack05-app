@@ -1,5 +1,63 @@
 # Resumo da Integração Agent Builder + ChatKit
 
+## 🎯 Idea Enricher - Fluxo Completo Implementado (v2.0)
+
+### ✅ Endpoint `/api/agent/enrich-idea` - Refatorado
+
+**Mudanças:**
+- ❌ **Removido**: Tools (`create_card`, `update_card_fields`, `create_edge`)
+- ✅ **Novo**: Agent retorna JSON puro estruturado
+- ✅ **Backend cria card** já preenchido com respostas do Agent
+- ✅ **Auto-conexão** IdeaBase → IdeaEnricher (edge type: `derives`)
+- ✅ **Timeout aumentado** para 90s (LLMs podem demorar)
+- ✅ **Validação de campos** obrigatórios
+- ✅ **Telemetria** integrada: `enrichmentStarted`, `enrichmentCompleted`, `enrichmentFailed`
+
+**Fluxo:**
+1. Frontend: Click "Enriquecer Ideia" → Loading visual progressivo
+2. Backend: Envia ideia base para Agent Builder
+3. Agent: Analisa e retorna JSON estruturado com 6 campos
+4. Backend: Parse, valida e sanitiza JSON
+5. Backend: Cria card IdeaEnricher com `fields` já populado (status: DRAFT)
+6. Backend: Cria edge IdeaBase → IdeaEnricher automaticamente
+7. Frontend: Adiciona card ao store e foca nele
+8. Success: Toast "Ideia enriquecida! 🎉"
+
+**Campos Retornados:**
+```typescript
+interface IdeaEnricherFields {
+  whatWeWantToCreate: string;      // O que queremos criar (obrigatório)
+  problemSolved: string;           // Problema que resolve (obrigatório)
+  targetAudience: string;          // Público-alvo (obrigatório)
+  proposedSolution: string;        // Solução proposta (obrigatório)
+  constraintsAssumptions: string;  // Restrições e suposições
+  gapsAndMissingInfo: string;      // Lacunas e informações faltantes
+}
+```
+
+**Response do Endpoint:**
+```json
+{
+  "success": true,
+  "cardId": "uuid-do-card-criado",
+  "fields": { ...IdeaEnricherFields },
+  "threadId": "thread_abc123",
+  "duration": 5230
+}
+```
+
+**Feedback Visual:**
+- Inicial: "Analisando ideia..."
+- Após 3s: "Gerando insights estruturados..."
+- Sucesso: "Ideia enriquecida com sucesso! 🎉"
+
+**Telemetria:**
+- `enrichmentStarted` - Início do processo
+- `enrichmentCompleted` - Sucesso (inclui duration, fieldsCount)
+- `enrichmentFailed` - Falha (inclui reason, duration)
+
+---
+
 ## ✅ Implementado
 
 ### 1. Session Management (`/api/agent/session`)

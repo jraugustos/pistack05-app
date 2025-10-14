@@ -25,6 +25,8 @@ import { Info, X } from 'lucide-react';
 
 // Node types
 import { IdeaBaseNode } from './nodes/IdeaBaseNode';
+import { IdeaEnricherNode } from './nodes/IdeaEnricherNode';
+import { TargetAudienceNode } from './nodes/TargetAudienceNode';
 import { ScopeFeaturesNode } from './nodes/ScopeFeaturesNode';
 import { TechStackNode } from './nodes/TechStackNode';
 
@@ -33,6 +35,8 @@ import { CustomEdge } from './edges/CustomEdge';
 
 const nodeTypes = {
   ideaBase: IdeaBaseNode,
+  ideaEnricher: IdeaEnricherNode,
+  targetAudience: TargetAudienceNode,
   scopeFeatures: ScopeFeaturesNode,
   techStack: TechStackNode,
 };
@@ -46,6 +50,7 @@ interface ReactFlowCanvasProps {
   initialCards: Card[];
   initialEdges: PiStackEdge[];
   focusCardId?: string;
+  enrichmentLoading?: boolean; // Loading state para enriquecimento
   onCardUpdate: (cardId: string, fields: any) => void;
   onCardDelete: (cardId: string) => void;
   onCardGenerate: (cardId: string, mode: 'generate' | 'expand' | 'review') => void;
@@ -54,6 +59,7 @@ interface ReactFlowCanvasProps {
   onCreateEdge: (sourceId: string, targetId: string) => Promise<void>;
   onDeleteEdge: (edgeId: string) => Promise<void>;
   onNodePositionChange: (cardId: string, x: number, y: number) => void;
+  onEnrichIdea?: (ideaBaseCardId: string) => void; // Callback para criar IdeaEnricher
   onAutoLayout?: () => void; // Callback quando auto-layout é aplicado
 }
 
@@ -68,6 +74,7 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
     initialCards,
     initialEdges,
     focusCardId,
+    enrichmentLoading = false,
     onCardUpdate,
     onCardDelete,
     onCardGenerate,
@@ -76,6 +83,7 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
     onCreateEdge,
     onDeleteEdge,
     onNodePositionChange,
+    onEnrichIdea,
     onAutoLayout,
   }, ref) => {
   const { toast } = useToastStore();
@@ -97,6 +105,8 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
     onConfirmReady: onCardConfirmReady,
     onChecklistClick,
     onFocusCard: handleFocusCard,
+    onEnrichIdea,
+    enrichmentLoading,
     cards: initialCards, // Passar todos os cards para verificar status
   };
 
@@ -223,11 +233,12 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
     // Atualizar handlers com cards mais recentes
     const updatedHandlers = {
       ...handlers,
+      enrichmentLoading,
       cards: initialCards,
     };
     setNodes(cardsToNodes(initialCards, updatedHandlers));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialCards]);
+  }, [initialCards, enrichmentLoading]);
 
   // Atualizar edges quando initialEdges ou initialCards mudar
   React.useEffect(() => {
