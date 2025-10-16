@@ -50,7 +50,8 @@ const IdeaBaseCard = React.forwardRef<HTMLDivElement, IdeaBaseCardProps>(
     const checklistItems = [
       { stageKey: 'ideia-base', typeKey: 'idea.target-audience', label: 'Público-Alvo', description: 'Defina quem é o público' },
       { stageKey: 'escopo', typeKey: 'scope.features', label: 'Funcionalidades', description: 'Defina as features principais' },
-      { stageKey: 'tech', typeKey: 'tech.stack', label: 'Tech Stack', description: 'Escolha as tecnologias' },
+      { stageKey: 'design', typeKey: 'design.interface', label: 'Interface', description: 'Defina o design e interface' },
+      { stageKey: 'tecnologia', typeKey: 'tech.stack', label: 'Tech Stack', description: 'Escolha as tecnologias' },
     ];
 
     // Calcular progresso geral

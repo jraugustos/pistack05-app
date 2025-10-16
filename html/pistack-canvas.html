@@ -1,0 +1,1140 @@
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas — PIStack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+    </style>
+  </head>
+  <body class="bg-[#0F1115] text-[#E6E9F2] antialiased overflow-x-hidden transition-colors duration-200" data-theme="dark">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0F1115]/80 backdrop-blur-xl transition-colors duration-200">
+      <nav class="h-14 px-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          <div class="flex items-center gap-3">
+            <div class="text-sm font-semibold tracking-tight">
+              App de Finanças
+            </div>
+            <div class="flex items-center gap-1.5 px-2 py-1 bg-[#5AD19A]/10 rounded-md">
+              <div class="w-1.5 h-1.5 rounded-full bg-[#5AD19A]"></div>
+              <span class="text-xs text-[#5AD19A]">Autosaved</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Theme Switcher -->
+          <div class="flex items-center gap-1 p-1 bg-white/5 rounded-lg mr-2">
+            <button id="theme-dark" class="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 transition-colors bg-white/10">
+              <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+            </button>
+            <button id="theme-light" class="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 transition-colors">
+              <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <button class="px-3 py-1.5 text-xs font-medium text-[#E6E9F2]/80 hover:text-[#E6E9F2] hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            Versions
+          </button>
+          <button class="px-3 py-1.5 text-xs font-medium text-[#E6E9F2]/80 hover:text-[#E6E9F2] hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1.5">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            Share
+          </button>
+          <div class="w-px h-6 bg-white/5 mx-1"></div>
+          <button class="px-3 py-1.5 text-xs font-medium bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg transition-colors flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            Export
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Canvas -->
+    <main class="pt-14 h-screen flex">
+      <!-- Left Sidebar - Stages -->
+      <aside class="w-64 border-r border-white/5 bg-[#0F1115] flex flex-col transition-colors duration-200">
+        <div class="p-4 border-b border-white/5">
+          <h2 class="text-xs font-semibold text-[#E6E9F2]/40 uppercase tracking-wider mb-3">
+            Etapas do Projeto
+          </h2>
+        </div>
+        <div class="flex-1 overflow-y-auto p-3 space-y-2">
+          <!-- Stage 1 -->
+          <button class="w-full text-left px-3 py-2.5 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/30 hover:border-[#7AA2FF]/50 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-2 h-2 rounded-full bg-[#7AA2FF]"></div>
+              <span class="text-xs font-medium text-[#7AA2FF]">Etapa 1</span>
+            </div>
+            <div class="text-sm font-medium">Ideia Base</div>
+            <div class="text-xs text-[#E6E9F2]/40 mt-1">6 cards</div>
+          </button>
+
+          <!-- Stage 2 -->
+          <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-2 h-2 rounded-full bg-[#5AD19A]"></div>
+              <span class="text-xs font-medium text-[#5AD19A]">Etapa 2</span>
+            </div>
+            <div class="text-sm font-medium">Entendimento</div>
+            <div class="text-xs text-[#E6E9F2]/40 mt-1">4 cards</div>
+          </button>
+
+          <!-- Stage 3 -->
+          <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-2 h-2 rounded-full bg-[#FFC24B]"></div>
+              <span class="text-xs font-medium text-[#FFC24B]">Etapa 3</span>
+            </div>
+            <div class="text-sm font-medium">Escopo</div>
+            <div class="text-xs text-[#E6E9F2]/40 mt-1">6 cards</div>
+          </button>
+
+          <!-- Stage 4 -->
+          <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-2 h-2 rounded-full bg-[#FF6B6B]"></div>
+              <span class="text-xs font-medium text-[#FF6B6B]">Etapa 4</span>
+            </div>
+            <div class="text-sm font-medium">Design &amp; Tech</div>
+            <div class="text-xs text-[#E6E9F2]/40 mt-1">6 cards</div>
+          </button>
+
+          <!-- Stage 5 -->
+          <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-2 h-2 rounded-full bg-[#9B8AFB]"></div>
+              <span class="text-xs font-medium text-[#9B8AFB]">Etapa 5</span>
+            </div>
+            <div class="text-sm font-medium">Planejamento</div>
+            <div class="text-xs text-[#E6E9F2]/40 mt-1">0 cards</div>
+          </button>
+        </div>
+
+        <div class="p-3 border-t border-white/5">
+          <button class="w-full px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Nova Etapa
+          </button>
+        </div>
+      </aside>
+
+      <!-- Canvas Area -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Canvas Toolbar -->
+        <div class="h-12 border-b border-white/5 px-4 flex items-center justify-between bg-[#0F1115] transition-colors duration-200">
+          <div class="flex items-center gap-2">
+            <button id="canvas-view-btn" class="px-3 py-1.5 text-xs font-medium bg-[#7AA2FF]/10 text-[#7AA2FF] rounded-lg flex items-center gap-1.5">
+              <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+              Canvas View
+            </button>
+            <button id="list-view-btn" class="px-3 py-1.5 text-xs font-medium text-[#E6E9F2]/60 hover:text-[#E6E9F2] hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1.5">
+              <i data-lucide="list" class="w-3.5 h-3.5"></i>
+              List View
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+              <i data-lucide="filter" class="w-4 h-4"></i>
+            </button>
+            <div class="w-px h-6 bg-white/5 mx-1"></div>
+            <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+              <i data-lucide="zoom-in" class="w-4 h-4"></i>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+              <i data-lucide="zoom-out" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Content -->
+        <div id="canvas-view" class="flex-1 overflow-auto bg-[#0A0B0E] p-6 transition-colors duration-200">
+          <div class="max-w-7xl mx-auto">
+            <!-- Stage Header -->
+            <div class="mb-6">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-3 h-3 rounded-full bg-[#7AA2FF]"></div>
+                <h2 class="text-xl font-semibold tracking-tight">
+                  Etapa 1: Ideia Base
+                </h2>
+              </div>
+              <p class="text-sm text-[#E6E9F2]/60">
+                Conceito inicial, problema, solução e KPIs do projeto
+              </p>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <!-- Card 1: Nome do Projeto -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="tag" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        Nome do Projeto
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <h3 class="font-semibold mb-2 text-lg">FinControl</h3>
+                <p class="text-sm text-[#E6E9F2]/60 mb-4">
+                  App de controle financeiro pessoal com categorização
+                  inteligente
+                </p>
+                <div class="flex items-center gap-2 text-xs">
+                  <div class="flex items-center gap-1 text-[#E6E9F2]/40">
+                    <i data-lucide="calendar" class="w-3 h-3"></i>
+                    <span>Criado há 2 dias</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Pitch -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="message-square" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        Pitch
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#7AA2FF]"></i>
+                    </button>
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-[#E6E9F2]/80 mb-4 leading-relaxed">
+                  "Uma forma simples e intuitiva de entender para onde vai seu
+                  dinheiro, com insights automáticos que ajudam você a
+                  economizar mais."
+                </p>
+                <div class="flex items-center gap-2">
+                  <button class="px-2.5 py-1 bg-white/5 hover:bg-white/10 rounded text-xs transition-colors">
+                    Expand
+                  </button>
+                  <button class="px-2.5 py-1 bg-white/5 hover:bg-white/10 rounded text-xs transition-colors">
+                    Refine
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 3: Problema -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="alert-circle" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        Problema
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#7AA2FF]"></i>
+                    </button>
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-[#E6E9F2]/80 mb-3 leading-relaxed">
+                  Pessoas têm dificuldade em acompanhar gastos mensais, não
+                  sabem onde estão gastando demais e não conseguem criar hábitos
+                  de economia sustentáveis.
+                </p>
+                <div class="space-y-2">
+                  <div class="text-xs text-[#E6E9F2]/40">Dores principais:</div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                      Falta de visibilidade
+                    </span>
+                    <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                      Trabalho manual
+                    </span>
+                    <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                      Desmotivação
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Solução -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="lightbulb" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        Solução
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#7AA2FF]"></i>
+                    </button>
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-[#E6E9F2]/80 mb-3 leading-relaxed">
+                  App mobile com categorização automática de gastos via IA,
+                  dashboard visual e sugestões personalizadas de economia
+                  baseadas no comportamento do usuário.
+                </p>
+                <div class="space-y-2">
+                  <div class="text-xs text-[#E6E9F2]/40">Diferenciais:</div>
+                  <ul class="space-y-1 text-xs text-[#E6E9F2]/70">
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                      <span>Categorização automática com IA</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                      <span>Insights em linguagem natural</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i data-lucide="check" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                      <span>Gamificação de metas</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Card 5: Público-Alvo -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="users" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        Público-Alvo
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#7AA2FF]"></i>
+                    </button>
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <div>
+                    <div class="text-sm font-medium mb-1.5">Primário</div>
+                    <p class="text-xs text-[#E6E9F2]/70">
+                      Jovens profissionais 25-35 anos, renda entre R$ 3-8k, com
+                      smartphone e contas bancárias digitais
+                    </p>
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium mb-1.5">Secundário</div>
+                    <p class="text-xs text-[#E6E9F2]/70">
+                      Autônomos e freelancers que precisam organizar receitas e
+                      despesas variáveis
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 6: KPIs -->
+              <div class="bg-[#151821] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-all hover:shadow-lg hover:shadow-[#7AA2FF]/5 group">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                      <i data-lucide="trending-up" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs text-[#7AA2FF] font-medium">
+                        KPIs Iniciais
+                      </div>
+                    </div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                    <span class="text-xs text-[#E6E9F2]/70">
+                      Usuários Ativos (MAU)
+                    </span>
+                    <span class="text-xs font-semibold">10k</span>
+                  </div>
+                  <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                    <span class="text-xs text-[#E6E9F2]/70">Retenção D7</span>
+                    <span class="text-xs font-semibold">40%</span>
+                  </div>
+                  <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                    <span class="text-xs text-[#E6E9F2]/70">
+                      Transações/mês
+                    </span>
+                    <span class="text-xs font-semibold">30+</span>
+                  </div>
+                  <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                    <span class="text-xs text-[#E6E9F2]/70">NPS</span>
+                    <span class="text-xs font-semibold">50+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Card Button -->
+            <button class="w-full max-w-xs px-4 py-3 border-2 border-dashed border-white/10 hover:border-[#7AA2FF]/30 rounded-xl text-sm font-medium text-[#E6E9F2]/60 hover:text-[#7AA2FF] transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Adicionar Card
+            </button>
+
+            <!-- Next Stage: Entendimento -->
+            <div class="mt-12 pt-8 border-t border-white/5">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div class="flex items-center gap-3 mb-2">
+                    <div class="w-3 h-3 rounded-full bg-[#5AD19A]"></div>
+                    <h2 class="text-xl font-semibold tracking-tight">
+                      Etapa 2: Entendimento
+                    </h2>
+                  </div>
+                  <p class="text-sm text-[#E6E9F2]/60">
+                    Hipóteses, personas e proposta de valor
+                  </p>
+                </div>
+              </div>
+
+              <!-- Etapa 2 Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <!-- Card: Hipóteses de Validação -->
+                <div class="bg-[#151821] rounded-xl border border-[#5AD19A]/30 p-5 hover:border-[#5AD19A]/50 transition-all hover:shadow-lg hover:shadow-[#5AD19A]/5 group">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                        <i data-lucide="clipboard-check" class="w-4 h-4 text-[#5AD19A]"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs text-[#5AD19A] font-medium">
+                          Hipóteses de Validação
+                        </div>
+                      </div>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="space-y-2">
+                      <div class="flex items-start gap-2">
+                        <div class="w-1 h-1 rounded-full bg-[#5AD19A] mt-1.5"></div>
+                        <div class="flex-1">
+                          <p class="text-xs font-medium text-[#E6E9F2]/90 mb-1">
+                            H1: Problema
+                          </p>
+                          <p class="text-xs text-[#E6E9F2]/60">
+                            70% dos usuários não sabem quanto gastam por
+                            categoria
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <div class="w-1 h-1 rounded-full bg-[#5AD19A] mt-1.5"></div>
+                        <div class="flex-1">
+                          <p class="text-xs font-medium text-[#E6E9F2]/90 mb-1">
+                            H2: Solução
+                          </p>
+                          <p class="text-xs text-[#E6E9F2]/60">
+                            Categorização automática reduz fricção em 80%
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <div class="w-1 h-1 rounded-full bg-[#5AD19A] mt-1.5"></div>
+                        <div class="flex-1">
+                          <p class="text-xs font-medium text-[#E6E9F2]/90 mb-1">
+                            H3: Valor
+                          </p>
+                          <p class="text-xs text-[#E6E9F2]/60">
+                            Insights aumentam economia em 15% ao mês
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card: Persona Primária -->
+                <div class="bg-[#151821] rounded-xl border border-[#5AD19A]/30 p-5 hover:border-[#5AD19A]/50 transition-all hover:shadow-lg hover:shadow-[#5AD19A]/5 group">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                        <i data-lucide="user" class="w-4 h-4 text-[#5AD19A]"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs text-[#5AD19A] font-medium">
+                          Persona Primária
+                        </div>
+                      </div>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#5AD19A]"></i>
+                      </button>
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div>
+                      <h4 class="font-semibold mb-1">Marina, 28 anos</h4>
+                      <p class="text-xs text-[#E6E9F2]/60 mb-2">
+                        Designer em startup • R$ 5.5k/mês
+                      </p>
+                    </div>
+                    <div class="space-y-1.5">
+                      <div class="text-xs text-[#E6E9F2]/40">Objetivos:</div>
+                      <p class="text-xs text-[#E6E9F2]/70">
+                        Economizar para viagem, reduzir gastos com delivery,
+                        criar reserva de emergência
+                      </p>
+                    </div>
+                    <div class="space-y-1.5">
+                      <div class="text-xs text-[#E6E9F2]/40">Frustrações:</div>
+                      <p class="text-xs text-[#E6E9F2]/70">
+                        Planilhas confusas, esquece de anotar gastos, não
+                        consegue manter consistência
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card: Proposta de Valor -->
+                <div class="bg-[#151821] rounded-xl border border-[#5AD19A]/30 p-5 hover:border-[#5AD19A]/50 transition-all hover:shadow-lg hover:shadow-[#5AD19A]/5 group">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                        <i data-lucide="gem" class="w-4 h-4 text-[#5AD19A]"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs text-[#5AD19A] font-medium">
+                          Proposta de Valor
+                        </div>
+                      </div>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#5AD19A]"></i>
+                      </button>
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <p class="text-sm font-medium text-[#E6E9F2]/90 leading-relaxed">
+                      "Entenda seus gastos sem esforço e economize mais com
+                      insights que fazem sentido para você"
+                    </p>
+                    <div class="space-y-2">
+                      <div class="text-xs text-[#E6E9F2]/40 mb-1.5">
+                        Por que escolher o FinControl:
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <i data-lucide="zap" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                        <p class="text-xs text-[#E6E9F2]/70">
+                          Zero trabalho manual - IA faz tudo
+                        </p>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <i data-lucide="brain" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                        <p class="text-xs text-[#E6E9F2]/70">
+                          Insights personalizados e acionáveis
+                        </p>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <i data-lucide="trophy" class="w-3 h-3 text-[#5AD19A] mt-0.5"></i>
+                        <p class="text-xs text-[#E6E9F2]/70">
+                          Gamificação que motiva economia
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card: Benchmarking -->
+                <div class="bg-[#151821] rounded-xl border border-[#5AD19A]/30 p-5 hover:border-[#5AD19A]/50 transition-all hover:shadow-lg hover:shadow-[#5AD19A]/5 group">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#5AD19A]"></i>
+                      </div>
+                      <div>
+                        <div class="text-xs text-[#5AD19A] font-medium">
+                          Benchmarking
+                        </div>
+                      </div>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <button class="w-6 h-6 flex items-center justify-center hover:bg-white/5 rounded">
+                        <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="space-y-2">
+                      <div class="p-2 bg-white/5 rounded">
+                        <div class="flex items-center justify-between mb-1">
+                          <span class="text-xs font-medium">Organizze</span>
+                          <span class="text-xs text-[#E6E9F2]/40">Manual</span>
+                        </div>
+                        <p class="text-xs text-[#E6E9F2]/60">
+                          Foco em controle manual, sem IA
+                        </p>
+                      </div>
+                      <div class="p-2 bg-white/5 rounded">
+                        <div class="flex items-center justify-between mb-1">
+                          <span class="text-xs font-medium">Guiabolso</span>
+                          <span class="text-xs text-[#E6E9F2]/40">
+                            Automático
+                          </span>
+                        </div>
+                        <p class="text-xs text-[#E6E9F2]/60">
+                          Integração bancária, mas UX complexa
+                        </p>
+                      </div>
+                      <div class="p-2 bg-[#5AD19A]/10 border border-[#5AD19A]/20 rounded">
+                        <div class="flex items-center justify-between mb-1">
+                          <span class="text-xs font-medium text-[#5AD19A]">
+                            FinControl
+                          </span>
+                          <span class="text-xs text-[#5AD19A]">
+                            IA + Simples
+                          </span>
+                        </div>
+                        <p class="text-xs text-[#E6E9F2]/70">
+                          Auto + insights inteligentes + gamificação
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="w-full max-w-xs px-4 py-3 border-2 border-dashed border-white/10 hover:border-[#5AD19A]/30 rounded-xl text-sm font-medium text-[#E6E9F2]/60 hover:text-[#5AD19A] transition-colors flex items-center justify-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Adicionar Card
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View -->
+        <div id="list-view" class="flex-1 overflow-auto bg-[#0A0B0E] p-6 transition-colors duration-200 hidden">
+          <div class="max-w-5xl mx-auto">
+            <!-- Etapa 1 -->
+            <div class="mb-8">
+              <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+                <div class="w-3 h-3 rounded-full bg-[#7AA2FF]"></div>
+                <h2 class="text-lg font-semibold tracking-tight">
+                  Etapa 1: Ideia Base
+                </h2>
+                <span class="text-xs text-[#E6E9F2]/40">6 cards</span>
+              </div>
+
+              <div class="space-y-3">
+                <!-- List Item -->
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="tag" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            Nome do Projeto
+                          </div>
+                          <h3 class="font-semibold">FinControl</h3>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/60">
+                        App de controle financeiro pessoal com categorização
+                        inteligente
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="message-square" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            Pitch
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/70">
+                        "Uma forma simples e intuitiva de entender para onde vai
+                        seu dinheiro, com insights automáticos que ajudam você a
+                        economizar mais."
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="alert-circle" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            Problema
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/70 mb-2">
+                        Pessoas têm dificuldade em acompanhar gastos mensais,
+                        não sabem onde estão gastando demais e não conseguem
+                        criar hábitos de economia sustentáveis.
+                      </p>
+                      <div class="flex flex-wrap gap-1.5">
+                        <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                          Falta de visibilidade
+                        </span>
+                        <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                          Trabalho manual
+                        </span>
+                        <span class="px-2 py-1 bg-white/5 rounded text-xs">
+                          Desmotivação
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="lightbulb" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            Solução
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/70">
+                        App mobile com categorização automática de gastos via
+                        IA, dashboard visual e sugestões personalizadas de
+                        economia baseadas no comportamento do usuário.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="users" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            Público-Alvo
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <div class="space-y-2">
+                        <div>
+                          <div class="text-xs font-medium mb-1">Primário</div>
+                          <p class="text-xs text-[#E6E9F2]/60">
+                            Jovens profissionais 25-35 anos, renda entre R$ 3-8k
+                          </p>
+                        </div>
+                        <div>
+                          <div class="text-xs font-medium mb-1">Secundário</div>
+                          <p class="text-xs text-[#E6E9F2]/60">
+                            Autônomos e freelancers
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#7AA2FF]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="trending-up" class="w-4 h-4 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#7AA2FF] font-medium mb-1">
+                            KPIs Iniciais
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2">
+                        <div class="text-xs">
+                          <span class="text-[#E6E9F2]/60">MAU:</span>
+                          <span class="font-semibold">10k</span>
+                        </div>
+                        <div class="text-xs">
+                          <span class="text-[#E6E9F2]/60">Retenção D7:</span>
+                          <span class="font-semibold">40%</span>
+                        </div>
+                        <div class="text-xs">
+                          <span class="text-[#E6E9F2]/60">Transações/mês:</span>
+                          <span class="font-semibold">30+</span>
+                        </div>
+                        <div class="text-xs">
+                          <span class="text-[#E6E9F2]/60">NPS:</span>
+                          <span class="font-semibold">50+</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Etapa 2 -->
+            <div class="mb-8">
+              <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+                <div class="w-3 h-3 rounded-full bg-[#5AD19A]"></div>
+                <h2 class="text-lg font-semibold tracking-tight">
+                  Etapa 2: Entendimento
+                </h2>
+                <span class="text-xs text-[#E6E9F2]/40">4 cards</span>
+              </div>
+
+              <div class="space-y-3">
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#5AD19A]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="clipboard-check" class="w-4 h-4 text-[#5AD19A]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#5AD19A] font-medium mb-1">
+                            Hipóteses de Validação
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <div class="space-y-1.5 text-sm text-[#E6E9F2]/70">
+                        <div>
+                          <span class="font-medium">H1:</span>
+                          70% dos usuários não sabem quanto gastam por categoria
+                        </div>
+                        <div>
+                          <span class="font-medium">H2:</span>
+                          Categorização automática reduz fricção em 80%
+                        </div>
+                        <div>
+                          <span class="font-medium">H3:</span>
+                          Insights aumentam economia em 15% ao mês
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#5AD19A]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="user" class="w-4 h-4 text-[#5AD19A]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#5AD19A] font-medium mb-1">
+                            Persona Primária
+                          </div>
+                          <h3 class="font-semibold">Marina, 28 anos</h3>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/60 mb-2">
+                        Designer em startup • R$ 5.5k/mês
+                      </p>
+                      <p class="text-xs text-[#E6E9F2]/70">
+                        Quer economizar para viagem mas esquece de anotar gastos
+                        e não consegue manter consistência em planilhas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#5AD19A]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="gem" class="w-4 h-4 text-[#5AD19A]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#5AD19A] font-medium mb-1">
+                            Proposta de Valor
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <p class="text-sm text-[#E6E9F2]/70">
+                        "Entenda seus gastos sem esforço e economize mais com
+                        insights que fazem sentido para você"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-[#151821] rounded-lg border border-white/5 p-4 hover:border-[#5AD19A]/30 transition-colors group">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#5AD19A]"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between mb-2">
+                        <div>
+                          <div class="text-xs text-[#5AD19A] font-medium mb-1">
+                            Benchmarking
+                          </div>
+                        </div>
+                        <button class="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded transition-opacity">
+                          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                      <div class="space-y-1.5 text-xs text-[#E6E9F2]/70">
+                        <div>
+                          <span class="font-medium">Organizze:</span>
+                          Manual, sem IA
+                        </div>
+                        <div>
+                          <span class="font-medium">Guiabolso:</span>
+                          Automático mas UX complexa
+                        </div>
+                        <div class="text-[#5AD19A]">
+                          <span class="font-medium">FinControl:</span>
+                          Auto + IA + Simples
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar - AI Assistant -->
+      <aside class="w-96 border-l border-white/5 bg-[#0F1115] flex flex-col transition-colors duration-200">
+        <div class="p-4 border-b border-white/5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7AA2FF]/20 to-[#5AD19A]/20 border border-[#7AA2FF]/30 flex items-center justify-center">
+              <i data-lucide="sparkles" class="w-5 h-5 text-[#7AA2FF]"></i>
+            </div>
+            <div>
+              <h3 class="font-semibold text-sm">AI Assistant</h3>
+              <p class="text-xs text-[#E6E9F2]/40">Powered by GPT-4</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Chat -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- AI Message -->
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#7AA2FF]"></i>
+            </div>
+            <div class="flex-1">
+              <div class="bg-white/5 rounded-lg p-3 text-sm leading-relaxed">
+                Olá! Estou aqui para ajudar com seu projeto. Notei que você
+                definiu bem a ideia base. Posso ajudar a:
+                <ul class="mt-2 space-y-1 text-xs text-[#E6E9F2]/70">
+                  <li>• Expandir o problema com dados de mercado</li>
+                  <li>• Sugerir features complementares</li>
+                  <li>• Criar personas detalhadas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Suggestions -->
+          <div class="space-y-2">
+            <div class="text-xs text-[#E6E9F2]/40 font-medium">
+              Sugestões rápidas:
+            </div>
+            <button class="w-full px-3 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-left text-sm transition-colors border border-white/5 flex items-start gap-2">
+              <i data-lucide="wand-2" class="w-4 h-4 text-[#7AA2FF] mt-0.5 flex-shrink-0"></i>
+              <span>Gerar hipóteses para validação do problema</span>
+            </button>
+            <button class="w-full px-3 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-left text-sm transition-colors border border-white/5 flex items-start gap-2">
+              <i data-lucide="users" class="w-4 h-4 text-[#5AD19A] mt-0.5 flex-shrink-0"></i>
+              <span>Criar 3 personas baseadas no público-alvo</span>
+            </button>
+            <button class="w-full px-3 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-left text-sm transition-colors border border-white/5 flex items-start gap-2">
+              <i data-lucide="target" class="w-4 h-4 text-[#FFC24B] mt-0.5 flex-shrink-0"></i>
+              <span>Expandir proposta de valor única</span>
+            </button>
+            <button class="w-full px-3 py-2.5 bg-white/5 hover:bg-white/10 rounded-lg text-left text-sm transition-colors border border-white/5 flex items-start gap-2">
+              <i data-lucide="list-checks" class="w-4 h-4 text-[#FF6B6B] mt-0.5 flex-shrink-0"></i>
+              <span>Sugerir MVP features essenciais</span>
+            </button>
+          </div>
+
+          <!-- Context Card -->
+          <div class="mt-6 p-3 bg-gradient-to-br from-[#7AA2FF]/5 to-[#5AD19A]/5 rounded-lg border border-white/5">
+            <div class="flex items-start gap-2 mb-2">
+              <i data-lucide="info" class="w-4 h-4 text-[#7AA2FF] mt-0.5"></i>
+              <div>
+                <div class="text-xs font-medium mb-1">Contexto do projeto</div>
+                <p class="text-xs text-[#E6E9F2]/60 leading-relaxed">
+                  A IA está analisando todos os cards da Etapa 1 para oferecer
+                  sugestões contextualizadas e consistentes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Input -->
+        <div class="p-4 border-t border-white/5">
+          <div class="relative">
+            <input type="text" placeholder="Pergunte algo ou peça ajuda..." class="w-full px-4 py-3 pr-12 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-[#E6E9F2]/40 focus:outline-none focus:border-[#7AA2FF]/50 transition-colors">
+            <button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#7AA2FF] hover:bg-[#6690E8] rounded-lg transition-colors">
+              <i data-lucide="send" class="w-4 h-4 text-white"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 mt-2 text-xs text-[#E6E9F2]/40">
+            <kbd class="px-1.5 py-0.5 bg-white/5 rounded text-[10px]">Cmd</kbd>
+            <span>+</span>
+            <kbd class="px-1.5 py-0.5 bg-white/5 rounded text-[10px]">K</kbd>
+            <span>para comandos rápidos</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      lucide.createIcons();
+
+      // Theme Switcher
+      const body = document.body;
+      const themeDark = document.getElementById('theme-dark');
+      const themeLight = document.getElementById('theme-light');
+
+      function setTheme(theme) {
+        body.setAttribute('data-theme', theme);
+
+        if (theme === 'dark') {
+          body.className = 'bg-[#0F1115] text-[#E6E9F2] antialiased overflow-x-hidden transition-colors duration-200';
+          themeDark.classList.add('bg-white/10');
+          themeLight.classList.remove('bg-black/10');
+        } else {
+          body.className = 'bg-white text-[#0F1115] antialiased overflow-x-hidden transition-colors duration-200';
+          themeLight.classList.add('bg-black/10');
+          themeDark.classList.remove('bg-white/10');
+        }
+      }
+
+      themeDark.addEventListener('click', () => setTheme('dark'));
+      themeLight.addEventListener('click', () => setTheme('light'));
+
+      // View Switcher
+      const canvasViewBtn = document.getElementById('canvas-view-btn');
+      const listViewBtn = document.getElementById('list-view-btn');
+      const canvasView = document.getElementById('canvas-view');
+      const listView = document.getElementById('list-view');
+
+      canvasViewBtn.addEventListener('click', () => {
+        canvasView.classList.remove('hidden');
+        listView.classList.add('hidden');
+        canvasViewBtn.className = 'px-3 py-1.5 text-xs font-medium bg-[#7AA2FF]/10 text-[#7AA2FF] rounded-lg flex items-center gap-1.5';
+        listViewBtn.className = 'px-3 py-1.5 text-xs font-medium text-[#E6E9F2]/60 hover:text-[#E6E9F2] hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1.5';
+        lucide.createIcons();
+      });
+
+      listViewBtn.addEventListener('click', () => {
+        canvasView.classList.add('hidden');
+        listView.classList.remove('hidden');
+        listViewBtn.className = 'px-3 py-1.5 text-xs font-medium bg-[#7AA2FF]/10 text-[#7AA2FF] rounded-lg flex items-center gap-1.5';
+        canvasViewBtn.className = 'px-3 py-1.5 text-xs font-medium text-[#E6E9F2]/60 hover:text-[#E6E9F2] hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1.5';
+        lucide.createIcons();
+      });
+    </script>
+  
+</body></html>

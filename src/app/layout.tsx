@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/foundation";
 import { TooltipProvider } from "@/components/foundation";
 import { ToastContainer } from "@/components/foundation/ToastContainer";
+import { ThemeProvider, ThemeScript } from "@/components/providers";
 import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({
@@ -25,13 +26,18 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="pt-BR" className={inter.variable}>
+      <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
+        <head>
+          <ThemeScript />
+        </head>
         <body className="antialiased">
-          <TooltipProvider delayDuration={300}>
-            {children}
-            <Toaster />
-            <ToastContainer />
-          </TooltipProvider>
+          <ThemeProvider>
+            <TooltipProvider delayDuration={300}>
+              {children}
+              <Toaster />
+              <ToastContainer />
+            </TooltipProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

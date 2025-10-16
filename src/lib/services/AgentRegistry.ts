@@ -3,7 +3,7 @@
  * Mantém configuração de agentes (Orchestrator + Domain Agents) e políticas.
  */
 
-export type AgentKind = 'orchestrator' | 'scope' | 'tech' | 'design' | 'plan' | 'enricher' | 'target-audience';
+export type AgentKind = 'orchestrator' | 'scope' | 'tech' | 'design' | 'interface' | 'plan' | 'enricher' | 'target-audience';
 
 export interface AgentConfig {
   id: string; // ID do agente no Agent Builder (quando disponível)
@@ -16,8 +16,17 @@ export interface AgentConfig {
 
 export class AgentRegistry {
   static get orchestrator(): AgentConfig {
+    const id = process.env.AGENT_ORCHESTRATOR_ID;
+
+    // Validar formato do ID - aceitar tanto asst_ quanto wf_ (Agent Builder)
+    if (id && !id.startsWith('asst_') && !id.startsWith('wf_')) {
+      console.warn(
+        `[AgentRegistry] AGENT_ORCHESTRATOR_ID deve começar com 'asst_' ou 'wf_', recebido: '${id.substring(0, 10)}...'`
+      );
+    }
+
     return {
-      id: process.env.AGENT_ORCHESTRATOR_ID || 'orchestrator.local',
+      id: id || 'orchestrator.local',
       kind: 'orchestrator',
       name: 'OrchestratorAgent',
       description: 'Coordena agentes por domínio e aplica políticas/gates',
@@ -84,12 +93,22 @@ export class AgentRegistry {
     };
   }
 
+  static get interface(): AgentConfig {
+    return {
+      id: process.env.AGENT_INTERFACE_ID || 'interface.local',
+      kind: 'interface',
+      name: 'InterfaceAgent',
+      description: 'Define interface, design system, componentes e UI/UX',
+      handlesTypeKeys: ['design.interface'],
+    };
+  }
+
   /**
    * Seleciona agente de domínio com base no typeKey do card
    */
   static selectDomainAgentByTypeKey(typeKey?: string): AgentConfig | null {
     if (!typeKey) return null;
-    const agents = [this.scope, this.tech, this.design, this.plan, this.enricher, this.targetAudience];
+    const agents = [this.scope, this.tech, this.design, this.plan, this.enricher, this.targetAudience, this.interface];
     return agents.find(a => a.handlesTypeKeys?.includes(typeKey)) || null;
   }
 }

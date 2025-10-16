@@ -81,12 +81,30 @@ const ScopeFeaturesCard = React.forwardRef<HTMLDivElement, ScopeFeaturesCardProp
                 {features.length} funcionalidades definidas
               </p>
             </div>
-            {isReady && (
-              <Badge variant="success">
-                <Check className="w-3 h-3" />
-                READY
+            <button
+              onClick={() => {
+                if (onConfirm && (features.length > 0 || isReady)) {
+                  onConfirm();
+                }
+              }}
+              disabled={features.length === 0 && !isReady}
+              className={cn(
+                'transition-all',
+                (features.length > 0 || isReady) ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-50'
+              )}
+              title={
+                isReady
+                  ? 'Clique para voltar para DRAFT'
+                  : features.length > 0
+                  ? 'Clique para marcar como READY'
+                  : 'Adicione pelo menos uma funcionalidade'
+              }
+            >
+              <Badge variant={isReady ? 'success' : 'draft'}>
+                {isReady && <Check className="w-3 h-3 mr-1" />}
+                {isReady ? 'READY' : 'DRAFT'}
               </Badge>
-            )}
+            </button>
           </div>
         </div>
 

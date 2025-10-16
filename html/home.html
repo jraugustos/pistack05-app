@@ -1,0 +1,445 @@
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIStack — Estruture suas ideias com IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#0F1115] text-[#E6E9F2] antialiased">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0F1115]/80 backdrop-blur-xl">
+        <nav class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <div class="text-lg font-semibold tracking-tight">PIStack</div>
+                <div class="hidden md:flex items-center gap-6 text-sm">
+                    <a href="#features" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Funcionalidades</a>
+                    <a href="#canvas" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Canvas</a>
+                    <a href="#outputs" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Outputs</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="hidden sm:block px-4 py-2 text-sm font-medium text-[#E6E9F2]/80 hover:text-[#E6E9F2] transition-colors">
+                    Entrar
+                </button>
+                <button class="px-4 py-2 text-sm font-medium bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg transition-colors">
+                    Começar Grátis
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl mx-auto text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 text-[#7AA2FF] text-sm font-medium mb-6">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Estruturação Colaborativa com IA
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-semibold tracking-tight mb-6">
+                    Transforme ideias em<br>planos executáveis
+                </h1>
+                <p class="text-lg text-[#E6E9F2]/60 mb-8 max-w-2xl mx-auto">
+                    Canvas modular alimentado por IA que organiza seu processo criativo. Da ideação à execução, com documentação estruturada e outputs automáticos.
+                </p>
+                <div class="flex items-center justify-center gap-4">
+                    <button class="px-6 py-3 bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+                        Iniciar Projeto
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                    <button class="px-6 py-3 bg-white/5 hover:bg-white/10 text-[#E6E9F2] rounded-lg font-medium transition-colors border border-white/10">
+                        Ver Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Preview -->
+            <div class="relative max-w-6xl mx-auto">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#7AA2FF]/20 via-[#5AD19A]/20 to-[#FFC24B]/20 blur-3xl opacity-30"></div>
+                <div class="relative bg-[#151821] rounded-2xl border border-white/10 p-8 shadow-2xl">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-3 h-3 rounded-full bg-[#FF6B6B]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#FFC24B]"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#5AD19A]"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Card 1 - Ideia Base -->
+                        <div class="bg-[#0F1115] rounded-xl border border-[#7AA2FF]/30 p-5 hover:border-[#7AA2FF]/50 transition-colors">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#7AA2FF]"></div>
+                                    <span class="text-xs font-medium text-[#7AA2FF]">Ideia Base</span>
+                                </div>
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-[#7AA2FF]/60"></i>
+                            </div>
+                            <h3 class="font-semibold mb-2">App de Finanças</h3>
+                            <p class="text-sm text-[#E6E9F2]/60 mb-4">Simplificar controle de gastos pessoais com categorização automática...</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full w-4/5 bg-[#7AA2FF] rounded-full"></div>
+                                </div>
+                                <span class="text-xs text-[#E6E9F2]/40">80%</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 - Entendimento -->
+                        <div class="bg-[#0F1115] rounded-xl border border-[#5AD19A]/30 p-5 hover:border-[#5AD19A]/50 transition-colors">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#5AD19A]"></div>
+                                    <span class="text-xs font-medium text-[#5AD19A]">Entendimento</span>
+                                </div>
+                                <i data-lucide="users" class="w-4 h-4 text-[#5AD19A]/60"></i>
+                            </div>
+                            <h3 class="font-semibold mb-2">Personas &amp; Proposta</h3>
+                            <p class="text-sm text-[#E6E9F2]/60 mb-4">Jovens profissionais 25-35 anos, buscam autonomia financeira...</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full w-3/5 bg-[#5AD19A] rounded-full"></div>
+                                </div>
+                                <span class="text-xs text-[#E6E9F2]/40">60%</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 - Escopo -->
+                        <div class="bg-[#0F1115] rounded-xl border border-[#FFC24B]/30 p-5 hover:border-[#FFC24B]/50 transition-colors">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#FFC24B]"></div>
+                                    <span class="text-xs font-medium text-[#FFC24B]">Escopo</span>
+                                </div>
+                                <i data-lucide="list-checks" class="w-4 h-4 text-[#FFC24B]/60"></i>
+                            </div>
+                            <h3 class="font-semibold mb-2">Funcionalidades</h3>
+                            <p class="text-sm text-[#E6E9F2]/60 mb-4">Dashboard, categorização automática, metas mensais...</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full w-2/5 bg-[#FFC24B] rounded-full"></div>
+                                </div>
+                                <span class="text-xs text-[#E6E9F2]/40">40%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Panel Preview -->
+                    <div class="mt-6 bg-gradient-to-br from-[#7AA2FF]/5 to-[#5AD19A]/5 rounded-lg border border-white/5 p-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-[#7AA2FF]"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium">AI Assistant</div>
+                                <div class="text-xs text-[#E6E9F2]/40">Pronto para expandir seu projeto</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium transition-colors border border-white/5">
+                                Generate
+                            </button>
+                            <button class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium transition-colors border border-white/5">
+                                Expand
+                            </button>
+                            <button class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium transition-colors border border-white/5">
+                                Review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-semibold tracking-tight mb-4">
+                    Tudo que você precisa em um só lugar
+                </h2>
+                <p class="text-lg text-[#E6E9F2]/60 max-w-2xl mx-auto">
+                    Canvas modular, IA contextual e outputs automáticos para acelerar seu processo de criação.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="layout-grid" class="w-6 h-6 text-[#7AA2FF]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Canvas Modular</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Cards inteligentes conectados que organizam cada etapa do seu projeto de forma visual e intuitiva.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="brain" class="w-6 h-6 text-[#5AD19A]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">IA Contextual</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Sugestões inteligentes, expansão de conteúdo e revisão automática baseada no contexto do projeto.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="file-text" class="w-6 h-6 text-[#FFC24B]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Outputs Automáticos</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Gere PRD, Work Plan e Prompt Pack prontos em minutos, diretamente do seu canvas.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="git-branch" class="w-6 h-6 text-[#FF6B6B]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Conexões Visuais</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Conecte cards para mostrar dependências e garantir consistência em todo o projeto.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="history" class="w-6 h-6 text-[#9B8AFB]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Versionamento</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Autosave automático e snapshots de versões para nunca perder seu trabalho.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6 hover:border-white/10 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="zap" class="w-6 h-6 text-[#7AA2FF]"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Atalhos de Teclado</h3>
+                    <p class="text-[#E6E9F2]/60 text-sm">
+                        Navegação rápida com comandos intuitivos para acelerar seu fluxo de trabalho.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Canvas Workflow -->
+    <section id="canvas" class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-semibold tracking-tight mb-4">
+                    Do conceito à execução
+                </h2>
+                <p class="text-lg text-[#E6E9F2]/60 max-w-2xl mx-auto">
+                    Estruture seu projeto em etapas claras, cada uma com cards específicos e suporte de IA.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <!-- Stage 1 -->
+                <div class="bg-gradient-to-br from-[#7AA2FF]/5 to-transparent rounded-xl border border-[#7AA2FF]/20 p-6">
+                    <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center mb-4">
+                        <span class="text-lg font-semibold text-[#7AA2FF]">1</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Ideia Base</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Nome, pitch, problema, público e KPIs iniciais.</p>
+                </div>
+
+                <!-- Stage 2 -->
+                <div class="bg-gradient-to-br from-[#5AD19A]/5 to-transparent rounded-xl border border-[#5AD19A]/20 p-6">
+                    <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center mb-4">
+                        <span class="text-lg font-semibold text-[#5AD19A]">2</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Entendimento</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Hipóteses, personas e proposta de valor.</p>
+                </div>
+
+                <!-- Stage 3 -->
+                <div class="bg-gradient-to-br from-[#FFC24B]/5 to-transparent rounded-xl border border-[#FFC24B]/20 p-6">
+                    <div class="w-10 h-10 rounded-lg bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center mb-4">
+                        <span class="text-lg font-semibold text-[#FFC24B]">3</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Escopo</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Funcionalidades e requisitos estruturados.</p>
+                </div>
+
+                <!-- Stage 4 -->
+                <div class="bg-gradient-to-br from-[#FF6B6B]/5 to-transparent rounded-xl border border-[#FF6B6B]/20 p-6">
+                    <div class="w-10 h-10 rounded-lg bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 flex items-center justify-center mb-4">
+                        <span class="text-lg font-semibold text-[#FF6B6B]">4</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Design &amp; Tech</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Fluxos, stack técnica e integrações.</p>
+                </div>
+
+                <!-- Stage 5 -->
+                <div class="bg-gradient-to-br from-[#9B8AFB]/5 to-transparent rounded-xl border border-[#9B8AFB]/20 p-6">
+                    <div class="w-10 h-10 rounded-lg bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 flex items-center justify-center mb-4">
+                        <span class="text-lg font-semibold text-[#9B8AFB]">5</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Planejamento</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Roadmap, métricas e critérios de lançamento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outputs Section -->
+    <section id="outputs" class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-semibold tracking-tight mb-4">
+                    Documentação pronta em minutos
+                </h2>
+                <p class="text-lg text-[#E6E9F2]/60 max-w-2xl mx-auto">
+                    Outputs automáticos gerados a partir do seu canvas, prontos para compartilhar com seu time.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Output 1 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors">
+                    <div class="h-32 bg-gradient-to-br from-[#7AA2FF]/20 to-[#7AA2FF]/5 border-b border-white/5 flex items-center justify-center">
+                        <i data-lucide="file-text" class="w-12 h-12 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">PRD — Product Requirements</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">
+                            Documento estruturado com visão, funcionalidades, requisitos e critérios de aceite.
+                        </p>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5">
+                            Ver Exemplo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output 2 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors">
+                    <div class="h-32 bg-gradient-to-br from-[#5AD19A]/20 to-[#5AD19A]/5 border-b border-white/5 flex items-center justify-center">
+                        <i data-lucide="gantt-chart" class="w-12 h-12 text-[#5AD19A]"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">Work Plan</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">
+                            Plano de trabalho com fases, tarefas, dependências e estimativas de tempo.
+                        </p>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5">
+                            Ver Exemplo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output 3 -->
+                <div class="bg-[#151821] rounded-xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors">
+                    <div class="h-32 bg-gradient-to-br from-[#FFC24B]/20 to-[#FFC24B]/5 border-b border-white/5 flex items-center justify-center">
+                        <i data-lucide="package" class="w-12 h-12 text-[#FFC24B]"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2">Prompt Pack</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">
+                            Conjunto de prompts otimizados para desenvolvimento, design e QA com IA.
+                        </p>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5">
+                            Ver Exemplo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl lg:text-4xl font-semibold tracking-tight mb-4">
+                Pronto para estruturar sua próxima ideia?
+            </h2>
+            <p class="text-lg text-[#E6E9F2]/60 mb-8">
+                Comece gratuitamente e transforme conceitos em projetos executáveis com suporte de IA.
+            </p>
+            <div class="flex items-center justify-center gap-4 flex-wrap">
+                <button class="px-6 py-3 bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+                    Criar Primeiro Projeto
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <button class="px-6 py-3 bg-white/5 hover:bg-white/10 text-[#E6E9F2] rounded-lg font-medium transition-colors border border-white/10 flex items-center gap-2">
+                    <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    Assistir Demo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-12 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-semibold mb-3">Produto</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Funcionalidades</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Preços</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Recursos</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Documentação</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Guias</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Templates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Empresa</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Sobre</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Legal</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Privacidade</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Termos</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Segurança</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-[#E6E9F2]/40">
+                    © 2024 PIStack. Todos os direitos reservados.
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="twitter" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body></html>

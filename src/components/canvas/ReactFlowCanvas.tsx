@@ -28,6 +28,7 @@ import { IdeaBaseNode } from './nodes/IdeaBaseNode';
 import { IdeaEnricherNode } from './nodes/IdeaEnricherNode';
 import { TargetAudienceNode } from './nodes/TargetAudienceNode';
 import { ScopeFeaturesNode } from './nodes/ScopeFeaturesNode';
+import { DesignInterfaceNode } from './nodes/DesignInterfaceNode';
 import { TechStackNode } from './nodes/TechStackNode';
 
 // Edge types
@@ -38,6 +39,7 @@ const nodeTypes = {
   ideaEnricher: IdeaEnricherNode,
   targetAudience: TargetAudienceNode,
   scopeFeatures: ScopeFeaturesNode,
+  designInterface: DesignInterfaceNode,
   techStack: TechStackNode,
 };
 
@@ -61,6 +63,7 @@ interface ReactFlowCanvasProps {
   onNodePositionChange: (cardId: string, x: number, y: number) => void;
   onEnrichIdea?: (ideaBaseCardId: string) => void; // Callback para criar IdeaEnricher
   onAutoLayout?: () => void; // Callback quando auto-layout é aplicado
+  onCardSelect?: (cardId: string | null) => void; // Callback quando um card é selecionado
 }
 
 export interface ReactFlowCanvasHandle {
@@ -85,6 +88,7 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
     onNodePositionChange,
     onEnrichIdea,
     onAutoLayout,
+    onCardSelect,
   }, ref) => {
   const { toast } = useToastStore();
   const { fitView, getNode, zoomIn, zoomOut } = useReactFlow();
@@ -127,12 +131,21 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
   // State para seleção múltipla
   const [selectedNodes, setSelectedNodes] = React.useState<Node[]>([]);
 
-  // Handler: rastrear seleção múltipla
+  // Handler: rastrear seleção múltipla e notificar parent
   const handleSelectionChange = useCallback(
     ({ nodes: selectedNodes }: { nodes: Node[]; edges: Edge[] }) => {
       setSelectedNodes(selectedNodes);
+
+      // Notificar parent sobre card selecionado
+      if (onCardSelect) {
+        if (selectedNodes.length === 1) {
+          onCardSelect(selectedNodes[0].id);
+        } else {
+          onCardSelect(null); // Nenhum ou múltiplos selecionados
+        }
+      }
     },
-    []
+    [onCardSelect]
   );
 
   // Expor funções via ref
@@ -230,13 +243,34 @@ const ReactFlowCanvasInner = React.forwardRef<ReactFlowCanvasHandle, ReactFlowCa
 
   // Atualizar nodes quando initialCards mudar (ex: novo card criado)
   React.useEffect(() => {
+    console.log('[ReactFlow] Updating nodes - cards:', initialCards.length, 'enrichmentLoading:', enrichmentLoading);
+
     // Atualizar handlers com cards mais recentes
     const updatedHandlers = {
       ...handlers,
       enrichmentLoading,
       cards: initialCards,
     };
-    setNodes(cardsToNodes(initialCards, updatedHandlers));
+
+    // CRITICAL: Preserve existing node positions when updating
+    setNodes((currentNodes) => {
+      const newNodes = cardsToNodes(initialCards, updatedHandlers);
+
+      // Merge: keep existing positions, only update data and add new nodes
+      return newNodes.map((newNode) => {
+        const existingNode = currentNodes.find((n) => n.id === newNode.id);
+        if (existingNode) {
+          // Keep existing position, update data only
+          return {
+            ...newNode,
+            position: existingNode.position,
+            selected: existingNode.selected, // Preserve selection state
+          };
+        }
+        // New node - use position from database
+        return newNode;
+      });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCards, enrichmentLoading]);
 

@@ -8,19 +8,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-gradient-to-br from-[#4A6CF7] to-[#7A9FFF] text-white hover:from-[#5A7CFF] hover:to-[#8AAFFF] active:from-[#3A5CE7] active:to-[#6A8FEF] shadow-lg hover:shadow-xl',
+          'bg-gradient-to-br text-[var(--button-text-primary)] shadow-lg hover:shadow-xl button-primary',
         secondary:
-          'bg-gradient-to-br from-[#1A1F2D] to-[#2A2F3D] border border-stroke text-text hover:from-[#2A2F3D] hover:to-[#3A3F4D] hover:border-[#3A3F4D] shadow-sm hover:shadow-md',
+          'bg-gradient-to-br border border-stroke text-[var(--button-text-secondary)] shadow-sm hover:shadow-md button-secondary',
         ghost:
-          'bg-transparent text-text hover:bg-gradient-to-br hover:from-[#1A1F2D]/50 hover:to-[#2A2F3D]/50 hover:text-text',
+          'bg-transparent text-text hover:bg-bg-elev/50 hover:text-text',
         danger:
-          'bg-gradient-to-br from-[#FF4444] to-[#FF6666] text-white hover:from-[#FF5555] hover:to-[#FF7777] active:from-[#FF3333] active:to-[#FF5555] shadow-lg hover:shadow-xl',
+          'bg-gradient-to-br from-[#FF4444] to-[#FF6666] text-[var(--button-text-primary)] hover:from-[#FF5555] hover:to-[#FF7777] active:from-[#FF3333] active:to-[#FF5555] shadow-lg hover:shadow-xl',
         success:
-          'bg-gradient-to-br from-[#22C55E] to-[#4ADE80] text-white hover:from-[#32D56E] hover:to-[#5AEE90] active:from-[#12B54E] active:to-[#3ACE70] shadow-lg hover:shadow-xl',
+          'bg-gradient-to-br from-[#22C55E] to-[#4ADE80] text-[var(--button-text-primary)] hover:from-[#32D56E] hover:to-[#5AEE90] active:from-[#12B54E] active:to-[#3ACE70] shadow-lg hover:shadow-xl',
         outline:
-          'border border-stroke bg-transparent text-text hover:bg-bg-elev hover:border-stroke-strong',
+          'border border-stroke bg-transparent text-text hover:bg-bg-elev hover:border-primary/30',
         default:
-          'bg-bg-elev text-text hover:bg-bg-soft border border-stroke',
+          'bg-bg-elev text-text hover:bg-bg border border-stroke',
       },
       size: {
         sm: 'h-9 px-4 text-xs',

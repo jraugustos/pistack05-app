@@ -386,18 +386,25 @@ export default function DesignSystemPage() {
             <h3 className="text-xl font-semibold text-primary mb-4">Ideia Base</h3>
             <div className="max-w-4xl">
               <IdeaBaseCard
-                idea={{
-                  title: "E-commerce Platform",
-                  description: "Uma plataforma de e-commerce moderna com foco em UX e performance",
-                  problem: "Lojas online com UX ruim e performance baixa",
-                  solution: "Interface intuitiva com carregamento rápido e checkout otimizado",
-                  targetAudience: "Empresas de médio porte que vendem online",
-                  valueProposition: "Aumento de 40% nas conversões com melhor UX"
+                card={{
+                  id: "demo-idea-base",
+                  stageKey: "idea",
+                  typeKey: "idea_base",
+                  status: "READY",
+                  fields: {
+                    name: "E-commerce Platform",
+                    pitch: "Uma plataforma de e-commerce moderna com foco em UX e performance"
+                  },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
                 }}
-                status="READY"
-                onUpdate={(field, value) => console.log('Update idea:', field, value)}
-                onAIGenerate={(field) => console.log('AI generate:', field)}
-                onMenuAction={(action) => console.log('Menu action:', action)}
+                cards={[]}
+                onUpdate={(fields) => console.log('Update:', fields)}
+                onGenerate={(mode) => console.log('Generate:', mode)}
+                onConfirmReady={() => console.log('Confirm Ready')}
+                onChecklistClick={(target) => console.log('Checklist:', target)}
+                onFocusCard={(cardId) => console.log('Focus:', cardId)}
+                onEnrichIdea={() => console.log('Enrich Idea')}
               />
             </div>
           </div>
@@ -428,53 +435,40 @@ export default function DesignSystemPage() {
             <h3 className="text-xl font-semibold text-success mb-4">Escopo e Funcionalidades</h3>
             <div className="max-w-4xl">
               <ScopeFeaturesCard
-                scope={{
-                  projectGoals: "Criar uma plataforma de e-commerce que converta 40% mais que a concorrência",
-                  successMetrics: "Taxa de conversão, tempo de carregamento, NPS > 70",
-                  constraints: "Orçamento de R$ 100k, prazo de 6 meses",
-                  timeline: "6 meses, 12 sprints de 2 semanas",
-                  budget: "R$ 100.000",
-                  features: [
-                    {
-                      id: "1",
-                      title: "Catálogo de Produtos",
-                      description: "Sistema completo de gestão de produtos com variações",
-                      priority: "must",
-                      effort: "high",
-                      completed: true
-                    },
-                    {
-                      id: "2",
-                      title: "Carrinho de Compras",
-                      description: "Carrinho persistente com salvamento local",
-                      priority: "must",
-                      effort: "medium",
-                      completed: true
-                    },
-                    {
-                      id: "3",
-                      title: "Checkout Otimizado",
-                      description: "Processo de checkout em 1 clique",
-                      priority: "must",
-                      effort: "high",
-                      completed: false
-                    },
-                    {
-                      id: "4",
-                      title: "Dashboard Analytics",
-                      description: "Painel com métricas de vendas e conversão",
-                      priority: "should",
-                      effort: "medium",
-                      completed: false
-                    }
-                  ]
-                }}
+                features={[
+                  {
+                    id: "1",
+                    name: "Catálogo de Produtos",
+                    description: "Sistema completo de gestão de produtos com variações",
+                    moscow: "must",
+                    effort: "high"
+                  },
+                  {
+                    id: "2",
+                    name: "Carrinho de Compras",
+                    description: "Carrinho persistente com salvamento local",
+                    moscow: "must",
+                    effort: "medium"
+                  },
+                  {
+                    id: "3",
+                    name: "Checkout Otimizado",
+                    description: "Processo de checkout em 1 clique",
+                    moscow: "must",
+                    effort: "high"
+                  },
+                  {
+                    id: "4",
+                    name: "Dashboard Analytics",
+                    description: "Painel com métricas de vendas e conversão",
+                    moscow: "should",
+                    effort: "medium"
+                  }
+                ]}
                 status="DRAFT"
-                onUpdate={(field, value) => console.log('Update scope:', field, value)}
-                onFeatureAdd={(feature) => console.log('Add feature:', feature)}
-                onFeatureUpdate={(id, updates) => console.log('Update feature:', id, updates)}
-                onFeatureDelete={(id) => console.log('Delete feature:', id)}
-                onAIGenerate={(type) => console.log('AI generate:', type)}
+                onUpdate={(updates) => console.log('Update scope:', updates)}
+                onAIGenerate={(mode, prompt) => console.log('AI generate:', mode, prompt)}
+                onConfirm={() => console.log('Confirm scope')}
                 onMenuAction={(action) => console.log('Menu action:', action)}
               />
             </div>
@@ -485,55 +479,20 @@ export default function DesignSystemPage() {
             <h3 className="text-xl font-semibold text-cyan mb-4">Stack Tecnológico</h3>
             <div className="max-w-4xl">
               <TechStackCard
-                techStack={{
-                  architecture: "Microserviços com API Gateway, separação frontend/backend",
-                  frontend: "Next.js 14, React 18, TypeScript, Tailwind CSS",
-                  backend: "Node.js, Express, Prisma ORM",
-                  database: "PostgreSQL com Redis para cache",
-                  infrastructure: "Vercel para frontend, Railway para backend",
-                  devops: "GitHub Actions, Docker, Vercel Analytics",
-                  choices: [
-                    {
-                      id: "1",
-                      category: "Frontend",
-                      name: "Next.js 14",
-                      description: "Framework React com SSR e otimizações",
-                      reason: "Performance, SEO, developer experience",
-                      alternatives: ["Vite", "Remix", "SvelteKit"],
-                      complexity: "medium",
-                      cost: "free",
-                      selected: true
-                    },
-                    {
-                      id: "2",
-                      category: "Backend",
-                      name: "Node.js + Express",
-                      description: "Runtime JavaScript com framework web",
-                      reason: "Consistência com frontend, ecosystem rico",
-                      alternatives: ["Python FastAPI", "Go Gin", "Rust Axum"],
-                      complexity: "low",
-                      cost: "free",
-                      selected: true
-                    },
-                    {
-                      id: "3",
-                      category: "Database",
-                      name: "PostgreSQL",
-                      description: "Banco relacional robusto e escalável",
-                      reason: "ACID compliance, JSON support, performance",
-                      alternatives: ["MongoDB", "MySQL", "Supabase"],
-                      complexity: "medium",
-                      cost: "low",
-                      selected: true
-                    }
-                  ]
+                stack={{
+                  frontend: ["Next.js 14", "React 18", "TypeScript", "Tailwind CSS"],
+                  backend: ["Node.js", "Express", "Prisma ORM"],
+                  database: ["PostgreSQL", "Redis"],
+                  infrastructure: ["Vercel", "Railway"],
+                  integrations: ["Stripe", "SendGrid", "AWS S3"],
+                  risks: ["Complexidade de deployment", "Dependência de serviços externos"],
+                  pros: ["Performance", "Escalabilidade", "Developer Experience"],
+                  cons: ["Curva de aprendizado", "Custo de infraestrutura"]
                 }}
                 status="READY"
-                onUpdate={(field, value) => console.log('Update tech:', field, value)}
-                onTechChoiceAdd={(choice) => console.log('Add choice:', choice)}
-                onTechChoiceUpdate={(id, updates) => console.log('Update choice:', id, updates)}
-                onTechChoiceDelete={(id) => console.log('Delete choice:', id)}
-                onAIGenerate={(type) => console.log('AI generate:', type)}
+                onUpdate={(updates) => console.log('Update tech:', updates)}
+                onAIGenerate={(mode, prompt) => console.log('AI generate:', mode, prompt)}
+                onConfirm={() => console.log('Confirm tech stack')}
                 onMenuAction={(action) => console.log('Menu action:', action)}
               />
             </div>

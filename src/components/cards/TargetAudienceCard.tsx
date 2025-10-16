@@ -125,9 +125,29 @@ const TargetAudienceCard = React.forwardRef<HTMLDivElement, TargetAudienceCardPr
                   <h3 className="text-xl font-bold text-text">Público-Alvo</h3>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge variant={status === 'READY' ? 'success' : 'draft'} className="capitalize">
-                    {status === 'READY' ? 'ready' : 'draft'}
-                  </Badge>
+                  <button
+                    onClick={() => {
+                      if (onConfirmReady && allRequiredFilled) {
+                        onConfirmReady();
+                      }
+                    }}
+                    disabled={!allRequiredFilled && status !== 'READY'}
+                    className={cn(
+                      'transition-all',
+                      allRequiredFilled || status === 'READY' ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-50'
+                    )}
+                    title={
+                      status === 'READY'
+                        ? 'Clique para voltar para DRAFT'
+                        : allRequiredFilled
+                        ? 'Clique para marcar como READY'
+                        : 'Preencha os campos obrigatórios para marcar como READY'
+                    }
+                  >
+                    <Badge variant={status === 'READY' ? 'success' : 'draft'} className="capitalize">
+                      {status === 'READY' ? 'ready' : 'draft'}
+                    </Badge>
+                  </button>
                 </div>
               </div>
             </div>
@@ -175,11 +195,13 @@ const TargetAudienceCard = React.forwardRef<HTMLDivElement, TargetAudienceCardPr
                     </div>
                     {/* Exibição do texto */}
                     <div
-                      className="min-h-[72px] p-3 rounded-md bg-bg border border-stroke/30 text-sm text-text cursor-pointer hover:border-stroke/50 hover:bg-bg-elev transition-all"
+                      className="min-h-[72px] p-3 rounded-md bg-bg border border-stroke/30 text-sm cursor-pointer hover:border-stroke/50 hover:bg-bg-elev transition-all"
                       onClick={() => setEditingField(field.key)}
                     >
-                      {fields[field.key] || (
-                        <span className="text-muted italic">{field.placeholder}</span>
+                      {fields[field.key] ? (
+                        <span className="text-text">{fields[field.key]}</span>
+                      ) : (
+                        <span className="text-text-dim">{field.placeholder}</span>
                       )}
                     </div>
                   </div>

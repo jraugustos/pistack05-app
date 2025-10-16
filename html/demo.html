@@ -1,0 +1,693 @@
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo — PIStack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#0F1115] text-[#E6E9F2] antialiased">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0F1115]/80 backdrop-blur-xl">
+        <nav class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="/" class="text-lg font-semibold tracking-tight">PIStack</a>
+                <div class="hidden md:flex items-center gap-6 text-sm">
+                    <a href="/#features" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Funcionalidades</a>
+                    <a href="/#canvas" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Canvas</a>
+                    <a href="/#outputs" class="text-[#E6E9F2]/60 hover:text-[#E6E9F2] transition-colors">Outputs</a>
+                    <a href="/demo" class="text-[#7AA2FF]">Demo</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="hidden sm:block px-4 py-2 text-sm font-medium text-[#E6E9F2]/80 hover:text-[#E6E9F2] transition-colors">
+                    Entrar
+                </button>
+                <button class="px-4 py-2 text-sm font-medium bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg transition-colors">
+                    Começar Grátis
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-16 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 text-[#7AA2FF] text-sm font-medium mb-6">
+                    <i data-lucide="play-circle" class="w-4 h-4"></i>
+                    Demo Interativa
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-semibold tracking-tight mb-6">
+                    Veja o PIStack<br>em ação
+                </h1>
+                <p class="text-lg text-[#E6E9F2]/60 mb-8">
+                    Explore casos de uso reais e descubra como transformar ideias em projetos executáveis com suporte de IA.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Navigation -->
+    <section class="pb-12 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <button onclick="showCase('fintech')" id="btn-fintech" class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-[#7AA2FF] text-white">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="wallet" class="w-4 h-4"></i>
+                        App Fintech
+                    </span>
+                </button>
+                <button onclick="showCase('saas')" id="btn-saas" class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-white/5 hover:bg-white/10 text-[#E6E9F2] border border-white/5">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="cloud" class="w-4 h-4"></i>
+                        SaaS B2B
+                    </span>
+                </button>
+                <button onclick="showCase('marketplace')" id="btn-marketplace" class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-white/5 hover:bg-white/10 text-[#E6E9F2] border border-white/5">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        Marketplace
+                    </span>
+                </button>
+                <button onclick="showCase('edtech')" id="btn-edtech" class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-white/5 hover:bg-white/10 text-[#E6E9F2] border border-white/5">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        EdTech
+                    </span>
+                </button>
+                <button onclick="showCase('social')" id="btn-social" class="whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-white/5 hover:bg-white/10 text-[#E6E9F2] border border-white/5">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        Rede Social
+                    </span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case: Fintech -->
+    <section id="case-fintech" class="py-12 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Case Header -->
+            <div class="bg-gradient-to-br from-[#7AA2FF]/10 to-transparent rounded-2xl border border-[#7AA2FF]/20 p-8 mb-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-semibold tracking-tight mb-3">App de Controle Financeiro Pessoal</h2>
+                        <p class="text-[#E6E9F2]/60 max-w-2xl">
+                            Do conceito à documentação técnica: veja como estruturar um app fintech completo em minutos.
+                        </p>
+                    </div>
+                    <div class="hidden lg:block w-16 h-16 rounded-2xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                        <i data-lucide="wallet" class="w-8 h-8 text-[#7AA2FF]"></i>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 text-[#7AA2FF] text-xs font-medium">Mobile-First</span>
+                    <span class="px-3 py-1 rounded-full bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 text-[#7AA2FF] text-xs font-medium">IA Integration</span>
+                    <span class="px-3 py-1 rounded-full bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 text-[#7AA2FF] text-xs font-medium">Real-time Sync</span>
+                </div>
+            </div>
+
+            <!-- Canvas Showcase -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Left: Canvas View -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="layout-grid" class="w-5 h-5 text-[#7AA2FF]"></i>
+                        <h3 class="text-xl font-semibold">Canvas Estruturado</h3>
+                    </div>
+                    <div class="bg-[#151821] rounded-xl border border-white/5 p-6">
+                        <!-- Stage Indicator -->
+                        <div class="flex items-center gap-2 mb-6 pb-4 border-b border-white/5">
+                            <div class="flex items-center gap-2 flex-1">
+                                <div class="w-2 h-2 rounded-full bg-[#7AA2FF]"></div>
+                                <span class="text-sm text-[#7AA2FF] font-medium">5 Etapas</span>
+                            </div>
+                            <span class="text-xs text-[#E6E9F2]/40">12 Cards Criados</span>
+                        </div>
+
+                        <!-- Card Example 1 -->
+                        <div class="bg-[#0F1115] rounded-lg border border-[#7AA2FF]/30 p-4 mb-3">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#7AA2FF]"></div>
+                                    <span class="text-xs font-medium text-[#7AA2FF]">Ideia Base</span>
+                                </div>
+                                <i data-lucide="lightbulb" class="w-4 h-4 text-[#7AA2FF]/60"></i>
+                            </div>
+                            <h4 class="font-medium text-sm mb-2">MoneyFlow</h4>
+                            <p class="text-xs text-[#E6E9F2]/60 mb-3">App mobile que simplifica controle de gastos com categorização automática via IA e insights personalizados.</p>
+                            <div class="flex items-center gap-2 text-xs text-[#E6E9F2]/40">
+                                <i data-lucide="target" class="w-3 h-3"></i>
+                                <span>KPI: 10k usuários em 6 meses</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Example 2 -->
+                        <div class="bg-[#0F1115] rounded-lg border border-[#5AD19A]/30 p-4 mb-3">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#5AD19A]"></div>
+                                    <span class="text-xs font-medium text-[#5AD19A]">Personas</span>
+                                </div>
+                                <i data-lucide="user-circle" class="w-4 h-4 text-[#5AD19A]/60"></i>
+                            </div>
+                            <h4 class="font-medium text-sm mb-2">Jovem Profissional</h4>
+                            <p class="text-xs text-[#E6E9F2]/60 mb-3">25-35 anos, renda 4-8k, busca autonomia financeira mas não tem tempo para planilhas complexas.</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-0.5 rounded bg-[#5AD19A]/10 text-[#5AD19A] text-xs">Mobile-First</span>
+                                <span class="px-2 py-0.5 rounded bg-[#5AD19A]/10 text-[#5AD19A] text-xs">Tech-Savvy</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Example 3 -->
+                        <div class="bg-[#0F1115] rounded-lg border border-[#FFC24B]/30 p-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-[#FFC24B]"></div>
+                                    <span class="text-xs font-medium text-[#FFC24B]">Features Core</span>
+                                </div>
+                                <i data-lucide="zap" class="w-4 h-4 text-[#FFC24B]/60"></i>
+                            </div>
+                            <h4 class="font-medium text-sm mb-2">Categorização Automática</h4>
+                            <p class="text-xs text-[#E6E9F2]/60 mb-3">IA identifica padrões de gastos e categoriza transações automaticamente com 95% de precisão.</p>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full w-4/5 bg-[#FFC24B] rounded-full"></div>
+                                </div>
+                                <span class="text-xs text-[#E6E9F2]/40">MVP</span>
+                            </div>
+                        </div>
+
+                        <!-- AI Assistant Preview -->
+                        <div class="mt-4 pt-4 border-t border-white/5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-[#7AA2FF]"></i>
+                                <span class="text-xs font-medium text-[#7AA2FF]">AI Assistant Ativo</span>
+                            </div>
+                            <p class="text-xs text-[#E6E9F2]/60">Sugerindo fluxos de onboarding e requisitos técnicos baseados nas features definidas...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Features & Flow -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="workflow" class="w-5 h-5 text-[#5AD19A]"></i>
+                        <h3 class="text-xl font-semibold">Fluxo Completo</h3>
+                    </div>
+                    
+                    <!-- Flow Steps -->
+                    <div class="space-y-3 mb-6">
+                        <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-sm font-semibold text-[#7AA2FF]">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-sm mb-1">Captura de Ideia</h4>
+                                    <p class="text-xs text-[#E6E9F2]/60 mb-2">Usuário descreve: "App para controlar gastos pessoais de forma simples"</p>
+                                    <div class="flex items-center gap-2 text-xs text-[#7AA2FF]">
+                                        <i data-lucide="check-circle-2" class="w-3 h-3"></i>
+                                        <span>IA expandiu para pitch estruturado</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-sm font-semibold text-[#5AD19A]">2</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-sm mb-1">Definição de Personas</h4>
+                                    <p class="text-xs text-[#E6E9F2]/60 mb-2">IA sugeriu 3 personas baseadas no público-alvo</p>
+                                    <div class="flex items-center gap-2 text-xs text-[#5AD19A]">
+                                        <i data-lucide="check-circle-2" class="w-3 h-3"></i>
+                                        <span>Hipóteses validadas e refinadas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-sm font-semibold text-[#FFC24B]">3</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-sm mb-1">Escopo de Features</h4>
+                                    <p class="text-xs text-[#E6E9F2]/60 mb-2">15 funcionalidades mapeadas e priorizadas (MVP + Roadmap)</p>
+                                    <div class="flex items-center gap-2 text-xs text-[#FFC24B]">
+                                        <i data-lucide="check-circle-2" class="w-3 h-3"></i>
+                                        <span>Requisitos técnicos gerados</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-sm font-semibold text-[#FF6B6B]">4</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-sm mb-1">Stack Técnica</h4>
+                                    <p class="text-xs text-[#E6E9F2]/60 mb-2">React Native + Node.js + MongoDB recomendados pela IA</p>
+                                    <div class="flex items-center gap-2 text-xs text-[#FF6B6B]">
+                                        <i data-lucide="check-circle-2" class="w-3 h-3"></i>
+                                        <span>Arquitetura definida</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Saved -->
+                    <div class="bg-gradient-to-br from-[#7AA2FF]/5 to-[#5AD19A]/5 rounded-xl border border-white/5 p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                                <i data-lucide="clock" class="w-5 h-5 text-[#7AA2FF]"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-semibold tracking-tight">~40 horas</div>
+                                <div class="text-xs text-[#E6E9F2]/60">economizadas em documentação</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
+                            <div>
+                                <div class="text-xs text-[#E6E9F2]/40 mb-1">Tradicional</div>
+                                <div class="text-sm font-medium">48-60h</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-[#E6E9F2]/40 mb-1">Com PIStack</div>
+                                <div class="text-sm font-medium text-[#5AD19A]">8-12h</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Outputs -->
+            <div>
+                <div class="flex items-center gap-2 mb-6">
+                    <i data-lucide="file-check" class="w-5 h-5 text-[#FFC24B]"></i>
+                    <h3 class="text-xl font-semibold">Outputs Gerados</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- PRD -->
+                    <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-5 h-5 text-[#7AA2FF]"></i>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-[#5AD19A]/10 text-[#5AD19A] text-xs font-medium">Pronto</span>
+                        </div>
+                        <h4 class="font-semibold mb-2">PRD Completo</h4>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">24 páginas com visão, features, requisitos e critérios de aceite</p>
+                        <div class="space-y-2 text-xs text-[#E6E9F2]/60 mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Executive Summary</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>User Stories (18)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Technical Requirements</span>
+                            </div>
+                        </div>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5 flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Download PRD
+                        </button>
+                    </div>
+
+                    <!-- Work Plan -->
+                    <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                                <i data-lucide="gantt-chart" class="w-5 h-5 text-[#5AD19A]"></i>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-[#5AD19A]/10 text-[#5AD19A] text-xs font-medium">Pronto</span>
+                        </div>
+                        <h4 class="font-semibold mb-2">Work Plan</h4>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">Roadmap de 16 semanas com 42 tarefas e dependências</p>
+                        <div class="space-y-2 text-xs text-[#E6E9F2]/60 mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Sprint Planning (8 sprints)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Dependencies Map</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Resource Allocation</span>
+                            </div>
+                        </div>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5 flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Download Plan
+                        </button>
+                    </div>
+
+                    <!-- Prompt Pack -->
+                    <div class="bg-[#151821] rounded-xl border border-white/5 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center">
+                                <i data-lucide="package" class="w-5 h-5 text-[#FFC24B]"></i>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-[#5AD19A]/10 text-[#5AD19A] text-xs font-medium">Pronto</span>
+                        </div>
+                        <h4 class="font-semibold mb-2">Prompt Pack</h4>
+                        <p class="text-sm text-[#E6E9F2]/60 mb-4">27 prompts otimizados para desenvolvimento com IA</p>
+                        <div class="space-y-2 text-xs text-[#E6E9F2]/60 mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Development (12 prompts)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>Design (8 prompts)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-3 h-3 text-[#5AD19A]"></i>
+                                <span>QA &amp; Testing (7 prompts)</span>
+                            </div>
+                        </div>
+                        <button class="w-full px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-medium transition-colors border border-white/5 flex items-center justify-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Download Pack
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case: SaaS (Hidden by default) -->
+    <section id="case-saas" class="py-12 px-6 lg:px-8 hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-[#5AD19A]/10 to-transparent rounded-2xl border border-[#5AD19A]/20 p-8 mb-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-semibold tracking-tight mb-3">Plataforma SaaS de Gestão de Projetos</h2>
+                        <p class="text-[#E6E9F2]/60 max-w-2xl">
+                            Estruturação de SaaS B2B completo: da proposta de valor até arquitetura multi-tenant.
+                        </p>
+                    </div>
+                    <div class="hidden lg:block w-16 h-16 rounded-2xl bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center">
+                        <i data-lucide="cloud" class="w-8 h-8 text-[#5AD19A]"></i>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#5AD19A]/10 border border-[#5AD19A]/20 text-[#5AD19A] text-xs font-medium">Multi-tenant</span>
+                    <span class="px-3 py-1 rounded-full bg-[#5AD19A]/10 border border-[#5AD19A]/20 text-[#5AD19A] text-xs font-medium">B2B</span>
+                    <span class="px-3 py-1 rounded-full bg-[#5AD19A]/10 border border-[#5AD19A]/20 text-[#5AD19A] text-xs font-medium">Enterprise</span>
+                </div>
+            </div>
+
+            <div class="text-center py-20">
+                <i data-lucide="cloud" class="w-16 h-16 text-[#5AD19A] mx-auto mb-4"></i>
+                <h3 class="text-2xl font-semibold mb-3">Caso de Uso: SaaS B2B</h3>
+                <p class="text-[#E6E9F2]/60 max-w-lg mx-auto mb-6">
+                    Este caso demonstra como estruturar uma plataforma SaaS completa com foco em empresas, incluindo pricing tiers, onboarding e integrações.
+                </p>
+                <button class="px-6 py-3 bg-[#5AD19A] hover:bg-[#48B986] text-white rounded-lg font-medium transition-colors">
+                    Explorar Caso Completo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case: Marketplace (Hidden by default) -->
+    <section id="case-marketplace" class="py-12 px-6 lg:px-8 hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-[#FFC24B]/10 to-transparent rounded-2xl border border-[#FFC24B]/20 p-8 mb-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-semibold tracking-tight mb-3">Marketplace de Serviços Freelance</h2>
+                        <p class="text-[#E6E9F2]/60 max-w-2xl">
+                            Estruturação de marketplace two-sided: matching, pagamentos e sistema de avaliações.
+                        </p>
+                    </div>
+                    <div class="hidden lg:block w-16 h-16 rounded-2xl bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center">
+                        <i data-lucide="shopping-bag" class="w-8 h-8 text-[#FFC24B]"></i>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#FFC24B]/10 border border-[#FFC24B]/20 text-[#FFC24B] text-xs font-medium">Two-Sided</span>
+                    <span class="px-3 py-1 rounded-full bg-[#FFC24B]/10 border border-[#FFC24B]/20 text-[#FFC24B] text-xs font-medium">Payments</span>
+                    <span class="px-3 py-1 rounded-full bg-[#FFC24B]/10 border border-[#FFC24B]/20 text-[#FFC24B] text-xs font-medium">Reviews</span>
+                </div>
+            </div>
+
+            <div class="text-center py-20">
+                <i data-lucide="shopping-bag" class="w-16 h-16 text-[#FFC24B] mx-auto mb-4"></i>
+                <h3 class="text-2xl font-semibold mb-3">Caso de Uso: Marketplace</h3>
+                <p class="text-[#E6E9F2]/60 max-w-lg mx-auto mb-6">
+                    Demonstra estruturação de plataforma two-sided com matching algorithm, sistema de pagamentos e trust &amp; safety.
+                </p>
+                <button class="px-6 py-3 bg-[#FFC24B] hover:bg-[#EDB239] text-white rounded-lg font-medium transition-colors">
+                    Explorar Caso Completo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case: EdTech (Hidden by default) -->
+    <section id="case-edtech" class="py-12 px-6 lg:px-8 hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-[#9B8AFB]/10 to-transparent rounded-2xl border border-[#9B8AFB]/20 p-8 mb-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-semibold tracking-tight mb-3">Plataforma de Aprendizado Adaptativo</h2>
+                        <p class="text-[#E6E9F2]/60 max-w-2xl">
+                            EdTech com IA: personalização de conteúdo, gamificação e analytics de progresso.
+                        </p>
+                    </div>
+                    <div class="hidden lg:block w-16 h-16 rounded-2xl bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 flex items-center justify-center">
+                        <i data-lucide="graduation-cap" class="w-8 h-8 text-[#9B8AFB]"></i>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 text-[#9B8AFB] text-xs font-medium">Adaptive Learning</span>
+                    <span class="px-3 py-1 rounded-full bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 text-[#9B8AFB] text-xs font-medium">Gamification</span>
+                    <span class="px-3 py-1 rounded-full bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 text-[#9B8AFB] text-xs font-medium">Analytics</span>
+                </div>
+            </div>
+
+            <div class="text-center py-20">
+                <i data-lucide="graduation-cap" class="w-16 h-16 text-[#9B8AFB] mx-auto mb-4"></i>
+                <h3 class="text-2xl font-semibold mb-3">Caso de Uso: EdTech</h3>
+                <p class="text-[#E6E9F2]/60 max-w-lg mx-auto mb-6">
+                    Mostra estruturação de plataforma educacional com aprendizado adaptativo, gamificação e dashboard de progresso.
+                </p>
+                <button class="px-6 py-3 bg-[#9B8AFB] hover:bg-[#8978E8] text-white rounded-lg font-medium transition-colors">
+                    Explorar Caso Completo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case: Social (Hidden by default) -->
+    <section id="case-social" class="py-12 px-6 lg:px-8 hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-[#FF6B6B]/10 to-transparent rounded-2xl border border-[#FF6B6B]/20 p-8 mb-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-semibold tracking-tight mb-3">Rede Social para Profissionais Criativos</h2>
+                        <p class="text-[#E6E9F2]/60 max-w-2xl">
+                            Plataforma social nichada: portfolio, networking e colaboração entre criativos.
+                        </p>
+                    </div>
+                    <div class="hidden lg:block w-16 h-16 rounded-2xl bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 flex items-center justify-center">
+                        <i data-lucide="users" class="w-8 h-8 text-[#FF6B6B]"></i>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 text-[#FF6B6B] text-xs font-medium">Social Network</span>
+                    <span class="px-3 py-1 rounded-full bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 text-[#FF6B6B] text-xs font-medium">Portfolio</span>
+                    <span class="px-3 py-1 rounded-full bg-[#FF6B6B]/10 border border-[#FF6B6B]/20 text-[#FF6B6B] text-xs font-medium">Collaboration</span>
+                </div>
+            </div>
+
+            <div class="text-center py-20">
+                <i data-lucide="users" class="w-16 h-16 text-[#FF6B6B] mx-auto mb-4"></i>
+                <h3 class="text-2xl font-semibold mb-3">Caso de Uso: Rede Social</h3>
+                <p class="text-[#E6E9F2]/60 max-w-lg mx-auto mb-6">
+                    Estruturação de rede social nichada com foco em networking, portfolio e ferramentas de colaboração.
+                </p>
+                <button class="px-6 py-3 bg-[#FF6B6B] hover:bg-[#E85959] text-white rounded-lg font-medium transition-colors">
+                    Explorar Caso Completo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo CTA -->
+    <section class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gradient-to-br from-[#7AA2FF]/10 via-[#5AD19A]/5 to-[#FFC24B]/10 rounded-2xl border border-white/10 p-12 text-center">
+                <div class="w-16 h-16 rounded-2xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="rocket" class="w-8 h-8 text-[#7AA2FF]"></i>
+                </div>
+                <h2 class="text-3xl font-semibold tracking-tight mb-4">
+                    Pronto para criar seu próprio projeto?
+                </h2>
+                <p class="text-lg text-[#E6E9F2]/60 mb-8 max-w-2xl mx-auto">
+                    Experimente o PIStack gratuitamente e veja como é fácil estruturar suas ideias com suporte de IA.
+                </p>
+                <div class="flex items-center justify-center gap-4 flex-wrap">
+                    <button class="px-6 py-3 bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg font-medium transition-colors flex items-center gap-2">
+                        Começar Agora
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                    <button class="px-6 py-3 bg-white/5 hover:bg-white/10 text-[#E6E9F2] rounded-lg font-medium transition-colors border border-white/10 flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        Agendar Apresentação
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section class="py-20 px-6 lg:px-8 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-semibold tracking-tight mb-4">Por que escolher PIStack?</h2>
+                <p class="text-[#E6E9F2]/60 max-w-2xl mx-auto">
+                    Tudo que você precisa para transformar ideias em projetos estruturados.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6">
+                    <div class="w-12 h-12 rounded-xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="zap" class="w-6 h-6 text-[#7AA2FF]"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">85% mais rápido</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Economize até 40 horas em documentação inicial</p>
+                </div>
+
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6">
+                    <div class="w-12 h-12 rounded-xl bg-[#5AD19A]/10 border border-[#5AD19A]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="brain" class="w-6 h-6 text-[#5AD19A]"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">IA Contextual</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Sugestões inteligentes baseadas no seu projeto</p>
+                </div>
+
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6">
+                    <div class="w-12 h-12 rounded-xl bg-[#FFC24B]/10 border border-[#FFC24B]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="file-check" class="w-6 h-6 text-[#FFC24B]"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Outputs Prontos</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">PRD, Work Plan e Prompts gerados automaticamente</p>
+                </div>
+
+                <div class="bg-[#151821] rounded-xl border border-white/5 p-6">
+                    <div class="w-12 h-12 rounded-xl bg-[#9B8AFB]/10 border border-[#9B8AFB]/20 flex items-center justify-center mb-4">
+                        <i data-lucide="users" class="w-6 h-6 text-[#9B8AFB]"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Colaborativo</h3>
+                    <p class="text-sm text-[#E6E9F2]/60">Trabalhe em equipe com versionamento automático</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-12 px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="font-semibold mb-3">Produto</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Funcionalidades</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Preços</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Recursos</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Documentação</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Guias</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Templates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Empresa</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Sobre</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3">Legal</h4>
+                    <ul class="space-y-2 text-sm text-[#E6E9F2]/60">
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Privacidade</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Termos</a></li>
+                        <li><a href="#" class="hover:text-[#E6E9F2] transition-colors">Segurança</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-[#E6E9F2]/40">
+                    © 2024 PIStack. Todos os direitos reservados.
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="twitter" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="text-[#E6E9F2]/40 hover:text-[#E6E9F2] transition-colors">
+                        <i data-lucide="linkedin" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        function showCase(caseId) {
+            // Hide all cases
+            document.querySelectorAll('[id^="case-"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show selected case
+            document.getElementById('case-' + caseId).classList.remove('hidden');
+            
+            // Update button states
+            document.querySelectorAll('[id^="btn-"]').forEach(btn => {
+                btn.className = 'whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-white/5 hover:bg-white/10 text-[#E6E9F2] border border-white/5';
+            });
+            
+            // Activate selected button
+            const activeBtn = document.getElementById('btn-' + caseId);
+            activeBtn.className = 'whitespace-nowrap px-5 py-2.5 rounded-lg text-sm font-medium transition-all bg-[#7AA2FF] text-white';
+            
+            // Reinitialize icons
+            lucide.createIcons();
+        }
+    </script>
+
+</body></html>

@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { X, Sparkles, Expand, Eye, CheckCircle2 } from 'lucide-react';
+import { X, Sparkles, Expand, Eye, CheckCircle2, Globe, Target, XCircle } from 'lucide-react';
 import { Button } from '@/components/foundation';
 import { IconButton } from '@/components/foundation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/foundation';
+import { Badge } from '@/components/foundation';
 import { cn } from '@/lib/utils';
 import { ChatMessage } from '@/components/chat/ChatMessage';
+import { CardMentionInput } from '@/components/molecules/CardMentionInput';
+import type { Card } from '@/types';
 
 export type AIMode = 'Generate' | 'Expand' | 'Review';
 
@@ -19,15 +22,20 @@ export interface AIPanelProps {
   // Headless ChatKit (mínimo):
   agentEnabled?: boolean;
   messages?: Array<{ role: 'user' | 'assistant'; content: string }>;
-  onSendMessage?: (text: string) => void;
+  onSendMessage?: (text: string, mentionedCardIds?: string[]) => void;
   onModeChange: (mode: AIMode) => void;
   onApply: () => void;
   onClose?: () => void;
   className?: string;
+  // Contexto de card
+  focusedCard?: Card | null;
+  onClearContext?: () => void;
+  // Cards para o sistema de menções
+  cards?: Card[];
 }
 
 const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
-  ({ mode, loading = false, prompt, diff, agentEnabled = false, messages = [], onSendMessage, onModeChange, onApply, onClose, className }, ref) => {
+  ({ mode, loading = false, prompt, diff, agentEnabled = false, messages = [], onSendMessage, onModeChange, onApply, onClose, className, focusedCard, onClearContext, cards = [] }, ref) => {
     const modes = [
       { key: 'Generate' as const, label: 'Gerar', icon: Sparkles },
       { key: 'Expand' as const, label: 'Expandir', icon: Expand },
@@ -35,6 +43,7 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
     ];
 
     const currentMode = modes.find(m => m.key === mode);
+    const hasContext = !!focusedCard;
 
     return (
       <div
@@ -59,7 +68,7 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
               <h3 className="font-semibold text-text">Assistente IA</h3>
             </div>
           </div>
-          
+
           {onClose && (
             <IconButton
               variant="ghost"
@@ -70,6 +79,43 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
               <X className="h-4 w-4" />
             </IconButton>
           )}
+          </div>
+        </div>
+
+        {/* Context Badge */}
+        <div className="px-4 py-3 border-b border-stroke/50 bg-bg/30">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              {hasContext ? (
+                <>
+                  <Target className="h-4 w-4 text-info flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-text-dim">Focado em:</p>
+                    <p className="text-sm font-medium text-text truncate">{focusedCard?.title || 'Card Selecionado'}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Globe className="h-4 w-4 text-primary flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-text-dim">Contexto:</p>
+                    <p className="text-sm font-medium text-text">Projeto Geral</p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {hasContext && onClearContext && (
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={onClearContext}
+                className="h-7 w-7 hover:bg-danger/10 hover:text-danger flex-shrink-0"
+                title="Voltar ao contexto global"
+              >
+                <XCircle className="h-3.5 w-3.5" />
+              </IconButton>
+            )}
           </div>
         </div>
 
@@ -88,7 +134,26 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-4 space-y-4 min-h-0">
+        <div className="flex-1 p-4 space-y-4 min-h-0 overflow-auto">
+          {/* Card Preview (quando há contexto) */}
+          {hasContext && focusedCard && (
+            <div className="bg-bg/50 border border-stroke/30 rounded-lg p-3 mb-4">
+              <div className="flex items-start gap-2 mb-2">
+                <Badge variant="draft" className="text-xs capitalize">
+                  {focusedCard.status}
+                </Badge>
+                <Badge variant="default" className="text-xs">
+                  {focusedCard.typeKey || focusedCard.type_key}
+                </Badge>
+              </div>
+              {focusedCard.summary && (
+                <p className="text-xs text-text-dim line-clamp-3">
+                  {focusedCard.summary}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Prompt Preview */}
           {prompt && (
             <div>
@@ -159,14 +224,53 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
               <div className="flex-1 min-h-0 overflow-auto px-0">
                 {messages && messages.length > 0 ? (
                   <div className="space-y-3">
-                    {messages.map((m, idx) => (
-                      <ChatMessage
-                        key={idx}
-                        message={m.content}
-                        sender={m.role === 'assistant' ? 'bot' : 'user'}
-                        timestamp={new Date()}
-                      />
-                    ))}
+                    {messages.map((m, idx) => {
+                      // Clean up message content - remove JSON artifacts
+                      let content = m.content || '';
+
+                      // If it looks like JSON, try to parse it
+                      if (content.trim().startsWith('{') || content.trim().startsWith('[')) {
+                        try {
+                          const parsed = JSON.parse(content);
+                          // If it has a message field, use that
+                          if (typeof parsed === 'object' && parsed.message) {
+                            content = parsed.message;
+                          } else if (typeof parsed === 'object' && parsed.content) {
+                            content = parsed.content;
+                          }
+                        } catch {
+                          // Not valid JSON, keep as is
+                        }
+                      }
+
+                      return (
+                        <ChatMessage
+                          key={idx}
+                          message={content}
+                          sender={m.role === 'assistant' ? 'bot' : 'user'}
+                          timestamp={new Date()}
+                        />
+                      );
+                    })}
+
+                    {/* Loading Animation - Typing indicator */}
+                    {loading && (
+                      <div className="flex w-full gap-3 mb-6">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <Sparkles className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="max-w-[80%] md:max-w-[70%] rounded-xl px-4 py-3 shadow-lg bg-bg-elev border border-stroke text-text rounded-tl-none">
+                          <div className="flex items-center gap-2">
+                            <div className="flex gap-1">
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                            <span className="text-xs text-text-dim ml-2">Pensando...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : null}
               </div>
@@ -177,35 +281,14 @@ const AIPanel = React.forwardRef<HTMLDivElement, AIPanelProps>(
         {/* Input fixo antes do footer */}
         {agentEnabled && onSendMessage && (
           <div className="px-4 pb-3">
-            <div className="border border-stroke rounded-xl p-2 bg-bg-elev/60 backdrop-blur-md glass-effect">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  id="chat-input"
-                  className="flex-1 bg-transparent outline-none px-2 py-2 text-sm"
-                  placeholder="Escreva uma mensagem..."
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const value = (e.target as HTMLInputElement).value.trim();
-                      if (value) {
-                        onSendMessage(value);
-                        (e.target as HTMLInputElement).value = '';
-                      }
-                    }
-                  }}
-                />
-                <Button size="sm" variant="default" onClick={() => {
-                  const input = document.getElementById('chat-input') as HTMLInputElement;
-                  if (input) {
-                    const value = input.value.trim();
-                    if (value) {
-                      onSendMessage(value);
-                      input.value = '';
-                    }
-                  }
-                }}>Enviar</Button>
-              </div>
-            </div>
+            <CardMentionInput
+              cards={cards}
+              placeholder="Escreva uma mensagem..."
+              onSubmit={(message, mentionedCardIds) => {
+                onSendMessage(message, mentionedCardIds);
+              }}
+              disabled={loading}
+            />
           </div>
         )}
 

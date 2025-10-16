@@ -38,29 +38,28 @@ const CARD_SCHEMAS: Record<string, CardSchema> = {
   'idea.target-audience': {
     typeKey: 'idea.target-audience',
     fields: {
-      primaryAudience: { type: 'string', required: true, default: '' },
+      primaryAudience: { type: 'string', default: '' },
       secondaryAudience: { type: 'string', default: '' },
-      demographics: { type: 'string', required: true, default: '' },
-      psychographics: { type: 'string', required: true, default: '' },
-      painPoints: { type: 'string', required: true, default: '' },
+      demographics: { type: 'string', default: '' },
+      psychographics: { type: 'string', default: '' },
+      painPoints: { type: 'string', default: '' },
       behaviors: { type: 'string', default: '' },
     },
   },
   'scope.features': {
     typeKey: 'scope.features',
     fields: {
-      features: { 
-        type: 'array', 
-        required: true, 
-        default: [] 
+      features: {
+        type: 'array',
+        default: []
       },
-      moscow: { 
-        type: 'object', 
-        default: { must: [], should: [], could: [], wont: [] } 
+      moscow: {
+        type: 'object',
+        default: { must: [], should: [], could: [], wont: [] }
       },
-      effort: { 
-        type: 'object', 
-        default: { low: [], medium: [], high: [] } 
+      effort: {
+        type: 'object',
+        default: { low: [], medium: [], high: [] }
       },
     },
   },
@@ -75,6 +74,21 @@ const CARD_SCHEMAS: Record<string, CardSchema> = {
       risks: { type: 'array', default: [] },
       pros: { type: 'array', default: [] },
       cons: { type: 'array', default: [] },
+    },
+  },
+  'design.interface': {
+    typeKey: 'design.interface',
+    fields: {
+      styleGuide: { type: 'string', default: '' },
+      colorPalette: { type: 'array', default: [] },
+      typography: { type: 'object', default: {} },
+      componentLibrary: { type: 'string', default: '' },
+      designSystem: { type: 'string', default: '' },
+      accessibility: { type: 'string', default: '' },
+      responsiveness: { type: 'string', default: '' },
+      inspiration: { type: 'array', default: [] },
+      layoutGuidelines: { type: 'string', default: '' },
+      interactions: { type: 'string', default: '' },
     },
   },
 };

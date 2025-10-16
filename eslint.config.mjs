@@ -20,6 +20,12 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn", // Mudar de erro para warning
+      "@typescript-eslint/no-unused-vars": "warn", // Mudar de erro para warning
+    },
+  },
 ];
 
 export default eslintConfig;

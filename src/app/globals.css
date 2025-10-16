@@ -39,6 +39,18 @@
   --shadow-1: 0 4px 16px rgba(0, 0, 0, 0.24);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.32);
 
+  /* === Botões (Dark Mode) === */
+  --button-text-primary: #FFFFFF;
+  --button-text-secondary: var(--text);
+  --button-bg-primary-from: #4A6CF7;
+  --button-bg-primary-to: #7A9FFF;
+  --button-bg-primary-hover-from: #5A7CFF;
+  --button-bg-primary-hover-to: #8AAFFF;
+  --button-bg-secondary-from: #1A1F2D;
+  --button-bg-secondary-to: #2A2F3D;
+  --button-bg-secondary-hover-from: #2A2F3D;
+  --button-bg-secondary-hover-to: #3A3F4D;
+
   /* === Espaçamentos === */
   --s-1: 8px;
   --s-2: 12px;
@@ -49,6 +61,53 @@
 
   /* === Bordas === */
   --border: 1px solid var(--stroke);
+}
+
+/* ======================================
+   Light Theme
+   ====================================== */
+
+[data-theme="light"] {
+  /* === Neutros (Light) - CONTRASTE MÁXIMO === */
+  --bg: #F5F5F7;                    /* Fundo principal - cinza muito claro */
+  --bg-elev: #FFFFFF;               /* Fundo elevado - branco puro */
+  --stroke: #D4D4D8;                /* Bordas - cinza claro VISÍVEL */
+  --muted: #52525B;                 /* Texto secundário - ESCURO */
+  --text: #09090B;                  /* Texto principal - PRETO quase puro */
+  --text-dim: #3F3F46;              /* Texto dim - cinza MUITO escuro */
+
+  /* === Semânticas - CONTRASTE ALTO === */
+  --primary: #1D4ED8;               /* Azul MUITO escuro */
+  --success: #15803D;               /* Verde MUITO escuro */
+  --warning: #CA8A04;               /* Laranja MUITO escuro */
+  --danger: #DC2626;                /* Vermelho escuro */
+  --info: #6D28D9;                  /* Roxo MUITO escuro */
+  --cyan: #0E7490;                  /* Ciano MUITO escuro */
+  --rose: #BE185D;                  /* Rosa MUITO escuro */
+
+  /* === Cores por Etapa (mantém referência) === */
+  --accent-idea: var(--primary);
+  --accent-understanding: var(--info);
+  --accent-scope: var(--success);
+  --accent-design: var(--warning);
+  --accent-tech: var(--cyan);
+  --accent-plan: var(--rose);
+
+  /* === Sombras Light - MAIS VISÍVEIS === */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.10);
+
+  /* === Botões (Light Mode) === */
+  --button-text-primary: #FFFFFF;
+  --button-text-secondary: var(--text);
+  --button-bg-primary-from: #0366D6;
+  --button-bg-primary-to: #0074E8;
+  --button-bg-primary-hover-from: #045BB5;
+  --button-bg-primary-hover-to: #0366D6;
+  --button-bg-secondary-from: #FAFBFC;
+  --button-bg-secondary-to: #F6F8FA;
+  --button-bg-secondary-hover-from: #F6F8FA;
+  --button-bg-secondary-hover-to: #E1E4E8;
 }
 
 /* @theme inline removido - configuração movida para tailwind.config.ts */
@@ -166,6 +225,24 @@ body {
 }
 
 /* === Cores dos Componentes === */
+
+/* === Botões com Gradiente Responsivo === */
+.button-primary {
+  background-image: linear-gradient(to bottom right, var(--button-bg-primary-from), var(--button-bg-primary-to));
+}
+
+.button-primary:hover {
+  background-image: linear-gradient(to bottom right, var(--button-bg-primary-hover-from), var(--button-bg-primary-hover-to));
+}
+
+.button-secondary {
+  background-image: linear-gradient(to bottom right, var(--button-bg-secondary-from), var(--button-bg-secondary-to));
+}
+
+.button-secondary:hover {
+  background-image: linear-gradient(to bottom right, var(--button-bg-secondary-hover-from), var(--button-bg-secondary-hover-to));
+}
+
 /* Botões */
 .bg-primary {
   background-color: #7AA2FF !important;
@@ -376,6 +453,11 @@ body {
   background-color: #151821 !important;
 }
 
+/* Light mode hover states */
+[data-theme="light"] .hover\:bg-bg-elev:hover {
+  background-color: var(--bg-elev) !important;
+}
+
 .hover\:border-primary\/50:hover {
   border-color: rgba(122, 162, 255, 0.5) !important;
 }
@@ -473,6 +555,15 @@ body {
 
 .bg-bg-elev {
   background-color: #151821 !important;
+}
+
+/* Light mode overrides for background utilities */
+[data-theme="light"] .bg-bg {
+  background-color: var(--bg) !important;
+}
+
+[data-theme="light"] .bg-bg-elev {
+  background-color: var(--bg-elev) !important;
 }
 
 /* Bordas suaves para cards específicos */
@@ -851,6 +942,13 @@ button:disabled {
   border-radius: 12px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24) !important;
   transition: all 0.2s ease !important;
+}
+
+/* Light mode card-elevated */
+[data-theme="light"] .card-elevated {
+  background: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 0 2px 8px rgba(27, 31, 35, 0.08) !important;
 }
 
 .card-elevated:hover {
@@ -1519,4 +1617,809 @@ textarea.error {
   bottom: 4rem !important;
   left: 1rem !important;
   z-index: 30 !important;
+}
+
+/* ============================================
+   Light Theme Specific Adjustments
+   ============================================ */
+
+/* React Flow - Light Mode */
+[data-theme="light"] .react-flow {
+  background: #F6F8FA;
+}
+
+[data-theme="light"] .react-flow__node.selected {
+  filter: drop-shadow(0 0 12px rgba(3, 102, 214, 0.35));
+}
+
+[data-theme="light"] .react-flow__node.node-idea-base {
+  filter: drop-shadow(0 0 16px rgba(3, 102, 214, 0.25));
+}
+
+[data-theme="light"] .react-flow__node.node-idea-base.selected {
+  filter: drop-shadow(0 0 20px rgba(3, 102, 214, 0.45));
+}
+
+[data-theme="light"] .idea-base-card {
+  border: 2px solid rgba(3, 102, 214, 0.8) !important;
+  box-shadow:
+    0 0 24px rgba(3, 102, 214, 0.25),
+    0 2px 8px rgba(27, 31, 35, 0.12) !important;
+}
+
+[data-theme="light"] .secondary-card {
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 0 2px 8px rgba(27, 31, 35, 0.08) !important;
+}
+
+/* Controls - Light Mode */
+[data-theme="light"] .react-flow__controls {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  box-shadow: 0 4px 16px rgba(27, 31, 35, 0.15);
+}
+
+[data-theme="light"] .react-flow__controls-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(27, 31, 35, 0.1);
+  color: var(--text);
+}
+
+[data-theme="light"] .react-flow__controls-button:hover {
+  background: rgba(3, 102, 214, 0.1);
+  border-color: rgba(3, 102, 214, 0.3);
+  color: var(--primary);
+}
+
+/* Background grid - Light Mode */
+[data-theme="light"] .react-flow__background {
+  opacity: 0.25;
+}
+
+/* Glass Effect - Light Mode */
+[data-theme="light"] .glass-effect {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  box-shadow:
+    0 4px 16px rgba(27, 31, 35, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .minimap-glass {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(27, 31, 35, 0.15);
+}
+
+/* Gradientes - Light Mode Adjustments */
+[data-theme="light"] .bg-gradient-primary {
+  background: linear-gradient(135deg, #0366D6 0%, #0074E8 100%) !important;
+}
+
+[data-theme="light"] .bg-gradient-primary:hover {
+  background: linear-gradient(135deg, #045BB5 0%, #0366D6 100%) !important;
+}
+
+[data-theme="light"] .bg-gradient-secondary {
+  background: linear-gradient(135deg, #FAFBFC 0%, #F6F8FA 100%) !important;
+  border: 1px solid var(--stroke);
+}
+
+[data-theme="light"] .bg-gradient-secondary:hover {
+  background: linear-gradient(135deg, #F6F8FA 0%, #E1E4E8 100%) !important;
+  box-shadow: 0 2px 8px rgba(27, 31, 35, 0.1) !important;
+}
+
+[data-theme="light"] .bg-gradient-success {
+  background: linear-gradient(135deg, #22863A 0%, #28A745 100%) !important;
+}
+
+[data-theme="light"] .bg-gradient-danger {
+  background: linear-gradient(135deg, #D73A49 0%, #E36060 100%) !important;
+}
+
+[data-theme="light"] .bg-gradient-info {
+  background: linear-gradient(135deg, #6F42C1 0%, #8B5CF6 100%) !important;
+}
+
+/* Sombras ajustadas para botões no light mode */
+[data-theme="light"] .bg-gradient-primary:hover,
+[data-theme="light"] .bg-gradient-success:hover,
+[data-theme="light"] .bg-gradient-danger:hover,
+[data-theme="light"] .bg-gradient-info:hover {
+  box-shadow: 0 4px 16px rgba(27, 31, 35, 0.2) !important;
+}
+
+/* Scrollbar - Light Mode */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--stroke);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ============================================
+   Header - Light Mode
+   ============================================ */
+
+/* Header limpo e profissional */
+[data-theme="light"] header .relative {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--stroke);
+}
+
+[data-theme="light"] .bg-bg-elev\/80 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Gradiente de fundo do header - muito sutil */
+[data-theme="light"] header .absolute.inset-0 {
+  background: radial-gradient(1200px 400px at -10% -50%, rgba(37, 99, 235, 0.02), transparent 60%), radial-gradient(800px 300px at 110% -10%, rgba(124, 58, 237, 0.01), transparent 60%);
+}
+
+/* ============================================
+   Header - Light Mode Text & Icons
+   ============================================ */
+
+/* Textos do header no light mode */
+[data-theme="light"] header .text-text,
+[data-theme="light"] header h1,
+[data-theme="light"] header h2,
+[data-theme="light"] header h3,
+[data-theme="light"] header p,
+[data-theme="light"] header span {
+  color: var(--text);
+}
+
+/* Ícones do header no light mode */
+[data-theme="light"] header button svg,
+[data-theme="light"] header svg {
+  color: var(--text);
+}
+
+/* Botões do header no light mode */
+[data-theme="light"] header button {
+  color: var(--text);
+}
+
+/* Hover states do header no light mode */
+[data-theme="light"] header button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+
+[data-theme="light"] header .hover\:bg-bg\/50:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Badge do header no light mode */
+[data-theme="light"] header .badge {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: var(--text);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Título do projeto no header */
+[data-theme="light"] header .text-2xl {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Separador vertical do header */
+[data-theme="light"] header .w-px {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Cards - Light Mode Improvements
+   ============================================ */
+
+/* Cards secundários - aparência limpa e profissional */
+[data-theme="light"] .secondary-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .secondary-card:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+/* Card IdeaBase com destaque sutil */
+[data-theme="light"] .idea-base-card {
+  background: var(--bg-elev);
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  box-shadow: 
+    0 0 0 1px rgba(37, 99, 235, 0.1),
+    var(--shadow-1);
+}
+
+[data-theme="light"] .idea-base-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 
+    0 0 0 1px rgba(37, 99, 235, 0.15),
+    var(--shadow-2);
+}
+
+/* Forçar fundos dos cards no light mode */
+[data-theme="light"] .bg-bg-elev {
+  background-color: var(--bg-elev) !important;
+}
+
+/* Todos os cards devem ter fundo claro no light mode */
+[data-theme="light"] .react-flow__node {
+  background: transparent !important;
+}
+
+/* Garantir que divs de card tenham fundo claro */
+[data-theme="light"] .react-flow__node > div {
+  background: var(--bg-elev) !important;
+}
+
+/* Textos dos cards no light mode */
+[data-theme="light"] .react-flow__node .text-text {
+  color: var(--text);
+}
+
+[data-theme="light"] .react-flow__node .text-text-dim {
+  color: var(--text-dim);
+}
+
+[data-theme="light"] .react-flow__node h3 {
+  color: var(--text);
+}
+
+[data-theme="light"] .react-flow__node p {
+  color: var(--text);
+}
+
+[data-theme="light"] .react-flow__node .text-xs {
+  color: var(--text-dim);
+}
+
+[data-theme="light"] .react-flow__node .text-sm {
+  color: var(--text);
+}
+
+/* Bordas dos cards no light mode */
+[data-theme="light"] .react-flow__node .border-stroke {
+  border-color: var(--stroke) !important;
+}
+
+/* Campos de entrada dos cards no light mode */
+[data-theme="light"] .react-flow__node .bg-bg {
+  background-color: var(--bg) !important;
+}
+
+/* Forçar TODOS os elementos de card no light mode */
+[data-theme="light"] .react-flow__node .bg-bg-elev,
+[data-theme="light"] .react-flow__node .idea-base-card,
+[data-theme="light"] .react-flow__node .secondary-card {
+  background-color: var(--bg-elev) !important;
+}
+
+/* Textos específicos dos cards - forçar cores escuras */
+[data-theme="light"] .react-flow__node .text-white,
+[data-theme="light"] .react-flow__node .text-gray-100,
+[data-theme="light"] .react-flow__node .text-gray-200,
+[data-theme="light"] .react-flow__node .text-gray-300 {
+  color: var(--text) !important;
+}
+
+/* Placeholders e textos secundários */
+[data-theme="light"] .react-flow__node .text-gray-400,
+[data-theme="light"] .react-flow__node .text-gray-500 {
+  color: var(--text-dim) !important;
+}
+
+/* Bordas e separadores */
+[data-theme="light"] .react-flow__node .border-gray-700,
+[data-theme="light"] .react-flow__node .border-gray-800,
+[data-theme="light"] .react-flow__node .border-gray-900 {
+  border-color: var(--stroke) !important;
+}
+
+/* REGRA MAIS AGRESSIVA - Forçar TODOS os fundos escuros para claros */
+[data-theme="light"] *[style*="background-color: rgb(21, 24, 33)"],
+[data-theme="light"] *[style*="background-color: #151821"],
+[data-theme="light"] *[style*="background-color: rgb(15, 17, 21)"],
+[data-theme="light"] *[style*="background-color: #0F1115"] {
+  background-color: var(--bg-elev) !important;
+}
+
+/* Forçar qualquer div dentro de react-flow__node */
+[data-theme="light"] .react-flow__node * {
+  background-color: inherit !important;
+}
+
+[data-theme="light"] .react-flow__node > * {
+  background-color: var(--bg-elev) !important;
+}
+
+/* ============================================
+   AI Panel - Light Mode Text Colors
+   ============================================ */
+
+/* Garantir que textos do AI Panel respondam ao tema */
+[data-theme="light"] .glass-effect .text-text {
+  color: var(--text);
+}
+
+[data-theme="light"] .glass-effect .text-text-dim {
+  color: var(--text-dim);
+}
+
+[data-theme="light"] .glass-effect h3 {
+  color: var(--text);
+}
+
+[data-theme="light"] .glass-effect p {
+  color: var(--text);
+}
+
+[data-theme="light"] .glass-effect .text-xs {
+  color: var(--text-dim);
+}
+
+[data-theme="light"] .glass-effect .text-sm {
+  color: var(--text);
+}
+
+/* ============================================
+   DESIGN SYSTEM COMPLETE - Light Mode
+   ============================================ */
+
+/* === BUTTONS - Design Limpo e Profissional === */
+/* Botões com gradiente escuro - adaptar para light mode */
+[data-theme="light"] .bg-gradient-to-br {
+  background: var(--bg-elev);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+
+[data-theme="light"] .bg-gradient-to-br:hover {
+  background: var(--bg);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+/* Hover states para botões */
+[data-theme="light"] .hover\:bg-gradient-to-br:hover {
+  background: rgba(37, 99, 235, 0.05);
+}
+
+[data-theme="light"] .bg-bg-soft {
+  background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+[data-theme="light"] .hover\:bg-bg-soft:hover {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+[data-theme="light"] .hover\:border-stroke-strong:hover {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* === INPUTS & FORMS - Design Limpo === */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+  border-color: var(--primary);
+  box-shadow: 
+    0 0 0 3px rgba(37, 99, 235, 0.1),
+    var(--shadow-2);
+  outline: none;
+}
+
+[data-theme="light"] input:hover,
+[data-theme="light"] textarea:hover,
+[data-theme="light"] select:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-dim);
+}
+
+/* === CARDS & MODALS === */
+[data-theme="light"] .bg-card {
+  background-color: var(--bg-elev) !important;
+}
+
+[data-theme="light"] .text-card-foreground {
+  color: var(--text) !important;
+}
+
+[data-theme="light"] .text-muted-foreground {
+  color: var(--text-dim) !important;
+}
+
+/* === TOASTS === */
+[data-theme="light"] .bg-black\/10 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .hover\:bg-black\/10:hover {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* === DROPDOWN MENUS - Design Moderno === */
+[data-theme="light"] .dropdown-content {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 
+    0 10px 15px rgba(15, 23, 42, 0.1),
+    0 4px 6px rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+[data-theme="light"] .dropdown-item {
+  color: var(--text) !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-theme="light"] .dropdown-item:hover {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  color: var(--primary) !important;
+}
+
+/* === SELECT COMPONENTS - Design Moderno === */
+[data-theme="light"] .select-trigger {
+  background-color: var(--bg-elev) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .select-trigger:hover {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+[data-theme="light"] .select-trigger:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    var(--shadow-2) !important;
+}
+
+[data-theme="light"] .select-content {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 
+    0 10px 15px rgba(15, 23, 42, 0.1),
+    0 4px 6px rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+[data-theme="light"] .select-item {
+  color: var(--text) !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-theme="light"] .select-item:hover {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  color: var(--primary) !important;
+}
+
+/* === TABS - Design Moderno === */
+[data-theme="light"] .tabs-trigger {
+  color: var(--text-dim) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .tabs-trigger[data-state="active"] {
+  color: var(--primary) !important;
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  border-bottom: 2px solid var(--primary) !important;
+}
+
+[data-theme="light"] .tabs-trigger:hover:not([data-state="active"]) {
+  color: var(--text) !important;
+  background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+[data-theme="light"] .tabs-content {
+  color: var(--text) !important;
+}
+
+/* === TOOLTIPS - Design Moderno === */
+[data-theme="light"] .tooltip-content {
+  background-color: var(--text) !important;
+  color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: 
+    0 10px 15px rgba(15, 23, 42, 0.1),
+    0 4px 6px rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* === SKELETONS & LOADING - Design Moderno === */
+[data-theme="light"] .skeleton {
+  background: linear-gradient(90deg, 
+    rgba(59, 130, 246, 0.1) 25%, 
+    rgba(59, 130, 246, 0.05) 50%, 
+    rgba(59, 130, 246, 0.1) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: skeleton-loading 1.5s infinite !important;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+[data-theme="light"] .animate-pulse > * {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+/* === SWITCH COMPONENT - Design Moderno === */
+[data-theme="light"] .switch-track {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .switch-track[data-state="checked"] {
+  background-color: var(--primary) !important;
+}
+
+[data-theme="light"] .switch-thumb {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* === PAGES & LAYOUTS - Design Limpo === */
+[data-theme="light"] .min-h-screen.bg-bg {
+  background-color: var(--bg) !important;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.02) 0%, transparent 50%) !important;
+}
+
+[data-theme="light"] .bg-bg {
+  background-color: var(--bg) !important;
+}
+
+/* === EMPTY STATES - Design Moderno === */
+[data-theme="light"] .empty-state {
+  color: var(--text-dim) !important;
+  background-color: rgba(59, 130, 246, 0.02) !important;
+  border: 1px dashed rgba(59, 130, 246, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="light"] .empty-state svg {
+  color: var(--text-dim) !important;
+  opacity: 0.6 !important;
+}
+
+/* === PAGINATION - Design Moderno === */
+[data-theme="light"] .pagination-button {
+  background-color: var(--bg-elev) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .pagination-button:hover {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* === SEARCH INPUTS - Design Moderno === */
+[data-theme="light"] .search-input {
+  background-color: var(--bg-elev) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .search-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    var(--shadow-2) !important;
+  outline: none !important;
+}
+
+[data-theme="light"] .search-input:hover {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+[data-theme="light"] .search-input::placeholder {
+  color: var(--text-dim) !important;
+}
+
+/* === PROJECT TILES - Design Moderno === */
+[data-theme="light"] .project-tile {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .project-tile:hover {
+  background-color: var(--bg) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  box-shadow: var(--shadow-2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* === CONVERSATION FLOW - Design Moderno === */
+[data-theme="light"] .conversation-flow {
+  background-color: var(--bg) !important;
+  background-image: 
+    radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.02) 0%, transparent 50%) !important;
+}
+
+[data-theme="light"] .chat-message {
+  background-color: var(--bg-elev) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .chat-input {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .chat-input textarea {
+  background-color: transparent !important;
+  color: var(--text) !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="light"] .chat-input:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    var(--shadow-2) !important;
+}
+
+[data-theme="light"] .chat-input textarea::placeholder {
+  color: var(--text-dim) !important;
+}
+
+/* === LOADING OVERLAYS === */
+[data-theme="light"] .loading-overlay {
+  background-color: rgba(250, 251, 252, 0.95) !important;
+  color: var(--text) !important;
+}
+
+/* === PROGRESS DRAWRER === */
+[data-theme="light"] .progress-drawer {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  color: var(--text) !important;
+}
+
+/* === OUTPUTS MODAL === */
+[data-theme="light"] .outputs-modal {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+  color: var(--text) !important;
+}
+
+/* === FORCE ALL ELEMENTS TO RESPOND TO THEME === */
+[data-theme="light"] * {
+  border-color: inherit;
+}
+
+[data-theme="light"] *:not([class*="text-"]):not([class*="bg-"]) {
+  color: inherit;
+}
+
+/* === SPECIFIC COMPONENT OVERRIDES === */
+[data-theme="light"] .lucide {
+  color: inherit;
+}
+
+[data-theme="light"] .lucide path,
+[data-theme="light"] .lucide circle,
+[data-theme="light"] .lucide line,
+[data-theme="light"] .lucide polyline,
+[data-theme="light"] .lucide polygon,
+[data-theme="light"] .lucide rect {
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+/* ============================================
+   REGRAS SUPER AGRESSIVAS - LIGHT MODE
+   GARANTIR CONTRASTE MÁXIMO
+   ============================================ */
+
+/* Forçar TODOS os textos base a serem escuros */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6,
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] div,
+[data-theme="light"] label,
+[data-theme="light"] button {
+  color: var(--text) !important;
+}
+
+/* Forçar textos com classe .text-text */
+[data-theme="light"] .text-text {
+  color: var(--text) !important;
+}
+
+[data-theme="light"] .text-text-dim {
+  color: var(--text-dim) !important;
+}
+
+[data-theme="light"] .text-muted {
+  color: var(--muted) !important;
+}
+
+/* Forçar placeholders */
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-dim) !important;
+  opacity: 0.7 !important;
+}
+
+/* Forçar labels de formulário */
+[data-theme="light"] label {
+  color: var(--text) !important;
+  font-weight: 500 !important;
+}
+
+/* Bordas mais visíveis em todos os cards e inputs */
+[data-theme="light"] .border,
+[data-theme="light"] .border-stroke {
+  border-color: var(--stroke) !important;
+  border-width: 1px !important;
+}
+
+/* Cards com background branco e borda visível */
+[data-theme="light"] .card-elevated,
+[data-theme="light"] .bg-bg-elev {
+  background-color: var(--bg-elev) !important;
+  border: 1px solid var(--stroke) !important;
+}
+
+/* Garantir que badges sejam legíveis */
+[data-theme="light"] .badge,
+[data-theme="light"] [class*="badge"] {
+  border-width: 1.5px !important;
+  font-weight: 600 !important;
 }

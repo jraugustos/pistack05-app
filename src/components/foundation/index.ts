@@ -22,4 +22,5 @@ export * from './Switch';
 export * from './EmptyState';
 export * from './LoadingSpinner';
 export * from './ConfirmationDialog';
+export * from './ThemeToggle';
 

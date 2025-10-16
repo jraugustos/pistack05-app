@@ -40,6 +40,7 @@ export type CardTypeKey =
   | 'scope.requirements'
   | 'design.concept'
   | 'design.flow'
+  | 'design.interface'
   | 'tech.stack'
   | 'tech.arch'
   | 'plan.release'
@@ -183,5 +184,19 @@ export interface TargetAudienceFields {
   psychographics: string; // Psicografia (interesses, valores, estilo de vida)
   painPoints: string; // Dores e necessidades
   behaviors: string; // Comportamentos e hábitos
+}
+
+// === DesignInterface Fields ===
+export interface DesignInterfaceFields {
+  styleGuide: string; // Guia de estilo geral
+  colorPalette: string[]; // Paleta de cores
+  typography: Record<string, any>; // Tipografia (fonts, tamanhos, pesos)
+  componentLibrary: string; // Biblioteca de componentes sugerida
+  designSystem: string; // Sistema de design (Material, Ant, Custom, etc)
+  accessibility: string; // Diretrizes de acessibilidade
+  responsiveness: string; // Estratégia de responsividade
+  inspiration: string[]; // Referências e inspirações visuais
+  layoutGuidelines: string; // Diretrizes de layout (grids, espaçamentos)
+  interactions: string; // Interações e micro-animações
 }
 

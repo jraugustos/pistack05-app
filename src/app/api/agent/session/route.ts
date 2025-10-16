@@ -15,7 +15,7 @@ const openai = new OpenAI({
  */
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     
     // Temporariamente permitir sem autenticação para desenvolvimento
     // TODO: Restaurar verificação de autenticação em produção

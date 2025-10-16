@@ -1,0 +1,290 @@
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seus Projetos — PIStack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#0A0B0E] text-[#E6E9F2] antialiased">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0F1115]/80 backdrop-blur-xl">
+        <nav class="h-14 px-4 md:px-6 flex items-center justify-between max-w-[1600px] mx-auto">
+            <div class="flex items-center gap-4">
+                <div class="text-base font-semibold tracking-tight">PIStack</div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center hover:bg-white/5 rounded-lg transition-colors">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+                <div class="w-px h-6 bg-white/5 mx-1"></div>
+                <button class="w-8 h-8 rounded-full bg-gradient-to-br from-[#7AA2FF]/20 to-[#5AD19A]/20 border border-[#7AA2FF]/30 flex items-center justify-center text-xs font-semibold">
+                    JD
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-14 min-h-screen">
+        <div class="max-w-[1600px] mx-auto px-4 md:px-6 py-8">
+            <!-- Page Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl font-semibold tracking-tight mb-1">Seus Projetos</h1>
+                    <p class="text-sm text-[#E6E9F2]/60">Gerencie e organize todos os seus projetos</p>
+                </div>
+                <button class="px-4 py-2 bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Novo projeto
+                </button>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="flex flex-col sm:flex-row gap-3 mb-6 pb-6 border-b border-white/5">
+                <!-- Search -->
+                <div class="relative flex-1 max-w-md">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#E6E9F2]/40"></i>
+                    <input type="text" placeholder="Buscar projetos..." class="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-[#E6E9F2]/40 focus:outline-none focus:border-[#7AA2FF]/50 focus:ring-2 focus:ring-[#7AA2FF]/20 transition-all">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Sort Dropdown -->
+                    <div class="relative">
+                        <button class="px-3 py-2 bg-white/5 border border-white/10 hover:border-white/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <i data-lucide="arrow-down-up" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Recentes</span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                        <button class="px-3 py-1.5 bg-[#7AA2FF]/10 text-[#7AA2FF] rounded text-xs font-medium transition-colors">
+                            Ativos
+                        </button>
+                        <button class="px-3 py-1.5 text-[#E6E9F2]/60 hover:text-[#E6E9F2] hover:bg-white/5 rounded text-xs font-medium transition-colors">
+                            Arquivados
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Project Card 1 -->
+                <div class="group bg-[#151821] rounded-xl border border-white/10 hover:border-[#2B3042] p-4 transition-all hover:shadow-lg hover:shadow-black/20 cursor-pointer relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="px-2 py-0.5 bg-[#5AD19A]/10 border border-[#5AD19A]/20 rounded text-[10px] font-medium text-[#5AD19A] uppercase tracking-wide">
+                                Active
+                            </div>
+                            <div class="text-xs text-[#E6E9F2]/40">há 2 horas</div>
+                        </div>
+                        <h3 class="text-base font-semibold mb-1 pr-8">FinControl</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 line-clamp-2">App de controle financeiro pessoal com categorização inteligente</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3 border-t border-white/5">
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            <span>5 etapas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>17 cards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="group bg-[#151821] rounded-xl border border-white/10 hover:border-[#2B3042] p-4 transition-all hover:shadow-lg hover:shadow-black/20 cursor-pointer relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="px-2 py-0.5 bg-white/10 border border-white/10 rounded text-[10px] font-medium text-[#E6E9F2]/60 uppercase tracking-wide">
+                                Draft
+                            </div>
+                            <div class="text-xs text-[#E6E9F2]/40">há 1 dia</div>
+                        </div>
+                        <h3 class="text-base font-semibold mb-1 pr-8">EduTech Platform</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 line-clamp-2">Plataforma de cursos online com sistema de gamificação</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3 border-t border-white/5">
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            <span>3 etapas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>8 cards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="group bg-[#151821] rounded-xl border border-white/10 hover:border-[#2B3042] p-4 transition-all hover:shadow-lg hover:shadow-black/20 cursor-pointer relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="px-2 py-0.5 bg-[#5AD19A]/10 border border-[#5AD19A]/20 rounded text-[10px] font-medium text-[#5AD19A] uppercase tracking-wide">
+                                Active
+                            </div>
+                            <div class="text-xs text-[#E6E9F2]/40">há 3 dias</div>
+                        </div>
+                        <h3 class="text-base font-semibold mb-1 pr-8">Marketplace B2B</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 line-clamp-2">Conectando fornecedores e compradores corporativos</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3 border-t border-white/5">
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            <span>5 etapas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>22 cards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 4 -->
+                <div class="group bg-[#151821] rounded-xl border border-white/10 hover:border-[#2B3042] p-4 transition-all hover:shadow-lg hover:shadow-black/20 cursor-pointer relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="px-2 py-0.5 bg-[#5AD19A]/10 border border-[#5AD19A]/20 rounded text-[10px] font-medium text-[#5AD19A] uppercase tracking-wide">
+                                Active
+                            </div>
+                            <div class="text-xs text-[#E6E9F2]/40">há 1 semana</div>
+                        </div>
+                        <h3 class="text-base font-semibold mb-1 pr-8">FitTracker</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 line-clamp-2">App de acompanhamento de treinos e nutrição</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3 border-t border-white/5">
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            <span>4 etapas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>14 cards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 5 -->
+                <div class="group bg-[#151821] rounded-xl border border-white/10 hover:border-[#2B3042] p-4 transition-all hover:shadow-lg hover:shadow-black/20 cursor-pointer relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="px-2 py-0.5 bg-white/10 border border-white/10 rounded text-[10px] font-medium text-[#E6E9F2]/60 uppercase tracking-wide">
+                                Draft
+                            </div>
+                            <div class="text-xs text-[#E6E9F2]/40">há 2 semanas</div>
+                        </div>
+                        <h3 class="text-base font-semibold mb-1 pr-8">SocialHub</h3>
+                        <p class="text-sm text-[#E6E9F2]/60 line-clamp-2">Rede social focada em comunidades locais</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-3 border-t border-white/5">
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                            <span>2 etapas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#E6E9F2]/60">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>5 cards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Project Card -->
+                <button class="bg-[#151821]/50 rounded-xl border-2 border-dashed border-white/10 hover:border-[#7AA2FF]/30 p-4 transition-all hover:bg-[#151821] min-h-[180px] flex flex-col items-center justify-center gap-3 group">
+                    <div class="w-12 h-12 rounded-xl bg-[#7AA2FF]/10 border border-[#7AA2FF]/20 flex items-center justify-center group-hover:bg-[#7AA2FF]/20 transition-colors">
+                        <i data-lucide="plus" class="w-6 h-6 text-[#7AA2FF]"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm font-medium text-[#E6E9F2]/80 mb-1">Novo Projeto</div>
+                        <div class="text-xs text-[#E6E9F2]/40">Comece do zero ou use um template</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Empty State (hidden when projects exist) -->
+            <div class="hidden">
+                <div class="max-w-md mx-auto text-center py-16">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#7AA2FF]/10 to-[#5AD19A]/10 border border-[#7AA2FF]/20 flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="folder-open" class="w-10 h-10 text-[#7AA2FF]"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold tracking-tight mb-2">Nenhum projeto por aqui</h2>
+                    <p class="text-sm text-[#E6E9F2]/60 mb-6">Vamos começar um? Você pode usar o template Site/App para facilitar.</p>
+                    <button class="px-6 py-3 bg-[#7AA2FF] hover:bg-[#6690E8] text-white rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Criar primeiro projeto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Context Menu (shown on kebab click) -->
+    <div class="hidden fixed bg-[#151821] border border-white/10 rounded-lg shadow-xl shadow-black/50 py-1 min-w-[180px] z-50">
+        <button class="w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors flex items-center gap-3">
+            <i data-lucide="folder-open" class="w-4 h-4 text-[#E6E9F2]/60"></i>
+            <span>Abrir</span>
+        </button>
+        <button class="w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors flex items-center gap-3">
+            <i data-lucide="pencil" class="w-4 h-4 text-[#E6E9F2]/60"></i>
+            <span>Renomear</span>
+        </button>
+        <button class="w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors flex items-center gap-3">
+            <i data-lucide="copy" class="w-4 h-4 text-[#E6E9F2]/60"></i>
+            <span>Duplicar</span>
+        </button>
+        <div class="h-px bg-white/5 my-1"></div>
+        <button class="w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors flex items-center gap-3 text-[#FF6B6B]">
+            <i data-lucide="archive" class="w-4 h-4"></i>
+            <span>Arquivar</span>
+        </button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body></html>

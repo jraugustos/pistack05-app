@@ -1,12 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Badge } from '@/components/foundation';
-import { AIPanel, ProgressDrawer } from '@/components/molecules';
+import { Button, Badge, ThemeToggle } from '@/components/foundation';
+import { AIPanel, ProgressDrawer, LoadingOverlay } from '@/components/molecules';
 import { OutputsModal } from '@/components/organisms/OutputsModal';
 import { ReactFlowCanvas, type ReactFlowCanvasHandle } from '@/components/canvas/ReactFlowCanvas';
 import { useCards } from '@/hooks/useCards';
 import { useCardsStore } from '@/lib/stores/useCardsStore';
+import { useTheme } from '@/components/providers';
 import { TelemetryService } from '@/lib/services/TelemetryService';
 import { GraphService } from '@/lib/services/GraphService';
 import { toast } from '@/lib/stores/useToastStore';
@@ -35,6 +36,9 @@ export interface CanvasPageProps {
 
 const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
   ({ projectId, project, cards: initialCards = [], edges: initialEdges = [], onboarding = false }, ref) => {
+    // Theme
+    const { resolvedTheme } = useTheme();
+
     // Store e API
     const {
       cards,
@@ -63,6 +67,8 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     const [agentMessages, setAgentMessages] = React.useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
     const [agentThreadId, setAgentThreadId] = React.useState<string | null>(null);
     const [isOrganizing, setIsOrganizing] = React.useState(false);
+    const [cardCreationLoading, setCardCreationLoading] = React.useState(false);
+    const [loadingMessage, setLoadingMessage] = React.useState({ title: 'Criando card', description: 'Aguarde um instante...' });
     
     // Edges state
     const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
@@ -136,7 +142,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     const handleChecklistCreate = async (target: { stageKey: string; typeKey: string }) => {
       try {
         TelemetryService.checklistClickStage(target.stageKey, target.typeKey, { projectId });
-        
+
         // Se já existir o card, focar nele em vez de criar outro
         const existing = cards.find(c => c.stageKey === target.stageKey && c.typeKey === target.typeKey);
         if (existing) {
@@ -146,22 +152,37 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
           return;
         }
 
+        // Mapeamento de títulos por typeKey
+        const titleMap: Record<string, string> = {
+          'idea.target-audience': 'Público-Alvo',
+          'scope.features': 'Funcionalidades',
+          'design.interface': 'Interface',
+          'tech.stack': 'Stack Tecnológico',
+        };
+
+        // Show loading overlay
+        setLoadingMessage({
+          title: `Criando ${titleMap[target.typeKey] || 'card'}`,
+          description: 'Preparando e preenchendo automaticamente...',
+        });
+        setCardCreationLoading(true);
+
         // Calcular posição em cascade
         const position = getCascadePosition(
           cards.map(c => ({
             id: c.id,
             position: c.position || { x: 80, y: 80 },
-            style: { 
-              width: c.size?.width || 360, 
-              minHeight: c.size?.height || 240 
+            style: {
+              width: c.size?.width || 360,
+              minHeight: c.size?.height || 240
             }
           } as any))
         );
-        
+
         const newCard = await createCard({
           stage_key: target.stageKey,
           type_key: target.typeKey,
-          title: target.typeKey === 'scope.features' ? 'Funcionalidades' : 'Stack Tecnológico',
+          title: titleMap[target.typeKey] || 'Novo Card',
           summary: '',
           fields: {},
           x: position.x,
@@ -177,9 +198,57 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
         }
 
         TelemetryService.cardGenerated(target.typeKey, { projectId, cardId: newCard?.id });
+
+        // Auto-preencher card com agente (se agente estiver habilitado)
+        if (agentEnabled && newCard && agentThreadId) {
+          console.log('[Canvas] Auto-filling card with agent:', newCard.title);
+
+          try {
+            // Enviar mensagem ao agente para preencher o card
+            const autoFillMessage = `Preencha o card "${newCard.title}" com informações detalhadas baseadas em TODO o contexto do projeto.`;
+
+            const res = await fetch('/api/agent/message', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                projectId,
+                message: autoFillMessage,
+                threadId: agentThreadId,
+                cardId: newCard.id,
+                typeKey: target.typeKey,
+                mentionedCardIds: [],
+              }),
+            });
+
+            if (!res.ok) {
+              console.warn('[Canvas] Failed to auto-fill card:', await res.text());
+            } else {
+              const data = await res.json();
+              console.log('[Canvas] Card auto-filled successfully');
+
+              // Processar toolResults para sincronizar store
+              if (data.toolResults && Array.isArray(data.toolResults)) {
+                for (const tr of data.toolResults) {
+                  if (tr.tool === 'update_card_fields' && tr.result?.cardId) {
+                    // Atualizar card no store
+                    useCardsStore.getState().updateCard(tr.result.cardId, {
+                      fields: tr.result.updates || tr.result.fields,
+                    });
+                    toast.success('Card preenchido automaticamente! 🎉');
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('[Canvas] Error auto-filling card:', error);
+            // Não mostrar erro ao usuário, é uma feature opcional
+          }
+        }
       } catch (err) {
         console.error('Failed to create card:', err);
         toast.error('Erro ao criar card');
+      } finally {
+        setCardCreationLoading(false);
       }
     };
 
@@ -220,8 +289,12 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
           ideaBaseCardId: ideaBaseCard.id,
         });
 
-        // Feedback visual progressivo
-        toast.info('Analisando ideia...');
+        // Show loading overlay
+        setLoadingMessage({
+          title: 'Enriquecendo ideia',
+          description: 'Analisando e gerando insights estruturados...',
+        });
+        setCardCreationLoading(true);
         setEnrichmentLoading(true);
 
         // Feedback intermediário após 3s
@@ -294,6 +367,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
         toast.error(err instanceof Error ? err.message : 'Erro ao enriquecer ideia');
       } finally {
         setEnrichmentLoading(false);
+        setCardCreationLoading(false);
       }
     };
 
@@ -348,12 +422,22 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
 
     const handleCardConfirmReady = async (cardId: string) => {
       try {
-        await confirmReady(cardId);
-        toast.success('Card confirmado como READY 🎉');
-        TelemetryService.cardConfirmed(cardId, { projectId });
+        // Toggle: Check current status and switch
+        const card = cards.find(c => c.id === cardId);
+        if (!card) return;
+
+        const newStatus = card.status === 'READY' ? 'DRAFT' : 'READY';
+        await updateCard(cardId, { status: newStatus });
+
+        if (newStatus === 'READY') {
+          toast.success('Card confirmado como READY 🎉');
+          TelemetryService.cardConfirmed(cardId, { projectId });
+        } else {
+          toast.success('Card voltou para DRAFT');
+        }
       } catch (err) {
-        console.error('Failed to confirm card:', err);
-        toast.error('Erro ao confirmar card');
+        console.error('Failed to toggle card status:', err);
+        toast.error('Erro ao alterar status do card');
       }
     };
 
@@ -510,17 +594,20 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
 
         // Encontrar o elemento do viewport do React Flow
         const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
-        
+
         if (!viewport) {
           toast.error('Canvas não encontrado');
           return;
         }
 
+        // Definir cor de fundo baseada no tema atual
+        const backgroundColor = resolvedTheme === 'dark' ? '#0F1115' : '#F6F8FA';
+
         // Gerar imagem com alta qualidade (2x scale)
         const dataUrl = await toPng(viewport, {
           quality: 1.0,
           pixelRatio: 2, // 2x para alta resolução
-          backgroundColor: '#0F1115', // bg color
+          backgroundColor,
         });
 
         // Criar link de download
@@ -538,7 +625,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
     };
 
     // Agent: enviar mensagem (ChatKit headless)
-    const handleSendAgentMessage = async (text: string) => {
+    const handleSendAgentMessage = async (text: string, mentionedCardIds?: string[]) => {
       // Verificar se há threadId
       if (!agentThreadId) {
         toast.error('Sessão do agente não inicializada');
@@ -548,13 +635,32 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
       try {
         // Abrir painel quando enviar mensagem
         setAiPanelOpen(true);
-        
+
         // Append mensagem do usuário
         setAgentMessages(prev => [...prev, { role: 'user', content: text }]);
 
-        // Descobrir typeKey do card focado (se houver)
-        const focusedCard = selectedCardId ? cards.find(c => c.id === selectedCardId) : undefined;
-        const typeKey = focusedCard?.typeKey || focusedCard?.type_key;
+        // Descobrir card de contexto:
+        // 1. Se há card selecionado, usar ele
+        // 2. Se não, mas há menções, usar o primeiro card mencionado
+        let contextCardId = selectedCardId;
+        let contextCard = contextCardId ? cards.find(c => c.id === contextCardId) : undefined;
+
+        if (!contextCard && mentionedCardIds && mentionedCardIds.length > 0) {
+          // Usar primeiro card mencionado como contexto
+          contextCardId = mentionedCardIds[0];
+          contextCard = cards.find(c => c.id === contextCardId);
+          console.log('[Agent] No card selected, using mentioned card as context:', contextCard?.title);
+        }
+
+        const typeKey = contextCard?.typeKey || contextCard?.type_key;
+
+        console.log('[Agent] Sending message:', {
+          selectedCardId,
+          contextCardId,
+          contextCard: contextCard ? { id: contextCard.id, title: contextCard.title, typeKey } : null,
+          mentionedCards: mentionedCardIds?.length || 0,
+          hasThreadId: !!agentThreadId,
+        });
 
         const res = await fetch('/api/agent/message', {
           method: 'POST',
@@ -563,41 +669,66 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
             projectId,
             message: text,
             threadId: agentThreadId,
-            cardId: selectedCardId,
+            cardId: contextCardId, // Usar card de contexto (selecionado ou mencionado)
             typeKey,
+            mentionedCardIds: mentionedCardIds || [],
           }),
         });
-        
-        if (!res.ok) throw new Error('Falha ao enviar mensagem ao agente');
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('[Agent] API Error:', res.status, errorData);
+          throw new Error(errorData.error || `Falha ao enviar mensagem (${res.status})`);
+        }
         
         const data = await res.json();
-        
+
+        console.log('[Agent Response] Full data:', {
+          hasMessages: !!data.messages,
+          messageCount: data.messages?.length || 0,
+          hasToolResults: !!data.toolResults,
+          toolResultCount: data.toolResults?.length || 0,
+          contextType: data.contextType,
+          cardId: data.cardId,
+        });
+
         // Processar toolResults para sincronizar store
         if (data.toolResults && Array.isArray(data.toolResults)) {
+          console.log(`[Agent] Processing ${data.toolResults.length} tool results...`);
           for (const tr of data.toolResults) {
-            console.log('[Agent] Processing tool result:', tr.tool, tr.result);
+            console.log('[Agent Tool Result]:', {
+              tool: tr.tool,
+              resultKeys: Object.keys(tr.result || {}),
+              result: tr.result,
+            });
             
             if (tr.tool === 'create_card' && tr.result?.card) {
               // Adicionar card ao store
+              console.log('[Agent Sync] Creating card:', tr.result.card.title);
               useCardsStore.getState().addCard(tr.result.card);
               toast.success('Card criado pelo agente');
             } else if (tr.tool === 'update_card_fields' && tr.result?.cardId) {
               // Atualizar card no store
+              console.log('[Agent Sync] Updating card:', tr.result.cardId, 'with fields:', Object.keys(tr.result.fields || tr.result.updates || {}));
               const updatedCard = cards.find(c => c.id === tr.result.cardId);
               if (updatedCard) {
                 useCardsStore.getState().updateCard(tr.result.cardId, {
                   fields: tr.result.fields || tr.result.updates,
                 });
                 toast.success('Card atualizado pelo agente');
+              } else {
+                console.warn('[Agent Sync] Card not found for update:', tr.result.cardId);
               }
             } else if (tr.tool === 'confirm_card_ready' && tr.result?.cardId) {
               // Confirmar card como READY
+              console.log('[Agent Sync] Marking card as READY:', tr.result.cardId);
               useCardsStore.getState().updateCard(tr.result.cardId, {
                 status: 'READY',
               });
               toast.success('Card confirmado como READY');
             } else if (tr.tool === 'create_edge' && tr.result?.edge) {
               // Adicionar edge
+              console.log('[Agent Sync] Creating edge:', tr.result.edge);
               setEdges(prev => [...prev, tr.result.edge]);
               toast.success('Conexão criada pelo agente');
             }
@@ -704,8 +835,8 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
                   <Share2 className="w-5 h-5" />
                 </Button>
 
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={handleExportPNG}
                   title="Exportar canvas como PNG"
@@ -713,6 +844,10 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
                 >
                   <ImageIcon className="w-5 h-5" />
                 </Button>
+
+                <div className="w-px h-6 bg-stroke" />
+
+                <ThemeToggle variant="icon" size="md" />
               </div>
             </div>
           </div>
@@ -753,6 +888,7 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
               onDeleteEdge={handleDeleteEdge}
               onNodePositionChange={handleNodePositionChange}
               onEnrichIdea={handleEnrichIdea}
+              onCardSelect={setSelectedCardId}
             />
           </div>
 
@@ -774,6 +910,9 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
               onModeChange={setAiMode}
               onApply={handleAIApply}
               onClose={handleAIClose}
+              focusedCard={selectedCardId ? cards.find(c => c.id === selectedCardId) : null}
+              onClearContext={() => setSelectedCardId(null)}
+              cards={cards}
             />
           </div>
         </div>
@@ -795,6 +934,13 @@ const CanvasPage = React.forwardRef<HTMLDivElement, CanvasPageProps>(
             onRegenerate={handleGenerateOutput}
           />
         )}
+
+        {/* Loading Overlay for card creation */}
+        <LoadingOverlay
+          isOpen={cardCreationLoading}
+          title={loadingMessage.title}
+          description={loadingMessage.description}
+        />
       </div>
     );
   }

@@ -14,6 +14,7 @@ export function getNodeType(typeKey: string): string {
     'idea.enricher': 'ideaEnricher',
     'idea.target-audience': 'targetAudience',
     'scope.features': 'scopeFeatures',
+    'design.interface': 'designInterface',
     'tech.stack': 'techStack',
   };
 
@@ -141,10 +142,28 @@ export function getCascadePosition(existingNodes: Node[]): { x: number; y: numbe
     return { x: 80, y: 80 };
   }
 
-  // Encontrar o card mais à direita
-  const rightmost = existingNodes.reduce((max, node) => {
+  // CRITICAL: Filter out Ideia Base to avoid overlapping it
+  const nonBaseNodes = existingNodes.filter(
+    (node) => node.type !== 'ideaBase' && node.type !== 'ideaEnricher'
+  );
+
+  // If only Ideia Base/Enricher exists, position to the right
+  if (nonBaseNodes.length === 0) {
+    const ideaBaseNode = existingNodes.find((n) => n.type === 'ideaBase' || n.type === 'ideaEnricher');
+    if (ideaBaseNode) {
+      const nodeWidth = ideaBaseNode.style?.width ? Number(ideaBaseNode.style.width) : 360;
+      return {
+        x: ideaBaseNode.position.x + nodeWidth + 60, // 60px margin from Ideia Base
+        y: ideaBaseNode.position.y,
+      };
+    }
+    return { x: 80, y: 80 };
+  }
+
+  // Encontrar o card mais à direita (excluindo Ideia Base)
+  const rightmost = nonBaseNodes.reduce((max, node) => {
     return node.position.x > max.position.x ? node : max;
-  }, existingNodes[0]);
+  }, nonBaseNodes[0]);
 
   const nodeWidth = rightmost.style?.width ? Number(rightmost.style.width) : 360;
   const newX = rightmost.position.x + nodeWidth + 40; // 40px de margem
@@ -152,14 +171,14 @@ export function getCascadePosition(existingNodes: Node[]): { x: number; y: numbe
   // Se ultrapassar 1200px, wrap para nova linha
   if (newX > 1200) {
     const baseX = 80;
-    const lowestInFirstColumn = existingNodes
+    const lowestInFirstColumn = nonBaseNodes
       .filter(n => n.position.x <= baseX + 420)
       .reduce((max, node) => {
         return node.position.y > max.position.y ? node : max;
-      }, existingNodes[0]);
+      }, nonBaseNodes[0]);
 
-    const nodeHeight = lowestInFirstColumn.style?.minHeight 
-      ? Number(lowestInFirstColumn.style.minHeight) 
+    const nodeHeight = lowestInFirstColumn.style?.minHeight
+      ? Number(lowestInFirstColumn.style.minHeight)
       : 240;
 
     return {

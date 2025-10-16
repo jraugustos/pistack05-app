@@ -11,7 +11,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ className, variant = 'default', size = 'md', children, ...props }, ref) => {
     const variantClasses = {
       default:
-        'bg-bg-elev border border-stroke text-text hover:border-[#2B3042] hover:bg-[#1A1F2D]',
+        'bg-bg-elev border border-stroke text-text hover:border-primary/30 hover:bg-bg',
       ghost: 'bg-transparent text-text hover:bg-bg-elev',
       danger: 'bg-transparent text-danger hover:bg-danger/10',
     };

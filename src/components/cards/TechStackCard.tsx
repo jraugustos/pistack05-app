@@ -70,12 +70,30 @@ const TechStackCard = React.forwardRef<HTMLDivElement, TechStackCardProps>(
                 {totalTechs} tecnologias selecionadas
               </p>
             </div>
-            {isReady && (
-              <Badge variant="success">
-                <Check className="w-3 h-3" />
-                READY
+            <button
+              onClick={() => {
+                if (onConfirm && (totalTechs > 0 || isReady)) {
+                  onConfirm();
+                }
+              }}
+              disabled={totalTechs === 0 && !isReady}
+              className={cn(
+                'transition-all',
+                (totalTechs > 0 || isReady) ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-50'
+              )}
+              title={
+                isReady
+                  ? 'Clique para voltar para DRAFT'
+                  : totalTechs > 0
+                  ? 'Clique para marcar como READY'
+                  : 'Adicione pelo menos uma tecnologia'
+              }
+            >
+              <Badge variant={isReady ? 'success' : 'draft'}>
+                {isReady && <Check className="w-3 h-3 mr-1" />}
+                {isReady ? 'READY' : 'DRAFT'}
               </Badge>
-            )}
+            </button>
           </div>
         </div>
 

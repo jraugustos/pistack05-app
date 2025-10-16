@@ -46,7 +46,7 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
                 'max-w-[80%] md:max-w-[70%] rounded-xl px-4 py-3 shadow-lg',
                 isBot
                   ? 'bg-bg-elev border border-stroke text-text rounded-tl-none'
-                  : 'bg-gradient-to-br from-primary to-[#5A7CFF] text-white rounded-tr-none'
+                  : 'button-primary text-[var(--button-text-primary)] rounded-tr-none'
               )}
             >
               <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">
@@ -65,12 +65,12 @@ const ChatMessage = React.forwardRef<HTMLDivElement, ChatMessageProps>(
               </div>
               {timestamp && (
                 <p className={cn(
-                  'text-xs mt-1',
-                  isBot ? 'text-text-dim' : 'text-white/70'
+                  'text-xs mt-1 opacity-70',
+                  isBot ? 'text-text-dim' : ''
                 )}>
-                  {timestamp.toLocaleTimeString('pt-BR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
+                  {timestamp.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
                   })}
                 </p>
               )}
